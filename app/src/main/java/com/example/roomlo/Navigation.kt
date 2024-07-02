@@ -21,7 +21,7 @@ fun Navigation(
          composable(
              Screen.HomeScreen.route
          ){
-             HomeScreen(navController = navController)
+             HomeScreen(navController = navController, RoomViewModel())
          }
      }
 

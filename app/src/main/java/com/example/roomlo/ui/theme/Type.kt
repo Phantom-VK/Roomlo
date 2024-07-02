@@ -2,9 +2,11 @@ package com.example.roomlo.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.roomlo.R
 
 // Set of Material typography styles to start with
 val Typography = Typography(
@@ -31,4 +33,15 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     )
     */
+)
+
+val baloo2Font = FontFamily(
+
+    Font(R.font.baloo2_bold, FontWeight.Bold),
+    Font(R.font.baloo2_extrabold, FontWeight.ExtraBold),
+    Font(R.font.baloo2_medium, FontWeight.Medium),
+    Font(R.font.baloo2_semibold, FontWeight.SemiBold),
+    Font(R.font.baloo2_regular)
+
+
 )
