@@ -16,11 +16,16 @@ fun HomeScreen(
 
 ) {
     Scaffold(
-        topBar = { AppTopBar(title = "RoomLo") },
+        topBar = {
+            AppTopBar(title = "RoomLo",
+                onTrailingIconClicked = {
+                    navController.navigate(Screen.ProfileScreen.route)
+                })
+        },
         containerColor = Color.White
 
 
-        ) {
+    ) {
         LazyColumn(
             modifier = Modifier
                 .padding(it)

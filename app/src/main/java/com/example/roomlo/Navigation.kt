@@ -1,7 +1,6 @@
 package com.example.roomlo
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -9,7 +8,8 @@ import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun Navigation(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    viewModel: RoomViewModel
 ) {
      NavHost(navController = navController, startDestination = Screen.SplashScreen.route){
          composable(
@@ -22,6 +22,12 @@ fun Navigation(
              Screen.HomeScreen.route
          ){
              HomeScreen(navController = navController, RoomViewModel())
+         }
+
+         composable(
+             Screen.ProfileScreen.route
+         ){
+             ProfileScreen(viewModel = viewModel, navController = navController )
          }
      }
 
