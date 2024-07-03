@@ -1,5 +1,6 @@
 package com.example.roomlo
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material.icons.Icons
@@ -15,6 +16,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,6 +33,8 @@ fun AppTopBar(
 
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
+    val gradientBrush = Brush.linearGradient(
+        colors = listOf(Color.Black, Color.Gray))
 
     val navigationIcon: (@Composable () -> Unit) = {
         if (!title.contains("RoomLo")) {
@@ -76,6 +80,7 @@ fun AppTopBar(
             titleContentColor = Color.Black
 
         ),
+        modifier = Modifier.background(gradientBrush),
         title = {
             Text(
                 text = title,

@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Icon
@@ -19,8 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+@Preview(showBackground = true)
 @Composable
 fun AppBottomBar() {
     var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -39,7 +42,8 @@ fun AppBottomBar() {
         BottomNavigationItem(
             title = "Wishlist",
             selectedIcon = Icons.Filled.Favorite,
-            unselectedIcon = ImageVector.vectorResource(R.drawable.favoutite_selected)
+            unselectedIcon = ImageVector.vectorResource(R.drawable.baseline_favorite_border_24)
+
         ),
         BottomNavigationItem(
             title = "Property",

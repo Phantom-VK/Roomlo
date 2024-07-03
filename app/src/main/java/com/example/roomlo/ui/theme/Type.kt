@@ -45,3 +45,11 @@ val baloo2Font = FontFamily(
 
 
 )
+
+val interFont = FontFamily(
+    Font(R.font.inter_bold, FontWeight.Bold),
+    Font(R.font.inter_black, FontWeight.Black),
+    Font(R.font.inter_medium, FontWeight.Medium),
+    Font(R.font.inter_regular, FontWeight.Normal),
+    Font(R.font.inter_semibold, FontWeight.SemiBold)
+)

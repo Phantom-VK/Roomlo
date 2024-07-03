@@ -1,25 +1,33 @@
 package com.example.roomlo
 
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.roomlo.ui.theme.interFont
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: RoomViewModel
-
 ) {
+    var searchQuery by remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
             AppTopBar(title = "RoomLo",
@@ -28,16 +36,83 @@ fun HomeScreen(
                 })
         },
         containerColor = Color.White,
-        bottomBar = { AppBottomBar()}
-
-
-    ) {
-        LazyColumn(
+        bottomBar = { AppBottomBar() }
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .padding(it)
+                .padding(paddingValues)
                 .fillMaxSize()
         ) {
 
+            Box(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .border(
+                        BorderStroke(2.dp, Color.DarkGray),
+                        shape = RoundedCornerShape(30.dp)
+                    ),
+                contentAlignment = Alignment.Center
+
+            ) {
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = { searchQuery = it },
+                    onSearch = { /* Perform search */ },
+                    active = false,
+                    onActiveChange = {},
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Search,
+                            contentDescription = "Search",
+                            tint = Color.Black
+                        )
+                    },
+                    colors = SearchBarDefaults.colors(
+                        Color.White
+                    ),
+                    placeholder = {
+                        Text(text = "Search Room")
+                    },
+                    shape = RoundedCornerShape(30.dp),
+                    trailingIcon = {
+                        Button(
+                            onClick = { /*TODO*/ },
+                            colors = ButtonDefaults.buttonColors(
+                                Color.White
+                            ),
+
+                            ) {
+                            Text(
+                                text = "Filters",
+                                fontFamily = interFont,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 18.sp
+                            )
+                            Icon(
+                                imageVector = Icons.Filled.ArrowDropDown,
+                                contentDescription = "Filters"
+                            )
+
+                        }
+                    }
+                ) {
+                    // Optional: Add additional content inside the search bar
+                }
+            }
+
+
+
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                item {
+                    RoomItemView()
+                }
+            }
         }
     }
 }
