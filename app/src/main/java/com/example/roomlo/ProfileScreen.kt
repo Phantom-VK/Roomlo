@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -109,21 +110,37 @@ fun ProfileScreen(
         UnderlineTextField(
             value = wpNumber,
             onValueChange = { wpNumber = it },
-            hint = "WhatsApp Number",
+            hint = "WhatsApp Number (Optional)",
             imageVector = Icons.Filled.Call
         )
-        UnderlineTextField(
-            value = userId,
-            onValueChange = { userId = it },
-            hint = "UserId",
-            imageVector = Icons.Filled.Face
-        )
+//        UnderlineTextField(
+//            value = userId,
+//            onValueChange = { userId = it },
+//            hint = "UserId",
+//            imageVector = Icons.Filled.Face
+//        )
+        Button(onClick = { /*TODO*/ },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp),
+            colors = ButtonDefaults.buttonColors(
+                Color(0xFFADC9FF)
+            )
+            ) {
+
+                Text(text = "Userid & Password")
+
+
+        }
 
         Button(
             onClick = { /*TODO*/ },
-            colors = ButtonDefaults.buttonColors()
+            colors = ButtonDefaults.buttonColors(
+                Color.Green
+            )
         ) {
             Text(text = "Save")
+
         }
     }
 
