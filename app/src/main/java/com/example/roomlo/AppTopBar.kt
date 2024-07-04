@@ -11,6 +11,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -42,7 +43,7 @@ fun AppTopBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Go back",
-                    tint = Color.White
+                    tint = MaterialTheme.colorScheme.onSecondary
                 )
             }
         } else {
@@ -50,7 +51,7 @@ fun AppTopBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.List,
                     contentDescription = "Menu",
-                    tint = Color.Black,
+                    tint = MaterialTheme.colorScheme.onSecondary,
                     modifier = Modifier.requiredSize(40.dp)
                 )
 
@@ -66,7 +67,7 @@ fun AppTopBar(
                     imageVector = Icons.Filled.AccountCircle,
                     contentDescription = "Localized description",
                     Modifier.requiredSize(40.dp),
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onSecondary
                 )
             }
         }else{
@@ -76,8 +77,8 @@ fun AppTopBar(
 
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color.White,
-            titleContentColor = Color.Black
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.primary
 
         ),
         modifier = Modifier.background(gradientBrush),

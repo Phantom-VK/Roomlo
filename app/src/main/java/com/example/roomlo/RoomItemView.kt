@@ -28,7 +28,7 @@ fun RoomItemView() {
         modifier = Modifier
             .wrapContentSize(),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(2.dp, Color(0xFFC2C2C2))
     ) {
@@ -65,7 +65,7 @@ fun RoomItemView() {
                 ) {
                     Text(
                         text = "Rs.1200/month (per person)",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.padding(bottom = 1.dp),
                         fontSize = 12.sp,
@@ -74,7 +74,7 @@ fun RoomItemView() {
                     )
                     Text(
                         text = "Double sharing",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.padding(bottom = 1.dp),
                         fontSize = 12.sp,
@@ -83,7 +83,7 @@ fun RoomItemView() {
                     )
                     Text(
                         text = "200 Sq.ft",
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.padding(bottom = 1.dp),
                         fontSize = 12.sp,
@@ -92,7 +92,7 @@ fun RoomItemView() {
                     )
                     Text(
                         text = "Owner: Giradkar",
-                        color = Color.DarkGray,
+                        color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
                         fontSize = 12.sp,
                         fontFamily = interFont,
@@ -110,30 +110,30 @@ fun RoomItemView() {
                         Icon(
                             imageVector = Icons.Filled.Share,
                             contentDescription = "Share Room",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
                             imageVector = Icons.Outlined.Favorite,
                             contentDescription = "Favorite Room",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
                             imageVector = Icons.Filled.LocationOn,
                             contentDescription = "Locate Room",
-                            tint = Color.Black
+                            tint = MaterialTheme.colorScheme.onSecondary
                         )
                     }
                     Button(
                         onClick = { /*TODO*/ },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red
+                            containerColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
-                        Text(text = "Book", color = Color.White)
+                        Text(text = "Book", color = MaterialTheme.colorScheme.surface)
                     }
                 }
             }

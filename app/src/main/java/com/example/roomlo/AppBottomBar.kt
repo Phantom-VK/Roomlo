@@ -9,6 +9,7 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
@@ -52,7 +53,7 @@ fun AppBottomBar() {
         )
     )
 
-    NavigationBar(containerColor = Color.White) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItemIndex == index,
@@ -61,7 +62,7 @@ fun AppBottomBar() {
                     Icon(
                         imageVector = if (index == selectedItemIndex) item.selectedIcon else item.unselectedIcon,
                         contentDescription = "${item.title} Button",
-                        tint = Color.Black,
+                        tint = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier.requiredSize(30.dp)
                     )
                 }
