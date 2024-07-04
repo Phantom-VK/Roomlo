@@ -2,14 +2,11 @@ package com.example.roomlo
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.*
@@ -17,7 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -27,7 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.roomlo.ui.theme.baloo2Font
+import com.example.roomlo.ui.theme.baloo
+import com.example.roomlo.ui.theme.dimens
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -54,9 +51,9 @@ fun ProfileScreen(
     ) {
         Text(
             text = "Profile",
-            fontFamily = baloo2Font,
+            fontFamily = baloo,
             fontWeight = FontWeight.Bold,
-            fontSize = 40.sp,
+            fontSize = MaterialTheme.typography.headlineLarge.fontSize,
             color = Color.Black
         )
         IconButton(
@@ -74,7 +71,7 @@ fun ProfileScreen(
 
         Text(
             text = "Vikramaditya Khupse",
-            fontSize = 20.sp,
+            fontSize = MaterialTheme.typography.titleMedium.fontSize,
             color = Color.DarkGray
         )
 
@@ -119,16 +116,17 @@ fun ProfileScreen(
 //            hint = "UserId",
 //            imageVector = Icons.Filled.Face
 //        )
-        Button(onClick = { /*TODO*/ },
+        Button(
+            onClick = { /*TODO*/ },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(15.dp),
+                .padding(MaterialTheme.dimens.small2),
             colors = ButtonDefaults.buttonColors(
                 Color(0xFFADC9FF)
             )
-            ) {
+        ) {
 
-                Text(text = "Userid & Password")
+            Text(text = "Userid & Password")
 
 
         }
@@ -162,33 +160,37 @@ fun UnderlineTextField(
         Icon(
             imageVector = imageVector,
             contentDescription = "Image",
-            Modifier.requiredSize(40.dp), tint = Color.Black
-    )
-    BasicTextField(
-        value = value,
-        onValueChange = {
-            onValueChange(it)
-            isHintDisplayed = it.isEmpty()
-        },
-        singleLine = true,
-        textStyle = TextStyle(color = Color.Black, fontSize = 15.sp),
-        modifier = Modifier
-            .padding(top = 8.dp, start = 15.dp, end = 15.dp),
+            Modifier.requiredSize(MaterialTheme.dimens.medium3), tint = Color.Black
+        )
+        BasicTextField(
+            value = value,
+            onValueChange = {
+                onValueChange(it)
+                isHintDisplayed = it.isEmpty()
+            },
+            singleLine = true,
+            textStyle = TextStyle(color = Color.Black, fontSize = 15.sp),
+            modifier = Modifier
+                .padding(
+                    top = MaterialTheme.dimens.small1,
+                    start = MaterialTheme.dimens.small2,
+                    end = MaterialTheme.dimens.small2
+                ),
 
-        ) { innerTextField ->
-        Column {
-            if (isHintDisplayed) {
-                Text(
-                    text = hint,
-                    style = TextStyle(color = Color.Gray, fontSize = 15.sp)
-                )
+            ) { innerTextField ->
+            Column {
+                if (isHintDisplayed) {
+                    Text(
+                        text = hint,
+                        style = TextStyle(color = Color.Gray, fontSize = MaterialTheme.typography.labelMedium.fontSize)
+                    )
+                }
+                innerTextField()
+                Divider(color = Color.Gray, thickness = 2.dp)
             }
-            innerTextField()
-            Divider(color = Color.Gray, thickness = 2.dp)
         }
-    }
 
-}
+    }
 
 }
 

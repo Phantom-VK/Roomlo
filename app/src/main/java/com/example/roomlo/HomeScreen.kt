@@ -92,7 +92,7 @@ private fun AppSearchBar(searchQuery: String) {
                         text = "Filters",
                         fontFamily = interFont,
                         fontWeight = FontWeight.Medium,
-                        fontSize = 18.sp
+                        fontSize = MaterialTheme.typography.labelMedium.fontSize
                     )
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,

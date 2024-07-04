@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.roomlo.ui.theme.dimens
 
 @Preview(showBackground = true)
 @Composable
@@ -63,7 +64,7 @@ fun AppBottomBar() {
                         imageVector = if (index == selectedItemIndex) item.selectedIcon else item.unselectedIcon,
                         contentDescription = "${item.title} Button",
                         tint = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier.requiredSize(30.dp)
+                        modifier = Modifier.requiredSize(MaterialTheme.dimens.medium3)
                     )
                 }
             )

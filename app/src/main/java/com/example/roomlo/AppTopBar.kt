@@ -19,11 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.roomlo.ui.theme.baloo2Font
+import com.example.roomlo.ui.theme.baloo
+import com.example.roomlo.ui.theme.dimens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +54,7 @@ fun AppTopBar(
                     imageVector = Icons.AutoMirrored.Outlined.List,
                     contentDescription = "Menu",
                     tint = MaterialTheme.colorScheme.onSecondary,
-                    modifier = Modifier.requiredSize(40.dp)
+                    modifier = Modifier.requiredSize(MaterialTheme.dimens.medium3)
                 )
 
             }
@@ -66,7 +68,7 @@ fun AppTopBar(
                 Icon(
                     imageVector = Icons.Filled.AccountCircle,
                     contentDescription = "Localized description",
-                    Modifier.requiredSize(40.dp),
+                    Modifier.requiredSize(MaterialTheme.dimens.logoSize),
                     tint = MaterialTheme.colorScheme.onSecondary
                 )
             }
@@ -87,9 +89,9 @@ fun AppTopBar(
                 text = title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontFamily = baloo2Font,
+                fontFamily = baloo,
                 fontWeight = FontWeight.Bold,
-                fontSize = 40.sp
+                fontSize = MaterialTheme.typography.headlineLarge.fontSize
             )
         },
         navigationIcon = navigationIcon,

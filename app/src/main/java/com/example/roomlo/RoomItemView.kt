@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.ui.theme.interFont
 
 @Composable
@@ -47,20 +48,20 @@ fun RoomItemView() {
 
             )
 
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(MaterialTheme.dimens.small1))
 
             // Information and actions section
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(end = 10.dp)
+                    .padding(end = MaterialTheme.dimens.small1)
             ) {
                 // Information section
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 12.dp),
+                        .padding(top = MaterialTheme.dimens.small2),
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
@@ -68,7 +69,7 @@ fun RoomItemView() {
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.padding(bottom = 1.dp),
-                        fontSize = 12.sp,
+                        fontSize = MaterialTheme.typography.labelMedium.fontSize,
                         fontFamily = interFont,
                         fontWeight = FontWeight.Normal
                     )
@@ -77,7 +78,7 @@ fun RoomItemView() {
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.padding(bottom = 1.dp),
-                        fontSize = 12.sp,
+                        fontSize = MaterialTheme.typography.labelMedium.fontSize,
                         fontFamily = interFont,
                         fontWeight = FontWeight.Normal
                     )
@@ -86,7 +87,7 @@ fun RoomItemView() {
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.padding(bottom = 1.dp),
-                        fontSize = 12.sp,
+                        fontSize = MaterialTheme.typography.labelMedium.fontSize,
                         fontFamily = interFont,
                         fontWeight = FontWeight.Normal
                     )
@@ -94,7 +95,7 @@ fun RoomItemView() {
                         text = "Owner: Giradkar",
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
-                        fontSize = 12.sp,
+                        fontSize = MaterialTheme.typography.labelMedium.fontSize,
                         fontFamily = interFont,
                         fontWeight = FontWeight.SemiBold
                     )
