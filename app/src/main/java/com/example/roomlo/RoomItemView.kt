@@ -22,10 +22,11 @@ import androidx.compose.ui.unit.sp
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.ui.theme.interFont
 
+@Preview(showBackground = true)
 @Composable
-fun RoomItemView() {
+fun RoomItemView(/*TODO Add parameters*/) {
     OutlinedCard(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(MaterialTheme.dimens.medium1),
         modifier = Modifier
             .wrapContentSize(),
         colors = CardDefaults.cardColors(
@@ -43,12 +44,11 @@ fun RoomItemView() {
                 painter = painterResource(id = R.drawable.the_taj_mahal_architectural_digest),
                 contentDescription = "Room Image",
                 modifier = Modifier
-                    .width(130.dp)
+                    .width(140.dp)
                     .aspectRatio(1f)
-
             )
 
-            Spacer(modifier = Modifier.width(MaterialTheme.dimens.small1))
+            Spacer(modifier = Modifier.width(2.dp))
 
             // Information and actions section
             Column(
@@ -68,7 +68,7 @@ fun RoomItemView() {
                         text = "Rs.1200/month (per person)",
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.padding(bottom = 1.dp),
+                        modifier = Modifier.padding(bottom = MaterialTheme.dimens.extraSmall),
                         fontSize = MaterialTheme.typography.labelMedium.fontSize,
                         fontFamily = interFont,
                         fontWeight = FontWeight.Normal
@@ -77,7 +77,7 @@ fun RoomItemView() {
                         text = "Double sharing",
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.padding(bottom = 1.dp),
+                        modifier = Modifier.padding(bottom = MaterialTheme.dimens.extraSmall),
                         fontSize = MaterialTheme.typography.labelMedium.fontSize,
                         fontFamily = interFont,
                         fontWeight = FontWeight.Normal
@@ -86,7 +86,7 @@ fun RoomItemView() {
                         text = "200 Sq.ft",
                         color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.padding(bottom = 1.dp),
+                        modifier = Modifier.padding(bottom = MaterialTheme.dimens.extraSmall),
                         fontSize = MaterialTheme.typography.labelMedium.fontSize,
                         fontFamily = interFont,
                         fontWeight = FontWeight.Normal
@@ -134,16 +134,11 @@ fun RoomItemView() {
                             containerColor = MaterialTheme.colorScheme.tertiary
                         )
                     ) {
-                        Text(text = "Book", color = MaterialTheme.colorScheme.surface)
+                        Text(text = "Book", color = MaterialTheme.colorScheme.surface,
+                            fontSize = MaterialTheme.typography.labelMedium.fontSize)
                     }
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewRoomItemView() {
-    RoomItemView()
 }

@@ -2,16 +2,19 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
-      <entry key="AppBottomBar">
-        <State />
-      </entry>
-      <entry key="Preview">
-        <State />
-      </entry>
       <entry key="PreviewRoomItemView">
         <State />
       </entry>
+      <entry key="PreviewSignInSignUpPage">
+        <State />
+      </entry>
       <entry key="RoomItemView">
+        <State />
+      </entry>
+      <entry key="SignInSignUpPage">
+        <State />
+      </entry>
+      <entry key="SignInSignUpScreen">
         <State />
       </entry>
       <entry key="app">

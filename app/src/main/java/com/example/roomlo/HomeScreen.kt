@@ -57,7 +57,8 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 private fun AppSearchBar(searchQuery: String) {
     var searchQuery1 = searchQuery
-    
+
+
         SearchBar(
             query = searchQuery1,
             onQueryChange = { searchQuery1 = it },
