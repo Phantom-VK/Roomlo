@@ -58,7 +58,6 @@ fun HomeScreen(
 private fun AppSearchBar(searchQuery: String) {
     var searchQuery1 = searchQuery
 
-
         SearchBar(
             query = searchQuery1,
             onQueryChange = { searchQuery1 = it },
@@ -71,21 +70,21 @@ private fun AppSearchBar(searchQuery: String) {
                 Icon(
                     imageVector = Icons.Outlined.Search,
                     contentDescription = "Search",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             },
             colors = SearchBarDefaults.colors(
-                MaterialTheme.colorScheme.primary
+                MaterialTheme.colorScheme.background
             ),
             placeholder = {
-                Text(text = "Search Room")
+                Text(text = "Search Room", color = MaterialTheme.colorScheme.primary)
             },
             shape = RoundedCornerShape(30.dp),
             trailingIcon = {
                 Button(
                     onClick = { /*TODO*/ },
                     colors = ButtonDefaults.buttonColors(
-                        MaterialTheme.colorScheme.primary
+                        MaterialTheme.colorScheme.secondary
                     ),
 
                     ) {
@@ -93,11 +92,13 @@ private fun AppSearchBar(searchQuery: String) {
                         text = "Filters",
                         fontFamily = interFont,
                         fontWeight = FontWeight.Medium,
-                        fontSize = MaterialTheme.typography.labelMedium.fontSize
+                        fontSize = MaterialTheme.typography.labelMedium.fontSize,
+                        color = MaterialTheme.colorScheme.primary
                     )
                     Icon(
                         imageVector = Icons.Filled.ArrowDropDown,
-                        contentDescription = "Filters"
+                        contentDescription = "Filters",
+                        tint = MaterialTheme.colorScheme.primary
                     )
 
                 }

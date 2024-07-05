@@ -54,7 +54,7 @@ fun AppBottomBar() {
         )
     )
 
-    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+    NavigationBar(containerColor = MaterialTheme.colorScheme.primary) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItemIndex == index,
@@ -63,7 +63,7 @@ fun AppBottomBar() {
                     Icon(
                         imageVector = if (index == selectedItemIndex) item.selectedIcon else item.unselectedIcon,
                         contentDescription = "${item.title} Button",
-                        tint = MaterialTheme.colorScheme.onSecondary,
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.requiredSize(MaterialTheme.dimens.medium3)
                     )
                 }

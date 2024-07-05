@@ -45,7 +45,7 @@ fun AppTopBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Go back",
-                    tint = MaterialTheme.colorScheme.onSecondary
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             }
         } else {
@@ -53,7 +53,7 @@ fun AppTopBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.List,
                     contentDescription = "Menu",
-                    tint = MaterialTheme.colorScheme.onSecondary,
+                    tint = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.requiredSize(MaterialTheme.dimens.medium3)
                 )
 
@@ -69,7 +69,7 @@ fun AppTopBar(
                     imageVector = Icons.Filled.AccountCircle,
                     contentDescription = "Localized description",
                     Modifier.requiredSize(MaterialTheme.dimens.logoSize),
-                    tint = MaterialTheme.colorScheme.onSecondary
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             }
         }else{
@@ -79,8 +79,8 @@ fun AppTopBar(
 
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            titleContentColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.secondary
 
         ),
         modifier = Modifier.background(gradientBrush),

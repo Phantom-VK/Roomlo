@@ -66,7 +66,7 @@ fun RoomItemView(/*TODO Add parameters*/) {
                 ) {
                     Text(
                         text = "Rs.1200/month (per person)",
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.secondary,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.padding(bottom = MaterialTheme.dimens.extraSmall),
                         fontSize = MaterialTheme.typography.labelMedium.fontSize,
@@ -75,7 +75,7 @@ fun RoomItemView(/*TODO Add parameters*/) {
                     )
                     Text(
                         text = "Double sharing",
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.secondary,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.padding(bottom = MaterialTheme.dimens.extraSmall),
                         fontSize = MaterialTheme.typography.labelMedium.fontSize,
@@ -84,7 +84,7 @@ fun RoomItemView(/*TODO Add parameters*/) {
                     )
                     Text(
                         text = "200 Sq.ft",
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.secondary,
                         textAlign = TextAlign.Start,
                         modifier = Modifier.padding(bottom = MaterialTheme.dimens.extraSmall),
                         fontSize = MaterialTheme.typography.labelMedium.fontSize,
@@ -93,7 +93,7 @@ fun RoomItemView(/*TODO Add parameters*/) {
                     )
                     Text(
                         text = "Owner: Giradkar",
-                        color = MaterialTheme.colorScheme.primary,
+                        color = MaterialTheme.colorScheme.background,
                         textAlign = TextAlign.Start,
                         fontSize = MaterialTheme.typography.labelMedium.fontSize,
                         fontFamily = interFont,
@@ -111,27 +111,27 @@ fun RoomItemView(/*TODO Add parameters*/) {
                         Icon(
                             imageVector = Icons.Filled.Share,
                             contentDescription = "Share Room",
-                            tint = MaterialTheme.colorScheme.onSecondary
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
                             imageVector = Icons.Outlined.Favorite,
                             contentDescription = "Favorite Room",
-                            tint = MaterialTheme.colorScheme.onSecondary
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     IconButton(onClick = { /*TODO*/ }) {
                         Icon(
                             imageVector = Icons.Filled.LocationOn,
                             contentDescription = "Locate Room",
-                            tint = MaterialTheme.colorScheme.onSecondary
+                            tint = MaterialTheme.colorScheme.secondary
                         )
                     }
                     Button(
                         onClick = { /*TODO*/ },
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary
+                            containerColor = MaterialTheme.colorScheme.onSecondary
                         )
                     ) {
                         Text(text = "Book", color = MaterialTheme.colorScheme.surface,

@@ -1,7 +1,6 @@
 package com.example.roomlo.ui.theme
 
 import android.app.Activity
-import android.content.Context
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -11,6 +10,7 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -18,29 +18,29 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryTextDark,
-    secondary = SecondaryButtonDark,
-    tertiary = PrimaryButtonDark,
-    background = BackgroundDark,
-    surface = BackgroundDark,
-    onPrimary = PrimaryButtonTextDark,
-    onSecondary = SecondaryButtonTextLight,
-    onTertiary = BorderDark,
-    onBackground = PrimaryTextDark,
-    onSurface = PrimaryTextDark
+    primary = DarkThemeBlack,
+    secondary = DarkThemeWhite,
+    tertiary = DarkThemeVeryDarkGrey,
+    background = DarkThemeLightGrey,
+    surface = DarkThemeVeryDarkGrey,
+    onPrimary = DarkThemeGreen,
+    onSecondary = DarkThemeRed,
+    onTertiary = DarkThemeDarkGrey,
+    onBackground = DarkThemeWhite,
+    onSurface = DarkThemeWhite
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryTextLight,
-    secondary = SecondaryButtonLight,
-    tertiary = PrimaryButtonLight,
-    background = BackgroundLight,
-    surface = BackgroundLight,
-    onPrimary = PrimaryButtonTextLight,
-    onSecondary = SecondaryButtonTextDark,
-    onTertiary = BorderLight,
-    onBackground = PrimaryTextLight,
-    onSurface = PrimaryTextLight
+    primary = LightThemeWhite,
+    secondary = LightThemeBlack,
+    tertiary = LightThemeVLightGrey,
+    background = LightThemeDarkGrey,
+    surface = LightThemeVLightGrey,
+    onPrimary = LightThemeGreen,
+    onSecondary = LightThemeRed,
+    onTertiary = LightThemeDarkGrey,
+    onBackground = LightThemeBlack,
+    onSurface = LightThemeBlack
 )
 
 

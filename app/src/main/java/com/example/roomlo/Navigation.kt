@@ -29,6 +29,11 @@ fun Navigation(
          ){
              ProfileScreen(viewModel = viewModel, navController = navController )
          }
+         composable(
+             Screen.SignInScreen.route
+         ){
+             SignInSignUpPage(navController = navController)
+         }
      }
 
 }
