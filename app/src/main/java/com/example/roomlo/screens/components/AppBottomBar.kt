@@ -1,11 +1,10 @@
-package com.example.roomlo
+package com.example.roomlo.screens.components
 
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Icon
@@ -18,11 +17,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import com.example.roomlo.R
 import com.example.roomlo.ui.theme.dimens
 
 @Preview(showBackground = true)

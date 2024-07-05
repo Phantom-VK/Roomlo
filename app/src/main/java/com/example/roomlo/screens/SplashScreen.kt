@@ -1,4 +1,4 @@
-package com.example.roomlo
+package com.example.roomlo.screens
 
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.tween
@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
+import com.example.roomlo.R
 import kotlinx.coroutines.delay
 
 @Composable

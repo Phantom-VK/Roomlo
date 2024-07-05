@@ -1,4 +1,4 @@
-package com.example.roomlo
+package com.example.roomlo.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -22,8 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.roomlo.R
 import com.example.roomlo.ui.theme.baloo
 import com.example.roomlo.ui.theme.dimens
+import com.example.roomlo.viewmodels.RoomViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
