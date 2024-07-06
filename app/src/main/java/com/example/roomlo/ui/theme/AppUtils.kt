@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun ProvideAppUtils(
-    appDimens: Dimens,
+     appDimens: Dimens,
     content: @Composable () -> Unit,
 ) {
     val appDimens = remember { appDimens }

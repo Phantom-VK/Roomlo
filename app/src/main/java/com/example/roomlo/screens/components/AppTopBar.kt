@@ -28,17 +28,17 @@ import com.example.roomlo.ui.theme.dimens
 @Composable
 fun AppTopBar(
     title: String,
-    onBackNavClicked: () -> Unit = {},
+    onLeadingIconClick: () -> Unit = {},
     onTrailingIconClicked: ()->Unit = {},
 
-) {
+    ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
     val gradientBrush = Brush.linearGradient(
         colors = listOf(Color.Black, Color.Gray))
 
     val navigationIcon: (@Composable () -> Unit) = {
         if (!title.contains("RoomLo")) {
-            IconButton(onClick = { onBackNavClicked() }) {
+            IconButton(onClick = { onLeadingIconClick() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Go back",
@@ -46,7 +46,7 @@ fun AppTopBar(
                 )
             }
         } else {
-            IconButton(onClick = {/*TODO*/}) {
+            IconButton(onClick = {onLeadingIconClick()}) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.List,
                     contentDescription = "Menu",
