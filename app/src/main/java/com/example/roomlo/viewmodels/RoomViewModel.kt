@@ -7,14 +7,12 @@ import androidx.lifecycle.ViewModel
 
 class RoomViewModel : ViewModel() {
 
-    private var _userid by mutableStateOf("")
-    var userid = _userid
+    private var _fullname by mutableStateOf("")
+    var fullname = _fullname
 
     private var _password by mutableStateOf("")
     var password = _password
 
-    private var _username by mutableStateOf("")
-    var username = _username
 
     private var _mobilenumber by mutableStateOf("")
     var mobilenumber = _mobilenumber
@@ -27,6 +25,9 @@ class RoomViewModel : ViewModel() {
 
     private var _searchQuery by mutableStateOf("")
     var searchQuery = _searchQuery
+
+
+
 
 
 }
