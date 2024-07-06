@@ -37,7 +37,8 @@ fun SplashScreen(
                     OvershootInterpolator(4f).getInterpolation(it)
                 })
         )
-        delay(2000L)
+        delay(1000L)
+
         navController.navigate(Screen.SignInScreen.route)
     }
 

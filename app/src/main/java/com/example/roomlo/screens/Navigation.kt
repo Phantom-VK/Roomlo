@@ -4,13 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.example.roomlo.viewmodels.AuthViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
 
 @Composable
 fun Navigation(
-    navController: NavHostController = rememberNavController(),
-    viewModel: RoomViewModel
+    navController: NavHostController,
+    viewModel: RoomViewModel,
+    authViewModel: AuthViewModel
 ) {
      NavHost(navController = navController, startDestination = Screen.SplashScreen.route){
          composable(
@@ -22,7 +23,7 @@ fun Navigation(
          composable(
              Screen.HomeScreen.route
          ){
-             HomeScreen(navController = navController, RoomViewModel())
+             HomeScreen(navController = navController, viewModel = viewModel, authViewModel = authViewModel)
          }
 
          composable(
@@ -33,12 +34,12 @@ fun Navigation(
          composable(
              Screen.SignInScreen.route
          ){
-             SignInScreen(navController = navController)
+             SignInScreen(navController = navController, authViewModel = authViewModel)
          }
          composable(
              Screen.SignUpScreen.route
          ){
-             SignUpScreen(navController = navController)
+             SignUpScreen(navController = navController, authViewModel = authViewModel)
          }
      }
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "39261818332",
+    "project_id": "roomlo-bbf77",
+    "storage_bucket": "roomlo-bbf77.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39261818332:android:90c103d0762fc890089319",
+        "android_client_info": {
+          "package_name": "com.example.roomlo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6SD9w_pe8zhmOnDyFoXHSudmIn27NImo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

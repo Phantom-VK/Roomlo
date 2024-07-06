@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
@@ -24,7 +26,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,14 +42,29 @@ import com.example.roomlo.screens.components.AppSearchBar
 import com.example.roomlo.screens.components.AppTopBar
 import com.example.roomlo.screens.components.RoomItemView
 import com.example.roomlo.ui.theme.dimens
+import com.example.roomlo.viewmodels.AuthState
+import com.example.roomlo.viewmodels.AuthViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: RoomViewModel
+    viewModel: RoomViewModel,
+    authViewModel: AuthViewModel
 ) {
+
+    //Checking authentication first
+    val authState = authViewModel.authState.observeAsState()
+    LaunchedEffect(authState.value) {
+        when (authState.value) {
+            is AuthState.Authenticated -> navController.navigate(Screen.SignInScreen.route)
+
+            else -> Unit
+        }
+    }
+
+
     val scope = rememberCoroutineScope()
     var selectedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -55,19 +74,33 @@ fun HomeScreen(
             title = "Account",
             selectedIcon = Icons.Filled.AccountCircle,
             unselectedIcon = Icons.Outlined.AccountCircle,
-            route = Screen.ProfileScreen.route
+            onDrawerItemClick = {
+                navController.navigate(Screen.ProfileScreen.route)
+            }
         ),
         DrawerItem(
             title = "Settings",
             selectedIcon = Icons.Filled.Settings,
             unselectedIcon = Icons.Outlined.Settings,
-            route = Screen.ProfileScreen.route
+            onDrawerItemClick = {
+                navController.navigate(Screen.ProfileScreen.route)
+            }
         ),
         DrawerItem(
             title = "Privacy Policy",
             selectedIcon = Icons.Filled.Info,
             unselectedIcon = Icons.Outlined.Info,
-            route = Screen.ProfileScreen.route
+            onDrawerItemClick = {
+                navController.navigate(Screen.ProfileScreen.route)
+            }
+        ),
+        DrawerItem(
+            title = "Log Out",
+            selectedIcon = Icons.AutoMirrored.Filled.ExitToApp,
+            unselectedIcon =Icons.AutoMirrored.Outlined.ExitToApp,
+            onDrawerItemClick = {
+                authViewModel.signOut()
+            }
         )
     )
 
@@ -80,7 +113,7 @@ fun HomeScreen(
                         label = { Text(drawerItem.title) },
                         selected = index == selectedItemIndex,
                         onClick = {
-                            navController.navigate(drawerItem.route)
+                            drawerItem.onDrawerItemClick()
 
                             scope.launch {
 
@@ -98,6 +131,7 @@ fun HomeScreen(
                             .padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
                 }
+
             }
         },
         drawerState = drawerState,
@@ -144,5 +178,5 @@ data class DrawerItem(
     val title: String,
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector,
-    val route: String
+    val onDrawerItemClick: () -> Unit
 )
