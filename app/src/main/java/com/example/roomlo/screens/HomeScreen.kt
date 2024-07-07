@@ -57,9 +57,8 @@ fun HomeScreen(
     //Checking authentication first
     val authState = authViewModel.authState.observeAsState()
     LaunchedEffect(authState.value) {
-        when (authState.value) {
-            is AuthState.Authenticated -> navController.navigate(Screen.SignInScreen.route)
-
+        when(authState.value){
+            is AuthState.Unauthenticated -> navController.navigate(Screen.SignInScreen.route)
             else -> Unit
         }
     }
@@ -99,7 +98,7 @@ fun HomeScreen(
             selectedIcon = Icons.AutoMirrored.Filled.ExitToApp,
             unselectedIcon =Icons.AutoMirrored.Outlined.ExitToApp,
             onDrawerItemClick = {
-                authViewModel.signOut()
+                authViewModel.signout()
             }
         )
     )

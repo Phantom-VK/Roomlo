@@ -13,7 +13,7 @@ fun Navigation(
     viewModel: RoomViewModel,
     authViewModel: AuthViewModel
 ) {
-     NavHost(navController = navController, startDestination = Screen.SplashScreen.route){
+     NavHost(navController = navController, startDestination = Screen.SignInScreen.route){
          composable(
             Screen.SplashScreen.route
          ){

@@ -60,15 +60,10 @@ fun SignInScreen(
 
     //TODO White screen after splashscreen page bug
     LaunchedEffect(authState.value) {
-        when (authState.value) {
+        when(authState.value){
             is AuthState.Authenticated -> navController.navigate(Screen.HomeScreen.route)
-
-            is AuthState.Error -> Toast.makeText(
-                context,
-                (authState.value as AuthState.Error).message,
-                Toast.LENGTH_LONG
-            ).show()
-
+            is AuthState.Error -> Toast.makeText(context,
+                (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT).show()
             else -> Unit
         }
     }
@@ -90,7 +85,6 @@ fun SignInScreen(
                 contentDescription = "KeyholeIcon",
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.size(MaterialTheme.dimens.logoSize + 30.dp)
-                // TODO Add size
 
             )
 
@@ -142,7 +136,7 @@ fun SignInScreen(
         // Sign In Button
         Button(
             onClick = {
-                authViewModel.signIn(email, password)
+                authViewModel.login(email, password)
 
             },
             enabled = authState.value != AuthState.Loading,
