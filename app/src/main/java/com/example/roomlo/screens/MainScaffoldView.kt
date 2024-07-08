@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
@@ -49,11 +50,10 @@ fun HomeScreen(
     authViewModel: AuthViewModel
 ) {
     // Checking authentication first
-    val authState by authViewModel.authState.observeAsState()
+    val authState by authViewModel.authState.collectAsState()
     LaunchedEffect(authState) {
-        when (authState) {
-            is AuthState.Unauthenticated -> navController.navigate("login")
-            else -> Unit
+        if (authState is AuthState.Unauthenticated) {
+            navController.navigate(Screen.SignInScreen.route)
         }
     }
 

@@ -22,6 +22,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -55,15 +56,15 @@ fun SignInScreen(
         mutableStateOf("")
     }
 
-    val authState = authViewModel.authState.observeAsState()
+    val authState by authViewModel.authState.collectAsState()
     val context = LocalContext.current
 
     //TODO White screen after splashscreen page bug
-    LaunchedEffect(authState.value) {
-        when(authState.value){
+    LaunchedEffect(authState) {
+        when(authState){
             is AuthState.Authenticated -> navController.navigate(Screen.HomeView.route)
             is AuthState.Error -> Toast.makeText(context,
-                (authState.value as AuthState.Error).message, Toast.LENGTH_SHORT).show()
+                (authState as AuthState.Error).message, Toast.LENGTH_SHORT).show()
             else -> Unit
         }
     }
@@ -98,6 +99,7 @@ fun SignInScreen(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Email
             ),
+            singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = MaterialTheme.dimens.medium2),
@@ -116,6 +118,7 @@ fun SignInScreen(
             value = password,
             onValueChange = { password = it },
             label = { Text("Password") },
+            singleLine = true,
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password
             ),
@@ -139,7 +142,7 @@ fun SignInScreen(
                 authViewModel.login(email, password)
 
             },
-            enabled = authState.value != AuthState.Loading,
+            enabled = authState != AuthState.Loading,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = MaterialTheme.dimens.small3)

@@ -26,6 +26,8 @@ class AuthViewModel : ViewModel() {
     private val _eventChannel = Channel<AuthEvent>()
     val eventsFlow = _eventChannel.receiveAsFlow()
 
+    private val _userid = auth.currentUser?.uid
+    val userId = _userid
     init {
         checkAuthStatus()
     }
