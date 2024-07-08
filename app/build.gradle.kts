@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("com.google.relay")version("0.3.12")
 }
 
 android {
@@ -67,6 +68,14 @@ dependencies {
     implementation("androidx.compose.material3:material3-window-size-class-android:1.2.1")
 
     implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
+
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+
+    // Add the dependency for the Realtime Database library
+    implementation("com.google.firebase:firebase-database")
+    // Add the dependency for the Cloud Storage library
+    implementation("com.google.firebase:firebase-storage")
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")

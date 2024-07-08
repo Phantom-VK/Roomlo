@@ -21,34 +21,37 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.roomlo.R
+import com.example.roomlo.screens.Screen
 import com.example.roomlo.ui.theme.dimens
 
-@Preview(showBackground = true)
 @Composable
-fun AppBottomBar() {
+fun AppBottomBar(onItemSelected: (Screen) -> Unit) {
     var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
 
     val items = listOf(
         BottomNavigationItem(
             title = "Home",
             selectedIcon = Icons.Filled.Home,
-            unselectedIcon = Icons.Outlined.Home
+            unselectedIcon = Icons.Outlined.Home,
+            route = Screen.HomeView
         ),
         BottomNavigationItem(
             title = "Map",
             selectedIcon = Icons.Filled.LocationOn,
-            unselectedIcon = Icons.Outlined.LocationOn
+            unselectedIcon = Icons.Outlined.LocationOn,
+            route = Screen.MapView
         ),
         BottomNavigationItem(
             title = "Wishlist",
             selectedIcon = Icons.Filled.Favorite,
-            unselectedIcon = ImageVector.vectorResource(R.drawable.baseline_favorite_border_24)
-
+            unselectedIcon = ImageVector.vectorResource(R.drawable.baseline_favorite_border_24),
+            route = Screen.WishlistView
         ),
         BottomNavigationItem(
             title = "Property",
             selectedIcon = ImageVector.vectorResource(R.drawable.baseline_sensor_door_24),
-            unselectedIcon = ImageVector.vectorResource(R.drawable.outline_sensor_door_24)
+            unselectedIcon = ImageVector.vectorResource(R.drawable.outline_sensor_door_24),
+            route = Screen.PropertyView
         )
     )
 
@@ -56,7 +59,10 @@ fun AppBottomBar() {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItemIndex == index,
-                onClick = { selectedItemIndex = index /* TODO Add navigation to each page */ },
+                onClick = {
+                    selectedItemIndex = index
+                    onItemSelected(item.route)
+                },
                 icon = {
                     Icon(
                         imageVector = if (index == selectedItemIndex) item.selectedIcon else item.unselectedIcon,
@@ -73,5 +79,6 @@ fun AppBottomBar() {
 data class BottomNavigationItem(
     val title: String,
     val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
+    val unselectedIcon: ImageVector,
+    val route: Screen
 )

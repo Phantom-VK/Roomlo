@@ -1,11 +1,8 @@
 package com.example.roomlo.screens
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
@@ -30,17 +27,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.roomlo.screens.components.AppBottomBar
-import com.example.roomlo.screens.components.AppSearchBar
 import com.example.roomlo.screens.components.AppTopBar
-import com.example.roomlo.screens.components.RoomItemView
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
 import com.example.roomlo.viewmodels.AuthViewModel
@@ -53,19 +49,17 @@ fun HomeScreen(
     viewModel: RoomViewModel,
     authViewModel: AuthViewModel
 ) {
-
-    //Checking authentication first
-    val authState = authViewModel.authState.observeAsState()
-    LaunchedEffect(authState.value) {
-        when(authState.value){
-            is AuthState.Unauthenticated -> navController.navigate(Screen.SignInScreen.route)
+    // Checking authentication first
+    val authState by authViewModel.authState.observeAsState()
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Unauthenticated -> navController.navigate("login")
             else -> Unit
         }
     }
 
-
     val scope = rememberCoroutineScope()
-    var selectedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
+    val selectedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val drawerItems = listOf(
@@ -96,12 +90,15 @@ fun HomeScreen(
         DrawerItem(
             title = "Log Out",
             selectedIcon = Icons.AutoMirrored.Filled.ExitToApp,
-            unselectedIcon =Icons.AutoMirrored.Outlined.ExitToApp,
+            unselectedIcon = Icons.AutoMirrored.Outlined.ExitToApp,
             onDrawerItemClick = {
+                navController.navigate(Screen.SignInScreen.route)
                 authViewModel.signout()
             }
         )
     )
+
+    var currentScreen by rememberSaveable { mutableStateOf(Screen.HomeView) }
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -113,12 +110,7 @@ fun HomeScreen(
                         selected = index == selectedItemIndex,
                         onClick = {
                             drawerItem.onDrawerItemClick()
-
-                            scope.launch {
-
-                                drawerState.close()
-
-                            }
+                            scope.launch { drawerState.close() }
                         },
                         icon = {
                             Icon(
@@ -126,14 +118,12 @@ fun HomeScreen(
                                 contentDescription = "${drawerItem.title} Button"
                             )
                         },
-                        modifier = Modifier
-                            .padding(NavigationDrawerItemDefaults.ItemPadding)
+                        modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding)
                     )
                 }
-
             }
         },
-        drawerState = drawerState,
+        drawerState = drawerState
     ) {
         Scaffold(
             topBar = {
@@ -143,31 +133,23 @@ fun HomeScreen(
                         navController.navigate(Screen.ProfileScreen.route)
                     },
                     onLeadingIconClick = {
-                        scope.launch {
-                            drawerState.open()
-
-                        }
-
+                        scope.launch { drawerState.open() }
                     }
                 )
             },
             containerColor = MaterialTheme.colorScheme.surface,
-            bottomBar = { AppBottomBar() }
+            bottomBar = {
+                AppBottomBar(onItemSelected = { screen ->
+                    currentScreen = screen
+                })
+            }
         ) { paddingValues ->
-            Column(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .fillMaxSize()
-            ) {
-                AppSearchBar(viewModel.searchQuery)
-                Spacer(modifier = Modifier.height(5.dp))
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    item {
-                        RoomItemView()
-                    }
-                }
+            when (currentScreen) {
+                Screen.HomeView -> HomeView(paddingValues = paddingValues, viewModel = viewModel)
+                Screen.WishlistView -> WishlistView(paddingValues)
+                Screen.MapView -> MapScreen(navController = navController, viewModel = viewModel)
+                Screen.PropertyView -> PropertyView(paddingValues)
+                else -> HomeView(paddingValues = paddingValues, viewModel = viewModel)
             }
         }
     }

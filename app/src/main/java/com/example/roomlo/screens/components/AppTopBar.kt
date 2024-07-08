@@ -1,8 +1,13 @@
 package com.example.roomlo.screens.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.List
@@ -16,13 +21,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.roomlo.ui.theme.baloo
 import com.example.roomlo.ui.theme.dimens
+import com.example.roomlo.R
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,14 +93,26 @@ fun AppTopBar(
         ),
         modifier = Modifier.background(gradientBrush),
         title = {
-            Text(
-                text = title,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontFamily = baloo,
-                fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.headlineLarge.fontSize
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(imageVector = ImageVector.vectorResource(R.drawable.keyholeiconcircle),
+                    //TODO add proper icon
+                    contentDescription = "Roomlo",
+                    Modifier.size(MaterialTheme.dimens.logoSize))
+
+                Text(
+                    text = title,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontFamily = baloo,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = MaterialTheme.typography.headlineLarge.fontSize
+                )
+            }
+
         },
         navigationIcon = navigationIcon,
         actions = profileIcon,
