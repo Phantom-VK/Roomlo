@@ -10,14 +10,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.roomlo.screens.components.AppSearchBar
 import com.example.roomlo.screens.components.RoomItemView
 
 @Composable
 fun PropertyView(paddingValues:PaddingValues){
 
     Column(
-        modifier = androidx.compose.ui.Modifier
+        modifier = Modifier
             .padding(paddingValues)
             .fillMaxSize()
     ) {

@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
+import com.example.roomlo.data.User
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
 import com.example.roomlo.viewmodels.AuthViewModel
@@ -142,6 +143,11 @@ fun SignUpScreen(
             onClick = {
 
                 authViewModel.signup(email, password)
+                User(
+                    email = email,
+                    password = password,
+                    mobilenumber = mobilenumber
+                )
 
             },
             enabled = authState.value != AuthState.Loading,

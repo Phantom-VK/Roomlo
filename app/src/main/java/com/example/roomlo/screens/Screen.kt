@@ -8,9 +8,5 @@ enum class Screen(val route: String) {
     SignUpScreen("signup_screen"),
     MapView("map_screen"),
     PropertyView("property_screen"),
-    WishlistView("wishlist_screen");
-
-    companion object {
-        var currentScreen: Screen = HomeView
-    }
+    WishlistView("wishlist_screen")
 }
