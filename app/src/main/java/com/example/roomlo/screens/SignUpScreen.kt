@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import com.example.roomlo.R
 import com.example.roomlo.data.User
+import com.example.roomlo.screens.components.ProfileImage
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
 import com.example.roomlo.viewmodels.AuthViewModel
@@ -48,7 +49,8 @@ import com.example.roomlo.viewmodels.DatabaseViewModel
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    dbViewModel: DatabaseViewModel
 ) {
     var email by remember {
         mutableStateOf("")
@@ -169,6 +171,7 @@ fun SignUpScreen(
         // Sign Up Button
         Button(
             onClick = {
+
 
                 authViewModel.signup(email, password)
 

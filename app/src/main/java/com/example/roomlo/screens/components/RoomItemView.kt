@@ -26,13 +26,13 @@ import com.example.roomlo.ui.theme.interFont
 @Composable
 fun RoomItemView(/*TODO Add parameters*/) {
     OutlinedCard(
-        shape = RoundedCornerShape(MaterialTheme.dimens.medium1),
+        shape = RoundedCornerShape(MaterialTheme.dimens.small2),
         modifier = Modifier
             .wrapContentSize(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(2.dp, Color(0xFFC2C2C2))
+        border = BorderStroke(1.dp, Color(0xFFC2C2C2))
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -44,7 +44,7 @@ fun RoomItemView(/*TODO Add parameters*/) {
                 painter = painterResource(id = R.drawable.the_taj_mahal_architectural_digest),
                 contentDescription = "Room Image",
                 modifier = Modifier
-                    .width(140.dp)
+                    .width(MaterialTheme.dimens.large+20.dp)
                     .aspectRatio(1f)
             )
 

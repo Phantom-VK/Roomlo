@@ -11,6 +11,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.roomlo.screens.Navigation
 import com.example.roomlo.ui.theme.RoomLoTheme
 import com.example.roomlo.viewmodels.AuthViewModel
+import com.example.roomlo.viewmodels.DatabaseViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
 
 class MainActivity : ComponentActivity() {
@@ -24,7 +25,9 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Navigation(viewModel = RoomViewModel(), authViewModel = AuthViewModel(), navController = rememberNavController())
+                    Navigation(roomViewModel = RoomViewModel(), authViewModel = AuthViewModel(), navController = rememberNavController(),
+                        dbViewModel = DatabaseViewModel()
+                    )
                 }
             }
         }

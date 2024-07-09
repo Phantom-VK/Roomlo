@@ -26,7 +26,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,14 +39,16 @@ import com.example.roomlo.screens.components.AppTopBar
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
 import com.example.roomlo.viewmodels.AuthViewModel
+import com.example.roomlo.viewmodels.DatabaseViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: RoomViewModel,
-    authViewModel: AuthViewModel
+    roomViewModel: RoomViewModel,
+    authViewModel: AuthViewModel,
+    dbViewModel: DatabaseViewModel
 ) {
     // Checking authentication first
     val authState by authViewModel.authState.collectAsState()
@@ -144,11 +145,11 @@ fun HomeScreen(
             }
         ) { paddingValues ->
             when (currentScreen) {
-                Screen.HomeView -> HomeView(paddingValues = paddingValues, viewModel = viewModel)
+                Screen.HomeView -> HomeView(paddingValues = paddingValues, viewModel = roomViewModel)
                 Screen.WishlistView -> WishlistView(paddingValues)
-                Screen.MapView -> MapScreen(navController = navController, viewModel = viewModel)
+                Screen.MapView -> MapScreen(navController = navController, viewModel = roomViewModel)
                 Screen.PropertyView -> PropertyView(paddingValues)
-                else -> HomeView(paddingValues = paddingValues, viewModel = viewModel)
+                else -> HomeView(paddingValues = paddingValues, viewModel = roomViewModel)
             }
         }
     }

@@ -50,6 +50,7 @@ import com.example.roomlo.R
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
 import com.example.roomlo.viewmodels.AuthViewModel
+import com.example.roomlo.viewmodels.DatabaseViewModel
 
 
 @Composable

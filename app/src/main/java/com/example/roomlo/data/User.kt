@@ -1,11 +1,12 @@
 package com.example.roomlo.data
 
 data class User(
-    var name: String? = null,
-    var address: String? = null,
-    var email: String? = null,
-    var mobilenumber: String? = null,
-    var wpnumber: String? = null,
-    var isOwner: Boolean ?= null,
-    var password: String ?= null
+    var name: String = "",
+    var address: String = "",
+    var email: String = "",
+    var mobilenumber: String = "",
+    var wpnumber: String = "",
+    var isOwner: Boolean = false,
+    var password: String = "",
+    var profileImageUrl: String = ""
 )

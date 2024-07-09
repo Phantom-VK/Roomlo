@@ -52,7 +52,8 @@ android {
 }
 
 dependencies {
-    implementation("com.google.firebase:firebase-auth:23.0.0")
+
+    implementation("com.google.firebase:firebase-firestore:25.0.0")
     val nav_version = "2.7.7"
 
     implementation("androidx.navigation:navigation-compose:$nav_version")
@@ -71,6 +72,7 @@ dependencies {
 
     // Import the BoM for the Firebase platform
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation("com.google.firebase:firebase-auth:23.0.0")
 
     // Add the dependency for the Realtime Database library
     implementation("com.google.firebase:firebase-database")
@@ -81,7 +83,7 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-   
+
 
 
     implementation("androidx.core:core-ktx:1.13.1")

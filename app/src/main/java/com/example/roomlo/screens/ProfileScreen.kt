@@ -2,6 +2,7 @@ package com.example.roomlo.screens
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -17,22 +18,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.roomlo.R
 import com.example.roomlo.screens.components.ProfileImage
 import com.example.roomlo.ui.theme.baloo
 import com.example.roomlo.ui.theme.dimens
-import com.example.roomlo.viewmodels.RoomViewModel
+import com.example.roomlo.viewmodels.DatabaseViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ProfileScreen(
-    viewModel: RoomViewModel,
+    dbViewModel: DatabaseViewModel,
     navController: NavController
 ) {
     var name by remember { mutableStateOf("") }
@@ -40,6 +39,22 @@ fun ProfileScreen(
     var email by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var wpNumber by remember { mutableStateOf("") }
+    var profileImageUrl by remember { mutableStateOf<Uri?>(null) }
+
+    val context = LocalContext.current
+
+//    LaunchedEffect(Unit) {
+//        dbViewModel.getUserDetails { user ->
+//            user?.let {
+//                name = it.name
+//                address = it.address
+//                email = it.email
+//                phoneNumber = it.mobilenumber
+//                wpNumber = it.wpnumber
+//                profileImageUrl = it.profileImageUrl?.let { Uri.parse(it) }
+//            }
+//        }
+//    }
 
     Column(
         modifier = Modifier
@@ -74,13 +89,16 @@ fun ProfileScreen(
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(MaterialTheme.dimens.small1)
+            modifier = Modifier.padding(
+                start = MaterialTheme.dimens.small1,
+                end = MaterialTheme.dimens.medium1
+            )
         ) {
-            ProfileImage(imageUrl = Uri.parse("android.resource://com.example.roomlo.viewmodels/${R.drawable.profile_pic}"))
+            ProfileImage(imageUrl = profileImageUrl)
             Spacer(modifier = Modifier.height(5.dp))
 
             Text(
-                text = "Vikramaditya Khupse",
+                text = name,
                 fontSize = MaterialTheme.typography.headlineMedium.fontSize,
                 color = MaterialTheme.colorScheme.background
             )
@@ -133,7 +151,9 @@ fun ProfileScreen(
             }
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    /*TODO*/
+                },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimary),
                 modifier = Modifier.padding(top = MaterialTheme.dimens.small1)
             ) {
@@ -195,19 +215,13 @@ fun UnderlineTextField(
                         )
                     }
                     innerTextField()
-                    Divider(
+                    HorizontalDivider(
+                        modifier = Modifier.padding(top = MaterialTheme.dimens.small1),
                         thickness = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.padding(top = MaterialTheme.dimens.small1)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ProfileScreenPreview() {
-    ProfileScreen(viewModel = RoomViewModel(), navController = NavController(LocalContext.current))
 }
