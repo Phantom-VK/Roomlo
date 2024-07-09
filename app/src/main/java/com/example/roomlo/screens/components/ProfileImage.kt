@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.roomlo.R
+import com.google.firebase.annotations.concurrent.Background
 
 @Composable
 fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {}) {
@@ -45,7 +46,7 @@ fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {})
             modifier = Modifier
                 .size(140.dp)
                 .clip(CircleShape)
-                .border(3.dp, color.primary, CircleShape),
+                .border(3.dp, color.secondary, CircleShape),
             contentAlignment = Alignment.Center
         ) {
             AsyncImage(
@@ -66,7 +67,7 @@ fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {})
                 .padding(2.dp)
                 .clip(CircleShape)
                 .align(Alignment.BottomEnd),
-            colors = IconButtonDefaults.iconButtonColors(color.primary),
+            colors = IconButtonDefaults.iconButtonColors(color.secondary),
         ) {
             Icon(
                 imageVector = Icons.Default.Edit,
@@ -80,4 +81,5 @@ fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {})
     }
 
 }
+
 

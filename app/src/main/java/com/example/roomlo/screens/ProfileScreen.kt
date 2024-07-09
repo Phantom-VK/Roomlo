@@ -1,6 +1,7 @@
 package com.example.roomlo.screens
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -23,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.roomlo.R
+import com.example.roomlo.screens.components.ProfileImage
 import com.example.roomlo.ui.theme.baloo
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.RoomViewModel
@@ -74,17 +76,7 @@ fun ProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(MaterialTheme.dimens.small1)
         ) {
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier.requiredSize(150.dp)
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.profile_pic),
-                    contentDescription = "Profile Picture",
-                    modifier = Modifier.requiredSize(110.dp),
-                    tint = MaterialTheme.colorScheme.background
-                )
-            }
+            ProfileImage(imageUrl = Uri.parse("android.resource://com.example.roomlo.viewmodels/${R.drawable.profile_pic}"))
             Spacer(modifier = Modifier.height(5.dp))
 
             Text(
@@ -162,7 +154,9 @@ fun UnderlineTextField(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start,
-        modifier = Modifier.fillMaxWidth().padding(vertical = MaterialTheme.dimens.small1)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = MaterialTheme.dimens.small1)
     ) {
         Icon(
             imageVector = imageVector,

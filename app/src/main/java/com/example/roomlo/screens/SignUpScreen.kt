@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -25,10 +27,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
+import com.example.roomlo.R
 import com.example.roomlo.data.User
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
@@ -49,6 +58,9 @@ fun SignUpScreen(
     }
     var mobilenumber by remember {
         mutableStateOf("")
+    }
+    val passwordVisible = remember {
+        mutableStateOf(false)
     }
     val authState by authViewModel.authState.collectAsState()
     val context = LocalContext.current
@@ -128,6 +140,18 @@ fun SignUpScreen(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Password
             ),
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
+                    Icon(
+                        imageVector = if (passwordVisible.value)
+                            ImageVector.vectorResource(R.drawable.baseline_visibility_24)
+                        else ImageVector.vectorResource(R.drawable.baseline_visibility_off_24),
+                        contentDescription = "Password visibility",
+                        tint = if (passwordVisible.value) colorResource(id = R.color.purple_700) else Color.Gray
+                    )
+                }
+            },
+            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = MaterialTheme.dimens.medium2),
