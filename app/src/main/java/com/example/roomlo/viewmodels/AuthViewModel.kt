@@ -2,6 +2,7 @@ package com.example.roomlo.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.roomlo.data.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,8 +27,7 @@ class AuthViewModel : ViewModel() {
     private val _eventChannel = Channel<AuthEvent>()
     val eventsFlow = _eventChannel.receiveAsFlow()
 
-    private val _userid = auth.currentUser?.uid
-    val userId = _userid
+    private val dbViewModel = DatabaseViewModel()
     init {
         checkAuthStatus()
     }
@@ -58,7 +58,9 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun signup(email: String, password: String) {
+    fun signup(user: User) {
+        val email = user.email
+        val password = user.password
         if (email.isEmpty() || password.isEmpty()) {
             viewModelScope.launch {
                 _eventChannel.send(AuthEvent.ShowError("Email or password can't be empty"))
@@ -69,6 +71,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 auth.createUserWithEmailAndPassword(email, password).await()
+                dbViewModel.addUserToDatabase(user)
                 _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Something went wrong")

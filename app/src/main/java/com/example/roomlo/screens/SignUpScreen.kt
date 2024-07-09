@@ -173,7 +173,13 @@ fun SignUpScreen(
             onClick = {
 
 
-                authViewModel.signup(email, password)
+                authViewModel.signup(
+                    User(
+                        email = email,
+                        password = password,
+                        mobilenumber = mobilenumber
+                    )
+                )
 
 
 
