@@ -1,7 +1,9 @@
 package com.example.roomlo.viewmodels
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import com.example.roomlo.data.User
 import com.google.firebase.database.ktx.database
@@ -21,25 +23,28 @@ class DatabaseViewModel : ViewModel() {
 //        addUserToDatabase()
 //    }
 
-     fun addUserToDatabase(user: User) {
-         val userMap = hashMapOf(
-             "name" to user.name,
-             "address" to user.address,
-             "email" to user.email,
-             "mobilenumber" to user.mobilenumber,
-             "wpnumber" to user.wpnumber,
-             "isOwner" to user.isOwner,
-             "password" to user.password,
-             "profileImageUrl" to user.profileImageUrl,
+    fun addUserToDatabase(user: User, context: Context) {
+        val userMap = mutableMapOf<String, Any?>(
+            "name" to user.name,
+            "address" to user.address,
+            "email" to user.email,
+            "mobilenumber" to user.mobilenumber,
+            "wpnumber" to user.wpnumber,
+            "isOwner" to user.isOwner,
+            "password" to user.password,
+            "profileImageUrl" to user.profileImageUrl
+        ).filterValues { it.toString().isNotEmpty() }  // Remove empty values
 
-         )
         db.collection("Users")
-            .add(userMap)
-            .addOnSuccessListener { documentReference ->
-                Log.d(tag, "DocumentSnapshot added with ID: ${documentReference.id}")
+            .document(user.mobilenumber)
+            .set(userMap)
+            .addOnSuccessListener {
+                Toast.makeText(context, "Profile saved!", Toast.LENGTH_LONG).show()
+                Log.d(tag, "DocumentSnapshot successfully written!")
             }
             .addOnFailureListener { e ->
-                Log.w(tag, "Error adding document", e)
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                Log.w(tag, "Error writing document", e)
             }
     }
 

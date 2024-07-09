@@ -112,7 +112,7 @@ fun SignUpScreen(
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = { email = it.trim() },
             label = { Text("Email") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -136,7 +136,7 @@ fun SignUpScreen(
 
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { password = it.trim() },
             label = { Text("Password") },
             singleLine = true,
             keyboardOptions = KeyboardOptions(
@@ -178,7 +178,7 @@ fun SignUpScreen(
                         email = email,
                         password = password,
                         mobilenumber = mobilenumber
-                    )
+                    ),context
                 )
 
 

@@ -1,5 +1,6 @@
 package com.example.roomlo.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.roomlo.data.User
@@ -58,7 +59,7 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    fun signup(user: User) {
+    fun signup(user: User, context: Context) {
         val email = user.email
         val password = user.password
         if (email.isEmpty() || password.isEmpty()) {
@@ -71,7 +72,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 auth.createUserWithEmailAndPassword(email, password).await()
-                dbViewModel.addUserToDatabase(user)
+                dbViewModel.addUserToDatabase(user, context)
                 _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Something went wrong")
