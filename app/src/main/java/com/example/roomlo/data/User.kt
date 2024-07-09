@@ -8,5 +8,6 @@ data class User(
     var wpnumber: String = "",
     var isOwner: Boolean = false,
     var password: String = "",
-    var profileImageUrl: String = ""
+    var profileImageUrl: String = "",
+    var uid:String = ""
 )

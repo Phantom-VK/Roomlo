@@ -72,7 +72,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 auth.createUserWithEmailAndPassword(email, password).await()
-                dbViewModel.addUserToDatabase(user, context)
+                dbViewModel.addUserToDatabase(user, context, auth.uid)
                 _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Something went wrong")
