@@ -83,6 +83,10 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.6.0")
 
+    //sharedpreference
+    implementation("androidx.core:core-ktx:1.13.1")
+
+
 
 
 

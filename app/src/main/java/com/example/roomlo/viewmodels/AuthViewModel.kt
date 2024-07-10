@@ -11,40 +11,39 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resumeWithException
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resumeWithException
 
+class AuthViewModel(
+context: Context,
+private val dbViewModel: DatabaseViewModel) : ViewModel() {
 
-class AuthViewModel : ViewModel() {
-
-    private val _auth: FirebaseAuth = FirebaseAuth.getInstance()
-    val auth = _auth
-
-
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState: StateFlow<AuthState> = _authState
 
-    // Using a Channel to send one-off events like showing a toast message
     private val _eventChannel = Channel<AuthEvent>()
-    val eventsFlow = _eventChannel.receiveAsFlow()
 
-    private val dbViewModel = DatabaseViewModel()
     init {
         checkAuthStatus()
-        auth.uid?.let { Log.d("DatabaseViewModel", it) }
-
     }
 
     private fun checkAuthStatus() {
-        _authState.value = if (auth.currentUser == null) {
+        val currentUser = auth.currentUser
+        _authState.value = if (currentUser == null) {
             AuthState.Unauthenticated
         } else {
             AuthState.Authenticated
-
+        }
+        auth.addAuthStateListener { auth ->
+            _authState.value = if (auth.currentUser == null) {
+                AuthState.Unauthenticated
+            } else {
+                AuthState.Authenticated
+            }
         }
     }
 
@@ -62,6 +61,7 @@ class AuthViewModel : ViewModel() {
                 _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Something went wrong")
+                Log.e("AuthViewModel", "Login failed: ${e.message}")
             }
         }
     }
@@ -79,13 +79,13 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 auth.createUserWithEmailAndPassword(email, password).await()
-                dbViewModel.addUserToDatabase(user, context, auth.currentUser?.uid)
+                auth.currentUser?.uid?.let { dbViewModel.addUserToDatabase(user, context, it) }
                 _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Something went wrong")
+                Log.e("AuthViewModel", "Signup failed: ${e.message}")
             }
         }
-
     }
 
     fun signout() {
@@ -104,9 +104,6 @@ sealed class AuthState {
 sealed class AuthEvent {
     data class ShowError(val message: String) : AuthEvent()
 }
-
-
-// Extension function to convert Task to Deferred
 
 @OptIn(ExperimentalCoroutinesApi::class)
 private suspend fun <T> Task<T>.await(): T {

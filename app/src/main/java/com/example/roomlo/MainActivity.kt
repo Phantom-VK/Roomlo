@@ -7,12 +7,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.example.roomlo.screens.Navigation
 import com.example.roomlo.ui.theme.RoomLoTheme
 import com.example.roomlo.viewmodels.AuthViewModel
 import com.example.roomlo.viewmodels.DatabaseViewModel
-import com.example.roomlo.viewmodels.ProfileViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
 
 class MainActivity : ComponentActivity() {
@@ -20,14 +20,17 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val context = LocalContext.current
+            val databaseViewModel = DatabaseViewModel(context)
+            val authViewModel = AuthViewModel(context, databaseViewModel)
             RoomLoTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Navigation(roomViewModel = RoomViewModel(), authViewModel = AuthViewModel(), navController = rememberNavController(),
-                        dbViewModel = DatabaseViewModel(), pfViewModel = ProfileViewModel()
+                    Navigation(roomViewModel = RoomViewModel(), authViewModel = authViewModel, navController = rememberNavController(),
+                        dbViewModel = databaseViewModel
                     )
                 }
             }

@@ -38,19 +38,17 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import com.example.roomlo.R
+import com.example.roomlo.data.PreferenceHelper
 import com.example.roomlo.data.User
-import com.example.roomlo.screens.components.ProfileImage
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
 import com.example.roomlo.viewmodels.AuthViewModel
-import com.example.roomlo.viewmodels.DatabaseViewModel
 
 
 @Composable
 fun SignUpScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel,
-    dbViewModel: DatabaseViewModel
 ) {
     var email by remember {
         mutableStateOf("")
@@ -64,9 +62,14 @@ fun SignUpScreen(
     val passwordVisible = remember {
         mutableStateOf(false)
     }
+
+
+
+
     val authState by authViewModel.authState.collectAsState()
     val context = LocalContext.current
-
+    // Instantiate PreferenceHelper for managing SharedPreferences
+    val preferenceHelper = remember { PreferenceHelper(context) }
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -172,7 +175,8 @@ fun SignUpScreen(
         Button(
             onClick = {
 
-
+                // Save mobile number to SharedPreferences
+                preferenceHelper.userMobileNumber = mobilenumber
                 authViewModel.signup(
                     User(
                         email = email,
@@ -180,6 +184,7 @@ fun SignUpScreen(
                         mobilenumber = mobilenumber
                     ),context
                 )
+
 
 
 

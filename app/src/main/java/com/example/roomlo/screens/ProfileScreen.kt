@@ -34,18 +34,33 @@ fun ProfileScreen(
 ) {
     val context = LocalContext.current
 
+    // Trigger fetching user details when ProfileScreen is first composed
+    LaunchedEffect(Unit) {
+        dbViewModel.fetchUserDetails()
+    }
+
     val user by dbViewModel.userDetails.collectAsState()
 
-
-
-
-    var name by remember { mutableStateOf("user.name") }
-    var address by remember { mutableStateOf("user.address") }
-    var email by remember { mutableStateOf("user.email") }
-    var mobilenumber by remember { mutableStateOf("user.mobilenumber") }
-    var wpnumber by remember { mutableStateOf("user.wpnumber") }
+    var name by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var mobilenumber by remember { mutableStateOf("") }
+    var wpnumber by remember { mutableStateOf("") }
     var profileImageUrl by remember { mutableStateOf<Uri?>(null) }
 
+    // Update local state values when user changes
+    LaunchedEffect(user) {
+        user?.let { user1 ->
+            name = user1.name
+            address = user1.address
+            email = user1.email
+            mobilenumber = user1.mobilenumber
+            wpnumber = user1.wpnumber
+            profileImageUrl = user1.profileImageUrl.let { Uri.parse(it) }
+        }
+
+        Log.d("ProfileScreen","${user?.mobilenumber}\n${user?.email}")
+    }
 
     Column(
         modifier = Modifier
@@ -94,40 +109,38 @@ fun ProfileScreen(
                 color = MaterialTheme.colorScheme.background
             )
 
-            if (user != null) {
-                UnderlineTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    hint = name,
-                    imageVector = Icons.Filled.AccountCircle
-                )
-            }
+            UnderlineTextField(
+                value = name,
+                onValueChange = { name = it },
+                hint = "Name",
+                imageVector = Icons.Filled.AccountCircle
+            )
 
             UnderlineTextField(
                 value = address,
                 onValueChange = { address = it },
-                hint = address,
+                hint = "Address",
                 imageVector = Icons.Filled.LocationOn
             )
 
             UnderlineTextField(
                 value = email,
                 onValueChange = { email = it },
-                hint = email,
+                hint = "Email",
                 imageVector = Icons.Outlined.Email
             )
 
             UnderlineTextField(
                 value = mobilenumber,
                 onValueChange = { mobilenumber = it },
-                hint = mobilenumber,
+                hint = "Mobile Number",
                 imageVector = Icons.Filled.Call
             )
 
             UnderlineTextField(
                 value = wpnumber,
                 onValueChange = { wpnumber = it },
-                hint = wpnumber,
+                hint = "WhatsApp Number",
                 imageVector = Icons.Filled.Call
             )
         }
@@ -138,7 +151,7 @@ fun ProfileScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { /* TODO: Implement change password functionality */ },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(MaterialTheme.dimens.small2),
@@ -148,9 +161,7 @@ fun ProfileScreen(
             }
 
             Button(
-                onClick = {
-                    /*TODO*/
-                },
+                onClick = { /* TODO: Implement save functionality */ },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimary),
                 modifier = Modifier.padding(top = MaterialTheme.dimens.small1)
             ) {
@@ -201,7 +212,6 @@ fun UnderlineTextField(
             focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
             focusedLabelColor = MaterialTheme.colorScheme.secondary,
             cursorColor = MaterialTheme.colorScheme.secondary
-
         )
     )
 }

@@ -3,10 +3,10 @@ package com.example.roomlo.viewmodels
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.roomlo.data.User
+import com.example.roomlo.data.PreferenceHelper
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
@@ -16,16 +16,43 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class DatabaseViewModel : ViewModel() {
+class DatabaseViewModel(
+    context: Context
+) : ViewModel() {
 
     private val db = Firebase.firestore
     private val tag = "DatabaseViewModel"
-    var currentUserId: String? = null
+    private val preferenceHelper: PreferenceHelper = PreferenceHelper(context) // Inject PreferenceHelper here
+
     private val _userDetails = MutableStateFlow<User?>(null)
     val userDetails: StateFlow<User?> = _userDetails
 
-    fun addUserToDatabase(user: User, context: Context, uid: String?) {
-        currentUserId = uid
+    init {
+        // Initialize preferenceHelper if not already injected
+        // preferenceHelper = PreferenceHelper(context)
+    }
+
+    fun fetchUserDetails() {
+        val currentUserMobileNumber = preferenceHelper.userMobileNumber ?: ""
+        Log.d(tag, "Current user mobile number: $currentUserMobileNumber")
+
+        viewModelScope.launch {
+            try {
+                val document = db.collection("Users").document(currentUserMobileNumber).get().await()
+                val result = document.toObject<User>()
+                if (result != null) {
+                    Log.d(tag, "User details fetched: ${result.mobilenumber}, ${result.name}, ${result.email}")
+                    _userDetails.value = result
+                }
+            } catch (e: FirebaseFirestoreException) {
+                Log.w(tag, "Error getting user data", e)
+            }
+        }
+    }
+
+    fun addUserToDatabase(user: User, context: Context, uid: String) {
+        Log.d(tag, "Current user mobile number: ${user.mobilenumber}")
+
         val userMap = mutableMapOf<String, Any?>(
             "name" to user.name,
             "address" to user.address,
@@ -38,36 +65,20 @@ class DatabaseViewModel : ViewModel() {
             "uid" to uid
         ).filterValues { it.toString().isNotEmpty() }  // Remove empty values
 
-        if (uid != null) {
-            viewModelScope.launch {
-                try {
-                    db.collection("Users").document(uid).set(userMap).await()
-                    Toast.makeText(context, "Profile saved!", Toast.LENGTH_LONG).show()
-                    Log.d(tag, "DocumentSnapshot successfully written!")
-                } catch (e: Exception) {
-                    Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
-                    Log.w(tag, "Error writing document", e)
-                }
+        db.collection("Users")
+            .document(user.mobilenumber)  // Use currentUserMobileNumber for document ID
+            .set(userMap)
+            .addOnSuccessListener {
+                Toast.makeText(context, "Profile saved!", Toast.LENGTH_LONG).show()
+                Log.d(tag, "DocumentSnapshot successfully written!")
             }
-        }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                Log.w(tag, "Error writing document", e)
+            }
     }
 
-    fun getUserDetails() {
-        currentUserId?.let { uid ->
-            viewModelScope.launch {
-                try {
-                    val document = db.collection("Users").document(uid).get().await()
-                    val result = document.toObject<User>()
-                    if (result != null) {
-                        Log.d(tag, "${result.mobilenumber}\n${result.name}\n${result.email}\n")
-                        _userDetails.value = result
-                    }
-                } catch (e: FirebaseFirestoreException) {
-                    Log.w(tag, "Error getting data", e)
-                } catch (e: Exception) {
-                    Log.w(tag, "Unexpected error getting data", e)
-                }
-            }
-        }
+    fun updateUserDetails(mobilenumber:String){
+
     }
 }
