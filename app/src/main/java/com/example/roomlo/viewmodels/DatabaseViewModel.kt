@@ -16,13 +16,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class DatabaseViewModel: ViewModel() {
+class DatabaseViewModel : ViewModel() {
 
     private val db = Firebase.firestore
     private val tag = "DatabaseViewModel"
-    var currentUserId:String? = null
-    var userDetails: User? = null
-
+    var currentUserId: String? = null
+    private val _userDetails = MutableStateFlow<User?>(null)
+    val userDetails: StateFlow<User?> = _userDetails
 
     fun addUserToDatabase(user: User, context: Context, uid: String?) {
         currentUserId = uid
@@ -36,50 +36,38 @@ class DatabaseViewModel: ViewModel() {
             "password" to user.password,
             "profileImageUrl" to user.profileImageUrl,
             "uid" to uid
-
         ).filterValues { it.toString().isNotEmpty() }  // Remove empty values
 
         if (uid != null) {
-            db.collection("Users")
-                .document(uid)
-                .set(userMap)
-                .addOnSuccessListener {
+            viewModelScope.launch {
+                try {
+                    db.collection("Users").document(uid).set(userMap).await()
                     Toast.makeText(context, "Profile saved!", Toast.LENGTH_LONG).show()
                     Log.d(tag, "DocumentSnapshot successfully written!")
-                }
-                .addOnFailureListener { e ->
+                } catch (e: Exception) {
                     Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
                     Log.w(tag, "Error writing document", e)
                 }
-        }
-
-    }
-
-
-    fun getUserDetails(){
-
-        try{
-            if (currentUserId != null) {
-                db.collection("Users")
-                    .document(currentUserId!!)
-                    .get()
-                    .addOnSuccessListener {
-                        val result = it.toObject<User>()
-                        if (result != null) {
-                            Log.w(tag, "${result.mobilenumber}\n${result.name}\n${result.email}\n")
-                            userDetails = result
-
-                        }
-
-                    }
             }
-
-        }catch (e:FirebaseFirestoreException){
-            Log.w(tag, "Error getting data", e)
-
         }
-
-
     }
 
+    fun getUserDetails() {
+        currentUserId?.let { uid ->
+            viewModelScope.launch {
+                try {
+                    val document = db.collection("Users").document(uid).get().await()
+                    val result = document.toObject<User>()
+                    if (result != null) {
+                        Log.d(tag, "${result.mobilenumber}\n${result.name}\n${result.email}\n")
+                        _userDetails.value = result
+                    }
+                } catch (e: FirebaseFirestoreException) {
+                    Log.w(tag, "Error getting data", e)
+                } catch (e: Exception) {
+                    Log.w(tag, "Unexpected error getting data", e)
+                }
+            }
+        }
+    }
 }

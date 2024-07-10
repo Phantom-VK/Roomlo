@@ -33,11 +33,12 @@ fun ProfileScreen(
     navController: NavController,
 ) {
     val context = LocalContext.current
-    val user = dbViewModel.userDetails
-    if (user != null) {
-        Log.d("ProfileScreen", "${user.mobilenumber}\n${user.name}\n${user.email}\n")
 
-    }
+    val user by dbViewModel.userDetails.collectAsState()
+
+
+
+
     var name by remember { mutableStateOf("user.name") }
     var address by remember { mutableStateOf("user.address") }
     var email by remember { mutableStateOf("user.email") }
