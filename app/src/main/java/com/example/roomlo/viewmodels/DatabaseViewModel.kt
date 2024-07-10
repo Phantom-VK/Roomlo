@@ -23,6 +23,8 @@ class DatabaseViewModel(
     private val db = Firebase.firestore
     private val tag = "DatabaseViewModel"
     private val preferenceHelper: PreferenceHelper = PreferenceHelper(context) // Inject PreferenceHelper here
+    val currentUserMobileNumber = preferenceHelper.userMobileNumber ?: ""
+
 
     private val _userDetails = MutableStateFlow<User?>(null)
     val userDetails: StateFlow<User?> = _userDetails
@@ -33,7 +35,6 @@ class DatabaseViewModel(
     }
 
     fun fetchUserDetails() {
-        val currentUserMobileNumber = preferenceHelper.userMobileNumber ?: ""
         Log.d(tag, "Current user mobile number: $currentUserMobileNumber")
 
         viewModelScope.launch {
@@ -78,7 +79,34 @@ class DatabaseViewModel(
             }
     }
 
-    fun updateUserDetails(mobilenumber:String){
+    fun updateUserDetails(updatedUser: User, context: Context) {
+        Log.d(tag, "Updated user mobile number: ${updatedUser.mobilenumber}")
+        Log.d(tag, "Updated user wpnumber: ${updatedUser.wpnumber}")
+        Log.d(tag, "Updated user name: ${updatedUser.name}")
+        Log.d(tag, "Updated user email: ${updatedUser.email}")
+        Log.d(tag, "Updated user address: ${updatedUser.address}")
 
+
+
+
+        val userMap = mutableMapOf<String, Any?>(
+            "name" to updatedUser.name,
+            "address" to updatedUser.address,
+            "email" to updatedUser.email,
+            "wpnumber" to updatedUser.wpnumber,
+            "isOwner" to updatedUser.isOwner,
+        ).filterValues { it.toString().isNotEmpty() }  // Remove empty values
+
+        db.collection("Users")
+            .document(currentUserMobileNumber)  // Use currentUserMobileNumber for document ID
+            .update(userMap)
+            .addOnSuccessListener {
+                Toast.makeText(context, "Profile updated!", Toast.LENGTH_LONG).show()
+                Log.d(tag, "DocumentSnapshot successfully updated!")
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+                Log.w(tag, "Error updating document", e)
+            }
     }
 }

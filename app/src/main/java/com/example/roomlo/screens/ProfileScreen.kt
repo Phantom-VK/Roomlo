@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.roomlo.data.User
 import com.example.roomlo.screens.components.ProfileImage
 import com.example.roomlo.ui.theme.baloo
 import com.example.roomlo.ui.theme.dimens
@@ -161,7 +162,21 @@ fun ProfileScreen(
             }
 
             Button(
-                onClick = { /* TODO: Implement save functionality */ },
+                onClick = {
+
+                    val updatedUser = User(
+                        name = name,
+                        address = address,
+                        email = email,
+                        mobilenumber = mobilenumber,
+                        wpnumber = wpnumber,
+                        profileImageUrl = profileImageUrl.toString(),
+                        // Fill in other user properties as needed
+                    )
+                    dbViewModel.updateUserDetails(updatedUser, context = context)
+
+
+                },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimary),
                 modifier = Modifier.padding(top = MaterialTheme.dimens.small1)
             ) {
