@@ -12,6 +12,7 @@ import com.example.roomlo.screens.Navigation
 import com.example.roomlo.ui.theme.RoomLoTheme
 import com.example.roomlo.viewmodels.AuthViewModel
 import com.example.roomlo.viewmodels.DatabaseViewModel
+import com.example.roomlo.viewmodels.ProfileViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
 
 class MainActivity : ComponentActivity() {
@@ -26,7 +27,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     Navigation(roomViewModel = RoomViewModel(), authViewModel = AuthViewModel(), navController = rememberNavController(),
-                        dbViewModel = DatabaseViewModel()
+                        dbViewModel = DatabaseViewModel(), pfViewModel = ProfileViewModel()
                     )
                 }
             }

@@ -2,14 +2,14 @@ package com.example.roomlo.screens
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.widget.Toast
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.*
@@ -18,11 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.example.roomlo.R
 import com.example.roomlo.screens.components.ProfileImage
 import com.example.roomlo.ui.theme.baloo
 import com.example.roomlo.ui.theme.dimens
@@ -32,29 +30,21 @@ import com.example.roomlo.viewmodels.DatabaseViewModel
 @Composable
 fun ProfileScreen(
     dbViewModel: DatabaseViewModel,
-    navController: NavController
+    navController: NavController,
 ) {
-    var name by remember { mutableStateOf("") }
-    var address by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var phoneNumber by remember { mutableStateOf("") }
-    var wpNumber by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val user = dbViewModel.userDetails
+    if (user != null) {
+        Log.d("ProfileScreen", "${user.mobilenumber}\n${user.name}\n${user.email}\n")
+
+    }
+    var name by remember { mutableStateOf("user.name") }
+    var address by remember { mutableStateOf("user.address") }
+    var email by remember { mutableStateOf("user.email") }
+    var mobilenumber by remember { mutableStateOf("user.mobilenumber") }
+    var wpnumber by remember { mutableStateOf("user.wpnumber") }
     var profileImageUrl by remember { mutableStateOf<Uri?>(null) }
 
-    val context = LocalContext.current
-
-//    LaunchedEffect(Unit) {
-//        dbViewModel.getUserDetails { user ->
-//            user?.let {
-//                name = it.name
-//                address = it.address
-//                email = it.email
-//                phoneNumber = it.mobilenumber
-//                wpNumber = it.wpnumber
-//                profileImageUrl = it.profileImageUrl?.let { Uri.parse(it) }
-//            }
-//        }
-//    }
 
     Column(
         modifier = Modifier
@@ -103,34 +93,40 @@ fun ProfileScreen(
                 color = MaterialTheme.colorScheme.background
             )
 
-            UnderlineTextField(
-                value = name,
-                onValueChange = { name = it },
-                hint = "Name",
-                imageVector = Icons.Filled.AccountCircle
-            )
+            if (user != null) {
+                UnderlineTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    hint = name,
+                    imageVector = Icons.Filled.AccountCircle
+                )
+            }
+
             UnderlineTextField(
                 value = address,
                 onValueChange = { address = it },
-                hint = "Address",
+                hint = address,
                 imageVector = Icons.Filled.LocationOn
             )
+
             UnderlineTextField(
                 value = email,
                 onValueChange = { email = it },
-                hint = "Email ID",
+                hint = email,
                 imageVector = Icons.Outlined.Email
             )
+
             UnderlineTextField(
-                value = phoneNumber,
-                onValueChange = { phoneNumber = it },
-                hint = "Phone Number",
+                value = mobilenumber,
+                onValueChange = { mobilenumber = it },
+                hint = mobilenumber,
                 imageVector = Icons.Filled.Call
             )
+
             UnderlineTextField(
-                value = wpNumber,
-                onValueChange = { wpNumber = it },
-                hint = "WhatsApp Number (Optional)",
+                value = wpnumber,
+                onValueChange = { wpnumber = it },
+                hint = wpnumber,
                 imageVector = Icons.Filled.Call
             )
         }
@@ -147,7 +143,7 @@ fun ProfileScreen(
                     .padding(MaterialTheme.dimens.small2),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
             ) {
-                Text(text = "Userid & Password", color = MaterialTheme.colorScheme.secondary)
+                Text(text = "Change Password", color = MaterialTheme.colorScheme.secondary)
             }
 
             Button(
@@ -170,58 +166,41 @@ fun UnderlineTextField(
     hint: String,
     imageVector: ImageVector
 ) {
-    var isHintDisplayed by remember { mutableStateOf(value.isEmpty()) }
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start,
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = { Text(text = hint) },
+        label = { Text(hint) },
+        leadingIcon = {
+            Icon(
+                imageVector = imageVector,
+                contentDescription = hint,
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        },
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Filled.Edit,
+                contentDescription = "Edit",
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        },
+        singleLine = true,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = MaterialTheme.dimens.small1)
-    ) {
-        Icon(
-            imageVector = imageVector,
-            contentDescription = hint,
-            modifier = Modifier.requiredSize(MaterialTheme.dimens.medium3),
-            tint = MaterialTheme.colorScheme.secondary
+            .padding(vertical = 8.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.primary,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = MaterialTheme.colorScheme.secondary,
+            unfocusedTextColor = MaterialTheme.colorScheme.background,
+            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+            cursorColor = MaterialTheme.colorScheme.secondary
+
         )
-        Spacer(modifier = Modifier.width(MaterialTheme.dimens.small2))
-        Box(modifier = Modifier.fillMaxWidth()) {
-            BasicTextField(
-                value = value,
-                onValueChange = {
-                    onValueChange(it)
-                    isHintDisplayed = it.isEmpty()
-                },
-                singleLine = true,
-                textStyle = TextStyle(
-                    color = MaterialTheme.colorScheme.secondary,
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        top = MaterialTheme.dimens.small1,
-                        bottom = MaterialTheme.dimens.small1
-                    )
-            ) { innerTextField ->
-                Column {
-                    if (isHintDisplayed) {
-                        Text(
-                            text = hint,
-                            style = TextStyle(
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                                fontSize = MaterialTheme.typography.bodyMedium.fontSize
-                            )
-                        )
-                    }
-                    innerTextField()
-                    HorizontalDivider(
-                        modifier = Modifier.padding(top = MaterialTheme.dimens.small1),
-                        thickness = 1.dp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                }
-            }
-        }
-    }
+    )
 }

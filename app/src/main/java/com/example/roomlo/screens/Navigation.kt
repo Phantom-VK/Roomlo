@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.roomlo.viewmodels.AuthViewModel
 import com.example.roomlo.viewmodels.DatabaseViewModel
+import com.example.roomlo.viewmodels.ProfileViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
 
 @Composable
@@ -13,7 +14,8 @@ fun Navigation(
     navController: NavHostController,
     roomViewModel: RoomViewModel,
     authViewModel: AuthViewModel,
-    dbViewModel: DatabaseViewModel) {
+    dbViewModel: DatabaseViewModel,
+    pfViewModel: ProfileViewModel) {
     NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
         composable(Screen.SplashScreen.route) {
             SplashScreen(navController = navController)
@@ -33,7 +35,7 @@ fun Navigation(
 
 
         composable(Screen.SignInScreen.route) {
-            SignInScreen(navController = navController, authViewModel = authViewModel)
+            SignInScreen(navController = navController, authViewModel = authViewModel, dbViewModel = DatabaseViewModel())
         }
 
         composable(Screen.SignUpScreen.route) {

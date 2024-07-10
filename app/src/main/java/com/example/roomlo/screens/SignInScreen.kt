@@ -56,7 +56,8 @@ import com.example.roomlo.viewmodels.DatabaseViewModel
 @Composable
 fun SignInScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    dbViewModel : DatabaseViewModel
 ) {
 
     var email by remember {
@@ -75,7 +76,11 @@ fun SignInScreen(
     //TODO White screen after splashscreen page bug
     LaunchedEffect(authState) {
         when(authState){
-            is AuthState.Authenticated -> navController.navigate(Screen.HomeView.route)
+            is AuthState.Authenticated -> {
+                dbViewModel.currentUserId = authViewModel.auth.uid
+                dbViewModel.getUserDetails()
+                navController.navigate(Screen.HomeView.route)
+            }
             is AuthState.Error -> Toast.makeText(context,
                 (authState as AuthState.Error).message, Toast.LENGTH_SHORT).show()
             else -> Unit

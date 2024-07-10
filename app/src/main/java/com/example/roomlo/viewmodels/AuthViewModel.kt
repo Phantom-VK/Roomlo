@@ -1,6 +1,7 @@
 package com.example.roomlo.viewmodels
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.roomlo.data.User
@@ -19,7 +20,10 @@ import kotlinx.coroutines.tasks.await
 
 class AuthViewModel : ViewModel() {
 
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val _auth: FirebaseAuth = FirebaseAuth.getInstance()
+    val auth = _auth
+
+
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState: StateFlow<AuthState> = _authState
@@ -31,6 +35,8 @@ class AuthViewModel : ViewModel() {
     private val dbViewModel = DatabaseViewModel()
     init {
         checkAuthStatus()
+        auth.uid?.let { Log.d("DatabaseViewModel", it) }
+
     }
 
     private fun checkAuthStatus() {
@@ -38,6 +44,7 @@ class AuthViewModel : ViewModel() {
             AuthState.Unauthenticated
         } else {
             AuthState.Authenticated
+
         }
     }
 
@@ -72,12 +79,13 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 auth.createUserWithEmailAndPassword(email, password).await()
-                dbViewModel.addUserToDatabase(user, context, auth.uid)
+                dbViewModel.addUserToDatabase(user, context, auth.currentUser?.uid)
                 _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Something went wrong")
             }
         }
+
     }
 
     fun signout() {
@@ -87,9 +95,9 @@ class AuthViewModel : ViewModel() {
 }
 
 sealed class AuthState {
-    object Authenticated : AuthState()
-    object Unauthenticated : AuthState()
-    object Loading : AuthState()
+    data object Authenticated : AuthState()
+    data object Unauthenticated : AuthState()
+    data object Loading : AuthState()
     data class Error(val message: String) : AuthState()
 }
 
