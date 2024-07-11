@@ -21,25 +21,13 @@ val baloo = FontFamily(
 )
 
 val interFont = FontFamily(
-    Font(R.font.inter_bold, FontWeight.Bold),
     Font(R.font.inter_black, FontWeight.Black),
     Font(R.font.inter_medium, FontWeight.Medium),
     Font(R.font.inter_regular, FontWeight.Normal),
-    Font(R.font.inter_semibold, FontWeight.SemiBold)
-)
-val Rubik = FontFamily(
-    listOf(
-        Font(resId = R.font.rubik_bold, weight = FontWeight.Bold)
-    )
 )
 
-val Roboto = FontFamily(
-    listOf(
-        Font(resId = R.font.roboto_medium, weight = FontWeight.Medium),
-        Font(resId = R.font.roboto_regular, weight = FontWeight.Normal),
-        Font(resId = R.font.roboto_bold, weight = FontWeight.ExtraBold),
-    )
-)
+
+
 // Set of Material typography styles to start with
 val CompactTypography = Typography(
     headlineLarge = TextStyle(
@@ -55,11 +43,6 @@ val CompactTypography = Typography(
     titleMedium = TextStyle(
         fontFamily = interFont,
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.Normal,
         fontSize = 14.sp
     )
 )
@@ -79,11 +62,6 @@ val CompactMediumTypography = Typography(
         fontFamily = interFont,
         fontWeight = FontWeight.Medium,
         fontSize = 14.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp
     )
 )
 
@@ -102,11 +80,6 @@ val CompactSmallTypography = Typography(
         fontFamily = interFont,
         fontWeight = FontWeight.Medium,
         fontSize = 10.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.Normal,
-        fontSize = 10.sp
     )
 )
 
@@ -116,19 +89,9 @@ val MediumTypography = Typography(
         fontWeight = FontWeight.ExtraBold,
         fontSize = 38.sp
     ),
-    headlineMedium = TextStyle(
-        fontFamily = Rubik,
-        fontWeight = FontWeight.Bold,
-        fontSize = 30.sp
-    ),
     titleMedium = TextStyle(
         fontFamily = baloo,
         fontWeight = FontWeight.Medium,
-        fontSize = 16.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.Normal,
         fontSize = 16.sp
     )
 )
@@ -147,11 +110,6 @@ val ExpandedTypography = Typography(
     titleMedium = TextStyle(
         fontFamily = interFont,
         fontWeight = FontWeight.Medium,
-        fontSize = 18.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = Roboto,
-        fontWeight = FontWeight.Normal,
         fontSize = 18.sp
     )
 )

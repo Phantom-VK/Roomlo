@@ -1,5 +1,7 @@
 package com.example.roomlo.screens
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,13 +35,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.roomlo.screens.components.AppBottomBar
 import com.example.roomlo.screens.components.AppTopBar
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
 import com.example.roomlo.viewmodels.AuthViewModel
-import com.example.roomlo.viewmodels.DatabaseViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
 import kotlinx.coroutines.launch
 
@@ -48,6 +50,12 @@ fun HomeScreen(
     navController: NavController,
     roomViewModel: RoomViewModel,
     authViewModel: AuthViewModel) {
+
+    val context = LocalContext.current
+    BackHandler {
+        // Exit the app when back button is pressed
+        (context as? Activity)?.finish()
+    }
 
     // Checking authentication first
     val authState by authViewModel.authState.collectAsState()
@@ -127,7 +135,7 @@ fun HomeScreen(
         Scaffold(
             topBar = {
                 AppTopBar(
-                    title = "RoomLo",
+                    title = "Roomlo",
                     onTrailingIconClicked = {
                         navController.navigate(Screen.ProfileScreen.route)
                     },
