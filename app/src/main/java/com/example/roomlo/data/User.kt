@@ -1,13 +1,13 @@
 package com.example.roomlo.data
 
 data class User(
-    var name: String = "",
-    var address: String = "",
-    var email: String = "",
-    var mobilenumber: String = "",
-    var wpnumber: String = "",
-    var isOwner: Boolean = false,
-    var password: String = "",
-    var profileImageUrl: String = "",
-    var uid:String = ""
+    val name: String = "",
+    val address: String = "",
+    val email: String = "",
+    val mobilenumber: String = "",
+    val wpnumber: String = "",
+    val isOwner: Boolean = false,
+    val password: String = "",
+    val uid: String = ""
 )
+

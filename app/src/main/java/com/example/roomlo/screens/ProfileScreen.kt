@@ -57,7 +57,6 @@ fun ProfileScreen(
             email = user1.email
             mobilenumber = user1.mobilenumber
             wpnumber = user1.wpnumber
-            profileImageUrl = user1.profileImageUrl.let { Uri.parse(it) }
         }
     }
 

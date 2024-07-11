@@ -56,7 +56,6 @@ class UserRepository(context: Context) {
             "wpnumber" to wpnumber,
             "isOwner" to preferenceHelper.isOwner,
             "password" to password,
-            "profileImageUrl" to profileImageUrl,
             "uid" to uid
         )
     }
