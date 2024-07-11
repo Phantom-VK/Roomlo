@@ -47,9 +47,8 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     navController: NavController,
     roomViewModel: RoomViewModel,
-    authViewModel: AuthViewModel,
-    dbViewModel: DatabaseViewModel
-) {
+    authViewModel: AuthViewModel) {
+
     // Checking authentication first
     val authState by authViewModel.authState.collectAsState()
     LaunchedEffect(authState) {

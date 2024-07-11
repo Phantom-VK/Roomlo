@@ -1,6 +1,5 @@
 package com.example.roomlo.screens
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -55,9 +54,7 @@ import com.example.roomlo.viewmodels.DatabaseViewModel
 @Composable
 fun SignInScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel,
-    dbViewModel : DatabaseViewModel
-) {
+    authViewModel: AuthViewModel) {
 
     var email by remember {
         mutableStateOf("")

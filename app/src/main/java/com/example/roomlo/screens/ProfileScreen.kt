@@ -2,9 +2,9 @@ package com.example.roomlo.screens
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.AccountCircle
@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.roomlo.data.User
@@ -31,7 +32,7 @@ import com.example.roomlo.viewmodels.DatabaseViewModel
 @Composable
 fun ProfileScreen(
     dbViewModel: DatabaseViewModel,
-    navController: NavController,
+    navController: NavController
 ) {
     val context = LocalContext.current
 
@@ -41,6 +42,7 @@ fun ProfileScreen(
     }
 
     val user by dbViewModel.userDetails.collectAsState()
+    val loading by dbViewModel.loading.collectAsState()
 
     var name by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
@@ -59,128 +61,138 @@ fun ProfileScreen(
             wpnumber = user1.wpnumber
             profileImageUrl = user1.profileImageUrl.let { Uri.parse(it) }
         }
-
-        Log.d("ProfileScreen","${user?.mobilenumber}\n${user?.email}")
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary),
-        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row(
+    if (loading) {
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = MaterialTheme.dimens.medium2),
-            horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center
         ) {
-            IconButton(onClick = { navController.navigateUp() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Go Back",
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-            }
-            Text(
-                text = "Profile",
-                fontFamily = baloo,
-                fontWeight = FontWeight.Bold,
-                fontSize = MaterialTheme.typography.headlineLarge.fontSize,
-                color = MaterialTheme.colorScheme.secondary,
-                modifier = Modifier.padding(start = MaterialTheme.dimens.small2)
-            )
+            CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
         }
-
+    } else {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(
-                start = MaterialTheme.dimens.small1,
-                end = MaterialTheme.dimens.medium1
-            )
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primary),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            ProfileImage(imageUrl = profileImageUrl)
-            Spacer(modifier = Modifier.height(5.dp))
-
-            Text(
-                text = name,
-                fontSize = MaterialTheme.typography.headlineMedium.fontSize,
-                color = MaterialTheme.colorScheme.background
-            )
-
-            UnderlineTextField(
-                value = name,
-                onValueChange = { name = it },
-                hint = "Name",
-                imageVector = Icons.Filled.AccountCircle
-            )
-
-            UnderlineTextField(
-                value = address,
-                onValueChange = { address = it },
-                hint = "Address",
-                imageVector = Icons.Filled.LocationOn
-            )
-
-            UnderlineTextField(
-                value = email,
-                onValueChange = { email = it },
-                hint = "Email",
-                imageVector = Icons.Outlined.Email
-            )
-
-            UnderlineTextField(
-                value = mobilenumber,
-                onValueChange = { mobilenumber = it },
-                hint = "Mobile Number",
-                imageVector = Icons.Filled.Call
-            )
-
-            UnderlineTextField(
-                value = wpnumber,
-                onValueChange = { wpnumber = it },
-                hint = "WhatsApp Number",
-                imageVector = Icons.Filled.Call
-            )
-        }
-
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Button(
-                onClick = { /* TODO: Implement change password functionality */ },
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(MaterialTheme.dimens.small2),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
+                    .padding(bottom = MaterialTheme.dimens.medium2),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Change Password", color = MaterialTheme.colorScheme.secondary)
+                IconButton(onClick = { navController.navigateUp() }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Go Back",
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
+                Text(
+                    text = "Profile",
+                    fontFamily = baloo,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = MaterialTheme.typography.headlineLarge.fontSize,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.padding(start = MaterialTheme.dimens.small2)
+                )
             }
 
-            Button(
-                onClick = {
-
-                    val updatedUser = User(
-                        name = name,
-                        address = address,
-                        email = email,
-                        mobilenumber = mobilenumber,
-                        wpnumber = wpnumber,
-                        profileImageUrl = profileImageUrl.toString(),
-                        // Fill in other user properties as needed
-                    )
-                    dbViewModel.updateUserDetails(updatedUser, context = context)
-
-
-                },
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimary),
-                modifier = Modifier.padding(top = MaterialTheme.dimens.small1)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(
+                    start = MaterialTheme.dimens.small1,
+                    end = MaterialTheme.dimens.small1
+                )
             ) {
-                Text(text = "Save", color = MaterialTheme.colorScheme.secondary)
+                ProfileImage(imageUrl = profileImageUrl)
+                Spacer(modifier = Modifier.height(5.dp))
+
+                Text(
+                    text = name,
+                    fontSize = MaterialTheme.typography.headlineMedium.fontSize,
+                    color = MaterialTheme.colorScheme.background
+                )
+
+                UnderlineTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    hint = "Name",
+                    keyboardType = KeyboardType.Text,
+                    imageVector = Icons.Filled.AccountCircle
+                )
+
+                UnderlineTextField(
+                    value = address,
+                    onValueChange = { address = it },
+                    hint = "Address",
+                    keyboardType = KeyboardType.Text,
+                    imageVector = Icons.Filled.LocationOn
+                )
+
+                UnderlineTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    hint = "Email",
+                    keyboardType = KeyboardType.Email,
+                    imageVector = Icons.Outlined.Email
+                )
+
+                UnderlineTextField(
+                    value = mobilenumber,
+                    onValueChange = { mobilenumber = it },
+                    hint = "Mobile Number",
+                    keyboardType = KeyboardType.Number,
+                    imageVector = Icons.Filled.Call
+                )
+
+                UnderlineTextField(
+                    value = wpnumber,
+                    onValueChange = { wpnumber = it },
+                    hint = "WhatsApp Number",
+                    keyboardType = KeyboardType.Number,
+                    imageVector = Icons.Filled.Call
+                )
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Button(
+                    onClick = { /* TODO: Implement change password functionality */ },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(MaterialTheme.dimens.small2),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
+                ) {
+                    Text(text = "Change Password", color = MaterialTheme.colorScheme.secondary)
+                }
+
+                Button(
+                    onClick = {
+                        dbViewModel.updateUserDetails(
+                            User(
+                                name = name,
+                                address = address,
+                                email = email,
+                                wpnumber = wpnumber,
+                                mobilenumber =  mobilenumber
+                            ), context
+                        )
+                    },
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimary),
+                    modifier = Modifier.padding(top = MaterialTheme.dimens.small1)
+                ) {
+                    Text(text = "Save", color = MaterialTheme.colorScheme.secondary)
+                }
             }
         }
     }
@@ -191,13 +203,16 @@ fun UnderlineTextField(
     value: String,
     onValueChange: (String) -> Unit,
     hint: String,
-    imageVector: ImageVector
+    imageVector: ImageVector,
+    keyboardType: KeyboardType
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         placeholder = { Text(text = hint) },
-        label = { Text(hint) },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType
+        ),
         leadingIcon = {
             Icon(
                 imageVector = imageVector,

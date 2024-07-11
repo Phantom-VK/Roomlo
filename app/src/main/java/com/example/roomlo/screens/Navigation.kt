@@ -21,7 +21,7 @@ fun Navigation(
         }
 
         composable(Screen.HomeView.route) {
-            HomeScreen(navController = navController, roomViewModel = roomViewModel, authViewModel = authViewModel, dbViewModel = dbViewModel)
+            HomeScreen(navController = navController, roomViewModel = roomViewModel, authViewModel = authViewModel)
         }
 
         composable(Screen.ProfileScreen.route) {
@@ -34,7 +34,7 @@ fun Navigation(
 
 
         composable(Screen.SignInScreen.route) {
-            SignInScreen(navController = navController, authViewModel = authViewModel, dbViewModel = dbViewModel)
+            SignInScreen(navController = navController, authViewModel = authViewModel)
         }
 
         composable(Screen.SignUpScreen.route) {

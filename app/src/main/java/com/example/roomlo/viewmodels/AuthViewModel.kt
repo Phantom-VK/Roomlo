@@ -1,26 +1,21 @@
 package com.example.roomlo.viewmodels
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.roomlo.data.AuthRepository
 import com.example.roomlo.data.User
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.tasks.await
-import kotlin.coroutines.resumeWithException
 
 class AuthViewModel(
-context: Context,
-private val dbViewModel: DatabaseViewModel) : ViewModel() {
+    context: Context,
+    private val dbViewModel: DatabaseViewModel
+) : ViewModel() {
 
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val authRepository: AuthRepository = AuthRepository(context)
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState: StateFlow<AuthState> = _authState
@@ -32,18 +27,11 @@ private val dbViewModel: DatabaseViewModel) : ViewModel() {
     }
 
     private fun checkAuthStatus() {
-        val currentUser = auth.currentUser
+        val currentUser = authRepository.getCurrentUser()
         _authState.value = if (currentUser == null) {
             AuthState.Unauthenticated
         } else {
             AuthState.Authenticated
-        }
-        auth.addAuthStateListener { auth ->
-            _authState.value = if (auth.currentUser == null) {
-                AuthState.Unauthenticated
-            } else {
-                AuthState.Authenticated
-            }
         }
     }
 
@@ -57,11 +45,11 @@ private val dbViewModel: DatabaseViewModel) : ViewModel() {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
-                auth.signInWithEmailAndPassword(email, password).await()
+                authRepository.login(email, password)
+                authRepository.updateUserIdInPreferences()
                 _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Something went wrong")
-                Log.e("AuthViewModel", "Login failed: ${e.message}")
             }
         }
     }
@@ -78,18 +66,19 @@ private val dbViewModel: DatabaseViewModel) : ViewModel() {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
-                auth.createUserWithEmailAndPassword(email, password).await()
-                auth.currentUser?.uid?.let { dbViewModel.addUserToDatabase(user, context, it) }
+                authRepository.signup(email, password)?.let { firebaseUser ->
+                    dbViewModel.addUserToDatabase(user, context, firebaseUser.uid)
+                    authRepository.updateUserIdInPreferences()
+                }
                 _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Something went wrong")
-                Log.e("AuthViewModel", "Signup failed: ${e.message}")
             }
         }
     }
 
     fun signout() {
-        auth.signOut()
+        authRepository.signout()
         _authState.value = AuthState.Unauthenticated
     }
 }
@@ -103,17 +92,4 @@ sealed class AuthState {
 
 sealed class AuthEvent {
     data class ShowError(val message: String) : AuthEvent()
-}
-
-@OptIn(ExperimentalCoroutinesApi::class)
-private suspend fun <T> Task<T>.await(): T {
-    return suspendCancellableCoroutine { cont ->
-        addOnCompleteListener {
-            if (it.isSuccessful) {
-                cont.resume(it.result, null)
-            } else {
-                cont.resumeWithException(it.exception ?: RuntimeException("Unknown task exception"))
-            }
-        }
-    }
 }

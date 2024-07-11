@@ -10,12 +10,12 @@ class PreferenceHelper(context: Context) {
 
     companion object {
         private const val PREF_NAME = "app_preferences"
-        private const val USER_MOBILE_NUMBER = ""
+        private const val USER_UID = ""
     }
 
-    var userMobileNumber: String?
-        get() = sharedPreferences.getString(USER_MOBILE_NUMBER, null)
+    var userId: String?
+        get() = sharedPreferences.getString(USER_UID, null)
         set(value) {
-            sharedPreferences.edit().putString(USER_MOBILE_NUMBER, value).apply()
+            sharedPreferences.edit().putString(USER_UID, value).apply()
         }
 }

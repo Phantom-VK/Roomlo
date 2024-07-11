@@ -176,7 +176,6 @@ fun SignUpScreen(
             onClick = {
 
                 // Save mobile number to SharedPreferences
-                preferenceHelper.userMobileNumber = mobilenumber
                 authViewModel.signup(
                     User(
                         email = email,
