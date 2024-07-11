@@ -45,16 +45,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.roomlo.R
+import com.example.roomlo.data.PreferenceHelper
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
 import com.example.roomlo.viewmodels.AuthViewModel
 import com.example.roomlo.viewmodels.DatabaseViewModel
+import com.example.roomlo.viewmodels.SharedViewModel
 
 
 @Composable
 fun SignInScreen(
     navController: NavHostController,
-    authViewModel: AuthViewModel) {
+    authViewModel: AuthViewModel,
+    preferenceHelper:PreferenceHelper,
+    sharedViewModel: SharedViewModel) {
 
     var email by remember {
         mutableStateOf("")
@@ -68,6 +72,11 @@ fun SignInScreen(
 
     val authState by authViewModel.authState.collectAsState()
     val context = LocalContext.current
+
+    val userId = preferenceHelper.userId
+    if (userId != null) {
+        sharedViewModel.fetchUserDetails()
+    }
 
     //TODO White screen after splashscreen page bug
     LaunchedEffect(authState) {
@@ -179,7 +188,7 @@ fun SignInScreen(
 
         // Sign Up Text
         TextButton(onClick = {
-            navController.navigate(Screen.SignUpScreen.route)
+            navController.navigate(Screen.RoleSelectionScreen.route)
         }) {
             Text(
                 text = "Don't have an account? Sign Up.",

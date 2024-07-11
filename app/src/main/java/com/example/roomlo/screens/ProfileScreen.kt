@@ -27,21 +27,19 @@ import com.example.roomlo.screens.components.ProfileImage
 import com.example.roomlo.ui.theme.baloo
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.DatabaseViewModel
+import com.example.roomlo.viewmodels.SharedViewModel
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ProfileScreen(
     dbViewModel: DatabaseViewModel,
-    navController: NavController
+    navController: NavController,
+    sharedViewModel: SharedViewModel
 ) {
     val context = LocalContext.current
 
-    // Trigger fetching user details when ProfileScreen is first composed
-    LaunchedEffect(Unit) {
-        dbViewModel.fetchUserDetails()
-    }
 
-    val user by dbViewModel.userDetails.collectAsState()
+    val user by sharedViewModel.userDetails.collectAsState()
     val loading by dbViewModel.loading.collectAsState()
 
     var name by remember { mutableStateOf("") }
@@ -178,13 +176,14 @@ fun ProfileScreen(
 
                 Button(
                     onClick = {
+
                         dbViewModel.updateUserDetails(
                             User(
-                                name = name,
-                                address = address,
-                                email = email,
-                                wpnumber = wpnumber,
-                                mobilenumber =  mobilenumber
+                                name = name.trim(),
+                                address = address.trim(),
+                                email = email.trim(),
+                                wpnumber = wpnumber.trim(),
+                                mobilenumber =  mobilenumber.trim()
                             ), context
                         )
                     },

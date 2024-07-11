@@ -5,19 +5,23 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.roomlo.data.PreferenceHelper
 import com.example.roomlo.viewmodels.AuthViewModel
 import com.example.roomlo.viewmodels.DatabaseViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
+import com.example.roomlo.viewmodels.SharedViewModel
 
 @Composable
 fun Navigation(
     navController: NavHostController,
     roomViewModel: RoomViewModel,
     authViewModel: AuthViewModel,
-    dbViewModel: DatabaseViewModel) {
+    dbViewModel: DatabaseViewModel,
+    sharedViewModel: SharedViewModel,
+    preferenceHelper: PreferenceHelper) {
     NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
         composable(Screen.SplashScreen.route) {
-            SplashScreen(navController = navController)
+            SplashScreen(navController = navController, sharedViewModel = sharedViewModel, preferenceHelper = preferenceHelper)
         }
 
         composable(Screen.HomeView.route) {
@@ -25,7 +29,10 @@ fun Navigation(
         }
 
         composable(Screen.ProfileScreen.route) {
-            ProfileScreen(dbViewModel = dbViewModel , navController = navController)
+            ProfileScreen(dbViewModel = dbViewModel , navController = navController, sharedViewModel= sharedViewModel )
+        }
+        composable(Screen.RoleSelectionScreen.route) {
+            RoleSelectionScreen(navController, preferenceHelper = preferenceHelper)
         }
 
         composable(Screen.MapView.route) {
@@ -34,11 +41,11 @@ fun Navigation(
 
 
         composable(Screen.SignInScreen.route) {
-            SignInScreen(navController = navController, authViewModel = authViewModel)
+            SignInScreen(navController = navController, authViewModel = authViewModel, sharedViewModel = sharedViewModel, preferenceHelper = preferenceHelper)
         }
 
         composable(Screen.SignUpScreen.route) {
-            SignUpScreen(navController = navController, authViewModel = authViewModel)
+            SignUpScreen(navController = navController, authViewModel = authViewModel, preferenceHelper=preferenceHelper)
         }
     }
 }

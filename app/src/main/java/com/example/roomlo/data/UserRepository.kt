@@ -1,8 +1,6 @@
 package com.example.roomlo.data
 
 import android.content.Context
-import com.example.roomlo.data.PreferenceHelper
-import com.example.roomlo.data.User
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.ktx.firestore
@@ -49,18 +47,19 @@ class UserRepository(context: Context) {
             false
         }
     }
+    private fun User.toMap(): Map<String, Any?> {
+        return mapOf(
+            "name" to name,
+            "address" to address,
+            "email" to email,
+            "mobilenumber" to mobilenumber,
+            "wpnumber" to wpnumber,
+            "isOwner" to preferenceHelper.isOwner,
+            "password" to password,
+            "profileImageUrl" to profileImageUrl,
+            "uid" to uid
+        )
+    }
 }
 
-private fun User.toMap(): Map<String, Any?> {
-    return mapOf(
-        "name" to name,
-        "address" to address,
-        "email" to email,
-        "mobilenumber" to mobilenumber,
-        "wpnumber" to wpnumber,
-        "isOwner" to isOwner,
-        "password" to password,
-        "profileImageUrl" to profileImageUrl,
-        "uid" to uid
-    )
-}
+

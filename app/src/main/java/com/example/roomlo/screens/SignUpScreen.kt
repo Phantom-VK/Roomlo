@@ -49,6 +49,7 @@ import com.example.roomlo.viewmodels.AuthViewModel
 fun SignUpScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel,
+    preferenceHelper: PreferenceHelper
 ) {
     var email by remember {
         mutableStateOf("")
@@ -65,11 +66,9 @@ fun SignUpScreen(
 
 
 
-
     val authState by authViewModel.authState.collectAsState()
     val context = LocalContext.current
-    // Instantiate PreferenceHelper for managing SharedPreferences
-    val preferenceHelper = remember { PreferenceHelper(context) }
+
 
     LaunchedEffect(authState) {
         when (authState) {
@@ -180,11 +179,10 @@ fun SignUpScreen(
                     User(
                         email = email,
                         password = password,
-                        mobilenumber = mobilenumber
+                        mobilenumber = mobilenumber,
+                        isOwner = preferenceHelper.isOwner
                     ),context
                 )
-
-
 
 
             },

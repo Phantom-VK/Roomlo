@@ -16,18 +16,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.roomlo.R
+import com.example.roomlo.data.PreferenceHelper
+import com.example.roomlo.viewmodels.SharedViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
-    navController: NavController
+    navController: NavController,
+    sharedViewModel: SharedViewModel,
+    preferenceHelper: PreferenceHelper
 ) {
-
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
 
-    // AnimationEffect
     LaunchedEffect(key1 = true) {
         scale.animateTo(
             targetValue = 0.7f,
@@ -37,9 +39,22 @@ fun SplashScreen(
                     OvershootInterpolator(4f).getInterpolation(it)
                 })
         )
+
+        // Fetch user details
+        val userId = preferenceHelper.userId
+        if (userId != null) {
+            sharedViewModel.fetchUserDetails()
+        }
+
+        // Delay to show splash screen and allow fetching data
         delay(1000L)
 
-        navController.navigate(Screen.SignInScreen.route)
+        // Navigate based on authentication state or fetched user details
+        if (sharedViewModel.userDetails.value != null) {
+            navController.navigate(Screen.HomeView.route)
+        } else {
+            navController.navigate(Screen.SignInScreen.route)
+        }
     }
 
     Box(
@@ -55,3 +70,4 @@ fun SplashScreen(
         )
     }
 }
+

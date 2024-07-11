@@ -9,7 +9,7 @@ import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
 
-class AuthRepository(private val context: Context) {
+class AuthRepository(context: Context) {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val preferenceHelper: PreferenceHelper = PreferenceHelper(context)
@@ -32,10 +32,15 @@ class AuthRepository(private val context: Context) {
         auth.signOut()
     }
 
-    suspend fun updateUserIdInPreferences() {
+     fun updateUserIdInPreferences() {
         auth.currentUser?.uid?.let {
             preferenceHelper.userId = it
         }
+    }
+    fun updateUserTypeInPreferences(owner: Boolean) {
+
+            preferenceHelper.isOwner = owner
+
     }
 }
 

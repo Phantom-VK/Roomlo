@@ -8,5 +8,6 @@ enum class Screen(val route: String) {
     SignUpScreen("signup_screen"),
     MapView("map_screen"),
     PropertyView("property_screen"),
-    WishlistView("wishlist_screen")
+    WishlistView("wishlist_screen"),
+    RoleSelectionScreen("role_selection_screen")
 }
