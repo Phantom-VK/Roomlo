@@ -179,9 +179,7 @@ fun SignUpScreen(
                     User(
                         email = email,
                         password = password,
-                        mobilenumber = mobilenumber,
-                        isOwner = preferenceHelper.isOwner
-                    ),context
+                        mobilenumber = mobilenumber),context
                 )
 
 

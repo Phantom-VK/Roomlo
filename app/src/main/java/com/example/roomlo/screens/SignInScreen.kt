@@ -188,7 +188,7 @@ fun SignInScreen(
 
         // Sign Up Text
         TextButton(onClick = {
-            navController.navigate(Screen.RoleSelectionScreen.route)
+            navController.navigate(Screen.SignUpScreen.route)
         }) {
             Text(
                 text = "Don't have an account? Sign Up.",

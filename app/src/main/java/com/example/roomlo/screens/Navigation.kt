@@ -40,7 +40,9 @@ fun Navigation(
                 navController = navController,
                 roomViewModel = roomViewModel,
                 authViewModel = authViewModel,
-                profileViewModel = profileViewModel
+                profileViewModel = profileViewModel,
+                preferenceHelper = preferenceHelper,
+                sharedViewModel = sharedViewModel
             )
         }
 
@@ -49,12 +51,7 @@ fun Navigation(
                 dbViewModel = dbViewModel,
                 navController = navController,
                 sharedViewModel = sharedViewModel,
-                profileViewModel = profileViewModel,
-                permissions = permissions
-            )
-        }
-        composable(Screen.RoleSelectionScreen.route) {
-            RoleSelectionScreen(navController, preferenceHelper = preferenceHelper)
+                profileViewModel = profileViewModel)
         }
 
         composable(Screen.MapView.route) {

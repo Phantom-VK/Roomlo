@@ -30,25 +30,27 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.roomlo.data.Permission
+import com.example.roomlo.screens.Screen
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.UserProfileViewModel
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun ProfileImage(profileViewModel: UserProfileViewModel, permissions: Permission) {
+fun ProfileImage(profileViewModel: UserProfileViewModel, profilePictureUrl: String, navController: NavController ) {
     val color = MaterialTheme.colorScheme
     val context = LocalContext.current
     val launcher =
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
             uri?.let {
                 profileViewModel.uploadProfilePicture(it, context)
+                navController.navigate(Screen.HomeView.route)
             }
         }
 
 
-    val profilePictureUrl by profileViewModel.profilePictureUrl.collectAsState()
     val size: Dp = MaterialTheme.dimens.large + 20.dp
 
 //    val permissionLauncher = permissions.PermissionLauncher(context)

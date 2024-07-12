@@ -40,11 +40,7 @@ fun SplashScreen(
                 })
         )
 
-        // Fetch user details
-        val userId = preferenceHelper.userId
-        if (userId != null) {
-            sharedViewModel.fetchUserDetails()
-        }
+
 
         // Delay to show splash screen and allow fetching data
         delay(1000L)

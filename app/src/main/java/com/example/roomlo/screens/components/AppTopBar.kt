@@ -1,7 +1,10 @@
 package com.example.roomlo.screens.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -10,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.List
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.List
@@ -35,11 +39,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.roomlo.R
 import com.example.roomlo.ui.theme.baloo
 import com.example.roomlo.ui.theme.dimens
+import com.example.roomlo.viewmodels.SharedViewModel
 import com.example.roomlo.viewmodels.UserProfileViewModel
 import com.google.firebase.auth.userProfileChangeRequest
 
@@ -50,7 +56,8 @@ fun AppTopBar(
     title: String,
     onLeadingIconClick: () -> Unit = {},
     onTrailingIconClicked: () -> Unit = {},
-    profileViewModel: UserProfileViewModel
+    profileViewModel: UserProfileViewModel,
+    sharedViewModel: SharedViewModel
 
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -59,10 +66,11 @@ fun AppTopBar(
     )
 
 
-    val profilePictureUrl by profileViewModel.profilePictureUrl.collectAsState()
+    val user by sharedViewModel.userDetails.collectAsState()
+    val profilePictureUrl = user?.profileImageUrl
 
     val navigationIcon: (@Composable () -> Unit) = {
-        if (!title.contains("RoomLo")) {
+        if (!title.contains("Roomlo")) {
             IconButton(onClick = { onLeadingIconClick() }) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.List,
@@ -72,22 +80,12 @@ fun AppTopBar(
             }
 
         } else {
-            IconButton(onClick = { onLeadingIconClick() },
-                modifier = Modifier
-                    .size(MaterialTheme.dimens.medium3)
-                    .clip(CircleShape),
-
-                ) {
-
+            IconButton(onClick = { onLeadingIconClick() }) {
                 Icon(
-                    painter = rememberAsyncImagePainter(
-                        model = profilePictureUrl,
-                        contentScale = ContentScale.Crop
-
-                    ), contentDescription ="Profile Image"
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    contentDescription = "Go back",
+                    tint = MaterialTheme.colorScheme.secondary
                 )
-
-
             }
         }
 
@@ -95,14 +93,29 @@ fun AppTopBar(
 
     val profileIcon: @Composable (RowScope.() -> Unit) = {
         if (!title.contains("Profile")) {
-            IconButton(onClick = { onTrailingIconClicked() }) {
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = "Localized description",
-                    Modifier.requiredSize(MaterialTheme.dimens.logoSize),
-                    tint = MaterialTheme.colorScheme.secondary
+            Box(
+                modifier = Modifier
+                    .size(MaterialTheme.dimens.logoSize)
+                    .clip(CircleShape)
+                    .border(3.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                    .clickable {
+                        onTrailingIconClicked()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = profilePictureUrl,
+                    modifier = Modifier
+                        .size(MaterialTheme.dimens.logoSize)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop,
+                    placeholder = rememberVectorPainter(image = Icons.Default.AccountCircle),
+                    error = rememberVectorPainter(image = Icons.Default.AccountCircle),
+                    contentDescription = null,
                 )
             }
+
+
         } else {
             null
         }
@@ -121,12 +134,6 @@ fun AppTopBar(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.keyholeiconcircle),
-                    //TODO add proper icon
-                    contentDescription = "Roomlo",
-                    Modifier.size(MaterialTheme.dimens.logoSize)
-                )
 
                 Text(
                     text = title,

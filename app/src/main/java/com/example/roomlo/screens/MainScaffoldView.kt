@@ -42,12 +42,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import com.example.roomlo.data.Permission
+import com.example.roomlo.data.PreferenceHelper
 import com.example.roomlo.screens.components.AppBottomBar
 import com.example.roomlo.screens.components.AppTopBar
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
 import com.example.roomlo.viewmodels.AuthViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
+import com.example.roomlo.viewmodels.SharedViewModel
 import com.example.roomlo.viewmodels.UserProfileViewModel
 import kotlinx.coroutines.launch
 
@@ -56,14 +58,20 @@ fun HomeScreen(
     navController: NavController,
     roomViewModel: RoomViewModel,
     authViewModel: AuthViewModel,
-    profileViewModel: UserProfileViewModel) {
+    profileViewModel: UserProfileViewModel,
+    preferenceHelper: PreferenceHelper,
+    sharedViewModel: SharedViewModel) {
 
     val context = LocalContext.current
     BackHandler {
         // Exit the app when back button is pressed
         (context as? Activity)?.finish()
     }
-
+    // Fetch user details
+    val userId = preferenceHelper.userId
+    if (userId != null) {
+        sharedViewModel.fetchUserDetails()
+    }
 
 
     // Checking authentication first
@@ -155,7 +163,8 @@ fun HomeScreen(
                     onLeadingIconClick = {
                         scope.launch { drawerState.open() }
                     },
-                    profileViewModel = profileViewModel
+                    profileViewModel = profileViewModel,
+                    sharedViewModel = sharedViewModel
                 )
             },
             containerColor = MaterialTheme.colorScheme.surface,

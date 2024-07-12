@@ -78,7 +78,6 @@ class AuthViewModel(
             try {
                 authRepository.signup(email, password)?.let { firebaseUser ->
                     dbViewModel.addUserToDatabase(user, context, firebaseUser.uid)
-                    authRepository.updateUserTypeInPreferences(user.isOwner)
                     authRepository.updateUserIdInPreferences()
                     if (userId != null) {
                         sharedViewModel.fetchUserDetails()

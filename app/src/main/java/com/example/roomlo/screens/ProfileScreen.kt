@@ -39,28 +39,32 @@ fun ProfileScreen(
     dbViewModel: DatabaseViewModel,
     navController: NavController,
     sharedViewModel: SharedViewModel,
-    profileViewModel:UserProfileViewModel,
-    permissions: Permission
+    profileViewModel:UserProfileViewModel
 ) {
     val context = LocalContext.current
 
 
     val user by sharedViewModel.userDetails.collectAsState()
 
+
     var name by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var mobilenumber by remember { mutableStateOf("") }
     var wpnumber by remember { mutableStateOf("") }
+    var profilePictureUrl by remember { mutableStateOf("") }
+
 
     // Update local state values when user changes
     LaunchedEffect(user) {
+
         user?.let { user1 ->
             name = user1.name
             address = user1.address
             email = user1.email
             mobilenumber = user1.mobilenumber
             wpnumber = user1.wpnumber
+            profilePictureUrl = user1.profileImageUrl
         }
     }
 
@@ -103,7 +107,7 @@ fun ProfileScreen(
                     end = MaterialTheme.dimens.small1
                 )
             ) {
-                ProfileImage(profileViewModel, permissions)
+                ProfileImage(profileViewModel, profilePictureUrl, navController)
                 Spacer(modifier = Modifier.height(5.dp))
 
                 Text(

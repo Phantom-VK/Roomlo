@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 class UserProfileViewModel(private val userRepository: UserRepository) : ViewModel() {
 
-    val profilePictureUrl = MutableStateFlow<String>("")
+    val profilePictureUrl = MutableStateFlow("")
 
     fun uploadProfilePicture(uri: Uri, context: Context) {
         val storageReference = Firebase.storage.reference.child("profile_pictures/${FirebaseAuth.getInstance().currentUser?.uid}")

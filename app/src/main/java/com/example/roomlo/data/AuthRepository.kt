@@ -37,11 +37,7 @@ class AuthRepository(context: Context) {
             preferenceHelper.userId = it
         }
     }
-    fun updateUserTypeInPreferences(owner: Boolean) {
 
-            preferenceHelper.isOwner = owner
-
-    }
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)

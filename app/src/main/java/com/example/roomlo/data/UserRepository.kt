@@ -67,7 +67,6 @@ class UserRepository(context: Context) {
             "email" to email,
             "mobilenumber" to mobilenumber,
             "wpnumber" to wpnumber,
-            "isOwner" to preferenceHelper.isOwner,
             "password" to password,
             "uid" to uid
         )

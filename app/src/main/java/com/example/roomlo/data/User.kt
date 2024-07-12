@@ -6,7 +6,6 @@ data class User(
     val email: String = "",
     val mobilenumber: String = "",
     val wpnumber: String = "",
-    val isOwner: Boolean = false,
     val password: String = "",
     val uid: String = "",
     val profileImageUrl: String = ""
