@@ -1,16 +1,20 @@
 package com.example.roomlo.screens
 
-import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.roomlo.data.Permission
 import com.example.roomlo.data.PreferenceHelper
 import com.example.roomlo.viewmodels.AuthViewModel
 import com.example.roomlo.viewmodels.DatabaseViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
 import com.example.roomlo.viewmodels.SharedViewModel
+import com.example.roomlo.viewmodels.UserProfileViewModel
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun Navigation(
     navController: NavHostController,
@@ -18,18 +22,36 @@ fun Navigation(
     authViewModel: AuthViewModel,
     dbViewModel: DatabaseViewModel,
     sharedViewModel: SharedViewModel,
-    preferenceHelper: PreferenceHelper) {
+    preferenceHelper: PreferenceHelper,
+    profileViewModel: UserProfileViewModel,
+    permissions: Permission
+) {
     NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
         composable(Screen.SplashScreen.route) {
-            SplashScreen(navController = navController, sharedViewModel = sharedViewModel, preferenceHelper = preferenceHelper)
+            SplashScreen(
+                navController = navController,
+                sharedViewModel = sharedViewModel,
+                preferenceHelper = preferenceHelper
+            )
         }
 
         composable(Screen.HomeView.route) {
-            HomeScreen(navController = navController, roomViewModel = roomViewModel, authViewModel = authViewModel)
+            HomeScreen(
+                navController = navController,
+                roomViewModel = roomViewModel,
+                authViewModel = authViewModel,
+                profileViewModel = profileViewModel
+            )
         }
 
         composable(Screen.ProfileScreen.route) {
-            ProfileScreen(dbViewModel = dbViewModel , navController = navController, sharedViewModel= sharedViewModel )
+            ProfileScreen(
+                dbViewModel = dbViewModel,
+                navController = navController,
+                sharedViewModel = sharedViewModel,
+                profileViewModel = profileViewModel,
+                permissions = permissions
+            )
         }
         composable(Screen.RoleSelectionScreen.route) {
             RoleSelectionScreen(navController, preferenceHelper = preferenceHelper)
@@ -41,11 +63,20 @@ fun Navigation(
 
 
         composable(Screen.SignInScreen.route) {
-            SignInScreen(navController = navController, authViewModel = authViewModel, sharedViewModel = sharedViewModel, preferenceHelper = preferenceHelper)
+            SignInScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+                sharedViewModel = sharedViewModel,
+                preferenceHelper = preferenceHelper
+            )
         }
 
         composable(Screen.SignUpScreen.route) {
-            SignUpScreen(navController = navController, authViewModel = authViewModel, preferenceHelper=preferenceHelper)
+            SignUpScreen(
+                navController = navController,
+                authViewModel = authViewModel,
+                preferenceHelper = preferenceHelper
+            )
         }
     }
 }

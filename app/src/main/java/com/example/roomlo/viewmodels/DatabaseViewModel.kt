@@ -16,20 +16,19 @@ class DatabaseViewModel(
 
     private val userRepository: UserRepository = UserRepository(context)
 
-    private val _userDetails = MutableStateFlow<User?>(null)
-    val userDetails: StateFlow<User?> = _userDetails
+//    private val _userDetails = MutableStateFlow<User?>(null)
+//
+//    private val _loading = MutableStateFlow(false)
 
-    private val _loading = MutableStateFlow(false)
-    val loading: StateFlow<Boolean> = _loading
 
-    fun fetchUserDetails() {
-        viewModelScope.launch {
-            _loading.value = true
-            val result = userRepository.fetchUserDetails()
-            _userDetails.value = result
-            _loading.value = false
-        }
-    }
+//    fun fetchUserDetails() {
+//        viewModelScope.launch {
+//            _loading.value = true
+//            val result = userRepository.fetchUserDetails()
+//            _userDetails.value = result
+//            _loading.value = false
+//        }
+//    }
 
     fun addUserToDatabase(user: User, context: Context, uid: String) {
         viewModelScope.launch {
@@ -52,4 +51,6 @@ class DatabaseViewModel(
             }
         }
     }
+
+
 }

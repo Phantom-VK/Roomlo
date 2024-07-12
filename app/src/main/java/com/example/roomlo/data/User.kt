@@ -8,6 +8,7 @@ data class User(
     val wpnumber: String = "",
     val isOwner: Boolean = false,
     val password: String = "",
-    val uid: String = ""
+    val uid: String = "",
+    val profileImageUrl: String = ""
 )
 

@@ -1,7 +1,8 @@
 package com.example.roomlo.screens
 
 import android.annotation.SuppressLint
-import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,32 +23,35 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.roomlo.data.Permission
 import com.example.roomlo.data.User
 import com.example.roomlo.screens.components.ProfileImage
 import com.example.roomlo.ui.theme.baloo
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.DatabaseViewModel
 import com.example.roomlo.viewmodels.SharedViewModel
+import com.example.roomlo.viewmodels.UserProfileViewModel
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun ProfileScreen(
     dbViewModel: DatabaseViewModel,
     navController: NavController,
-    sharedViewModel: SharedViewModel
+    sharedViewModel: SharedViewModel,
+    profileViewModel:UserProfileViewModel,
+    permissions: Permission
 ) {
     val context = LocalContext.current
 
 
     val user by sharedViewModel.userDetails.collectAsState()
-    val loading by dbViewModel.loading.collectAsState()
 
     var name by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var mobilenumber by remember { mutableStateOf("") }
     var wpnumber by remember { mutableStateOf("") }
-    var profileImageUrl by remember { mutableStateOf<Uri?>(null) }
 
     // Update local state values when user changes
     LaunchedEffect(user) {
@@ -60,16 +64,7 @@ fun ProfileScreen(
         }
     }
 
-    if (loading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.primary),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = MaterialTheme.colorScheme.secondary)
-        }
-    } else {
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -108,7 +103,7 @@ fun ProfileScreen(
                     end = MaterialTheme.dimens.small1
                 )
             ) {
-                ProfileImage(imageUrl = profileImageUrl)
+                ProfileImage(profileViewModel, permissions)
                 Spacer(modifier = Modifier.height(5.dp))
 
                 Text(
@@ -193,7 +188,7 @@ fun ProfileScreen(
                 }
             }
         }
-    }
+
 }
 
 @Composable

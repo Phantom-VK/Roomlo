@@ -1,41 +1,60 @@
 package com.example.roomlo.screens.components
 
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts.GetContent
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.example.roomlo.data.Permission
 import com.example.roomlo.ui.theme.dimens
+import com.example.roomlo.viewmodels.UserProfileViewModel
 
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
-fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {}) {
+fun ProfileImage(profileViewModel: UserProfileViewModel, permissions: Permission) {
     val color = MaterialTheme.colorScheme
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            onImageChangeClick(it)
+    val context = LocalContext.current
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
+            uri?.let {
+                profileViewModel.uploadProfilePicture(it, context)
+            }
         }
-    }
 
+
+    val profilePictureUrl by profileViewModel.profilePictureUrl.collectAsState()
     val size: Dp = MaterialTheme.dimens.large + 20.dp
 
-    Box(Modifier.height(size)) {
+//    val permissionLauncher = permissions.PermissionLauncher(context)
+//TODO Add permission launcher to ask permissions
+    Box {
+
         Box(
             modifier = Modifier
                 .size(size)
@@ -44,7 +63,7 @@ fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {})
             contentAlignment = Alignment.Center
         ) {
             AsyncImage(
-                model = imageUrl,
+                model = profilePictureUrl,
                 modifier = Modifier
                     .size(size)
                     .clip(CircleShape),
@@ -53,9 +72,14 @@ fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {})
                 error = rememberVectorPainter(image = Icons.Default.AccountCircle),
                 contentDescription = null,
             )
+
         }
         IconButton(
-            onClick = { launcher.launch("image/*") },
+            onClick = {
+
+                    launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+
+            },
             modifier = Modifier
                 .size(35.dp)
                 .padding(2.dp)
@@ -73,4 +97,6 @@ fun ProfileImage(imageUrl: Uri?, onImageChangeClick: (newUri: Uri) -> Unit = {})
             )
         }
     }
+
+
 }

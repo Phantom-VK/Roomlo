@@ -1,7 +1,11 @@
 package com.example.roomlo.screens
 
+import android.Manifest
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,19 +41,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.example.roomlo.data.Permission
 import com.example.roomlo.screens.components.AppBottomBar
 import com.example.roomlo.screens.components.AppTopBar
 import com.example.roomlo.ui.theme.dimens
 import com.example.roomlo.viewmodels.AuthState
 import com.example.roomlo.viewmodels.AuthViewModel
 import com.example.roomlo.viewmodels.RoomViewModel
+import com.example.roomlo.viewmodels.UserProfileViewModel
 import kotlinx.coroutines.launch
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     roomViewModel: RoomViewModel,
-    authViewModel: AuthViewModel) {
+    authViewModel: AuthViewModel,
+    profileViewModel: UserProfileViewModel) {
 
     val context = LocalContext.current
     BackHandler {
@@ -57,13 +64,19 @@ fun HomeScreen(
         (context as? Activity)?.finish()
     }
 
+
+
     // Checking authentication first
     val authState by authViewModel.authState.collectAsState()
     LaunchedEffect(authState) {
         if (authState is AuthState.Unauthenticated) {
             navController.navigate(Screen.SignInScreen.route)
         }
+
     }
+
+
+
 
     val scope = rememberCoroutineScope()
     val selectedItemIndex by rememberSaveable { mutableIntStateOf(-1) }
@@ -141,7 +154,8 @@ fun HomeScreen(
                     },
                     onLeadingIconClick = {
                         scope.launch { drawerState.open() }
-                    }
+                    },
+                    profileViewModel = profileViewModel
                 )
             },
             containerColor = MaterialTheme.colorScheme.surface,
