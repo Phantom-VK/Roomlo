@@ -2,15 +2,17 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
-    id("com.google.relay")version("0.3.12")
+    id("com.google.dagger.hilt.android")
+    id("kotlin-kapt")
+    id("com.google.relay") version "0.3.12"
 }
 
 android {
-    namespace = "com.example.roomlo"
+    namespace = "com.app.roomlo"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.roomlo"
+        applicationId = "com.app.roomlo"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -52,44 +54,38 @@ android {
 }
 
 dependencies {
-
-    implementation("com.google.firebase:firebase-firestore:25.0.0")
-    val nav_version = "2.7.7"
-
-    implementation("androidx.navigation:navigation-compose:$nav_version")
-
+    implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.compose.material:material-icons-core:1.6.8")
-
     implementation("androidx.core:core-splashscreen:1.0.1")
-
-    implementation( "com.google.accompanist:accompanist-pager:0.28.0")
+    implementation("com.google.accompanist:accompanist-pager:0.28.0")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.28.0")
-
-    //WindowSize Class
     implementation("androidx.compose.material3:material3-window-size-class-android:1.2.1")
-
     implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
 
     // Import the BoM for the Firebase platform
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-auth:23.0.0")
-
-    // Add the dependency for the Realtime Database library
+    implementation("com.google.firebase:firebase-firestore:25.0.0")
     implementation("com.google.firebase:firebase-database")
-    // Add the dependency for the Cloud Storage library
     implementation("com.google.firebase:firebase-storage")
 
-    //coil-compose
-
+    // coil-compose
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-    //sharedpreference
+    // sharedpreference
     implementation("androidx.core:core-ktx:1.13.1")
 
+    // Dagger-Hilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    kapt("com.google.dagger:hilt-compiler:2.51.1")
 
+    // Hilt navigation-compose
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
-    implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
     implementation("androidx.activity:activity-compose:1.9.0")
     implementation(platform("androidx.compose:compose-bom:2024.06.00"))
@@ -104,4 +100,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+}
+
+kapt {
+    correctErrorTypes = true
 }

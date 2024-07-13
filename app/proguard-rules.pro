@@ -21,4 +21,4 @@
 #-renamesourcefileattribute SourceFile
 
 # Keep User class and its members
--keep class com.example.roomlo.data.User { *; }
+-keep class com.app.roomlo.data.User { *; }
