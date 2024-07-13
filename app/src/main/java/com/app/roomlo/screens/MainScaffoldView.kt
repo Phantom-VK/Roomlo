@@ -55,9 +55,7 @@ fun HomeScreen(
     preferenceHelper: PreferenceHelper,
    ) {
 
-    val roomViewModel: RoomViewModel = hiltViewModel()
     val authViewModel: AuthViewModel = hiltViewModel()
-    val profileViewModel: UserProfileViewModel = hiltViewModel()
     val sharedViewModel: SharedViewModel = hiltViewModel()
 
 
@@ -161,11 +159,9 @@ fun HomeScreen(
                     },
                     onLeadingIconClick = {
                         scope.launch { drawerState.open() }
-                    },
-                    sharedViewModel = sharedViewModel
-                )
+                    })
             },
-            containerColor = MaterialTheme.colorScheme.surface,
+            containerColor = MaterialTheme.colorScheme.primary,
             bottomBar = {
                 AppBottomBar(onItemSelected = { screen ->
                     currentScreen = screen

@@ -38,7 +38,7 @@ private val LightColorScheme = lightColorScheme(
     surface = LightThemeVLightGrey,
     onPrimary = LightThemeGreen,
     onSecondary = LightThemeRed,
-    onTertiary = LightThemeDarkGrey,
+    onTertiary = LightThemeVLightGrey,
     onBackground = LightThemeBlack,
     onSurface = LightThemeBlack
 )
@@ -48,7 +48,6 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun RoomLoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+,
     activity: Activity = LocalContext.current as Activity,
     content: @Composable () -> Unit
 ) {

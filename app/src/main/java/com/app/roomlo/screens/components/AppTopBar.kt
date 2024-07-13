@@ -35,6 +35,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.app.roomlo.ui.theme.baloo
 import com.app.roomlo.ui.theme.dimens
@@ -47,16 +48,12 @@ import com.app.roomlo.viewmodels.UserProfileViewModel
 fun AppTopBar(
     title: String,
     onLeadingIconClick: () -> Unit = {},
-    onTrailingIconClicked: () -> Unit = {},
-    sharedViewModel: SharedViewModel
-
+    onTrailingIconClicked: () -> Unit = {}
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
-    val gradientBrush = Brush.linearGradient(
-        colors = listOf(Color.Black, Color.Gray)
-    )
 
 
+    val sharedViewModel = hiltViewModel<SharedViewModel>()
     val user by sharedViewModel.userDetails.collectAsState()
     val profilePictureUrl = user?.profileImageUrl
 
@@ -64,18 +61,20 @@ fun AppTopBar(
         if (!title.contains("Roomlo")) {
             IconButton(onClick = { onLeadingIconClick() }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.List,
+                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
                     contentDescription = "Go back",
                     tint = MaterialTheme.colorScheme.secondary
                 )
             }
 
         } else {
-            IconButton(onClick = { onLeadingIconClick() }) {
+            IconButton(onClick = { onLeadingIconClick() },
+                modifier = Modifier.size(MaterialTheme.dimens.logoSize-10.dp)) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Outlined.List,
                     contentDescription = "Go back",
-                    tint = MaterialTheme.colorScheme.secondary
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(MaterialTheme.dimens.logoSize-10.dp)
                 )
             }
         }
@@ -88,7 +87,7 @@ fun AppTopBar(
                 modifier = Modifier
                     .size(MaterialTheme.dimens.logoSize)
                     .clip(CircleShape)
-                    .border(3.dp, MaterialTheme.colorScheme.secondary, CircleShape)
+                    .border(1.dp, MaterialTheme.colorScheme.secondary)
                     .clickable {
                         onTrailingIconClicked()
                     },
@@ -112,12 +111,10 @@ fun AppTopBar(
 
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = MaterialTheme.colorScheme.tertiary,
             titleContentColor = MaterialTheme.colorScheme.secondary
 
-        ),
-        modifier = Modifier.background(gradientBrush),
-        title = {
+        ),title = {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,

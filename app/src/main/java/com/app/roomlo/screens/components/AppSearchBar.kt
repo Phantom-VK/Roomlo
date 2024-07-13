@@ -1,5 +1,7 @@
 package com.app.roomlo.screens.components
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -10,6 +12,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -36,7 +39,8 @@ fun AppSearchBar(searchQuery: String) {
         active = false,
         onActiveChange = {},
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .border(1.dp, color = MaterialTheme.colorScheme.background),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Outlined.Search,
@@ -45,22 +49,23 @@ fun AppSearchBar(searchQuery: String) {
             )
         },
         colors = SearchBarDefaults.colors(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = MaterialTheme.colorScheme.primary,
             inputFieldColors = SearchBarDefaults.inputFieldColors(
-                focusedTextColor = MaterialTheme.colorScheme.primary
+                focusedTextColor = MaterialTheme.colorScheme.secondary
             )
 
         ),
         placeholder = {
-            Text(text = "Search Room", color = MaterialTheme.colorScheme.primary)
+            Text(text = "Search Room", color = MaterialTheme.colorScheme.secondary)
         },
         shape = RoundedCornerShape(30.dp),
         trailingIcon = {
-            Button(
+            OutlinedButton(
                 onClick = { /*TODO*/ },
                 colors = ButtonDefaults.buttonColors(
-                    MaterialTheme.colorScheme.secondary
+                    MaterialTheme.colorScheme.primary
                 ),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary)
 
                 ) {
                 Text(
@@ -68,12 +73,12 @@ fun AppSearchBar(searchQuery: String) {
                     fontFamily = interFont,
                     fontWeight = FontWeight.Medium,
                     fontSize = MaterialTheme.typography.labelMedium.fontSize,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.secondary
                 )
                 Icon(
                     imageVector = Icons.Filled.ArrowDropDown,
                     contentDescription = "Filters",
-                    tint = MaterialTheme.colorScheme.primary
+                    tint = MaterialTheme.colorScheme.secondary
                 )
 
             }
