@@ -12,33 +12,23 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.app.roomlo.R
 import com.app.roomlo.ui.theme.dimens
 import com.app.roomlo.ui.theme.interFont
@@ -132,27 +123,62 @@ fun RoomItemView() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(MaterialTheme.colorScheme.primary),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.Start
                 ) {
+                    Row {
 
-                    Text(
-                        text = "Rs.1200/month (per person)\nDouble sharing 200 Sq.ft",
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Start,
-                        fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                        fontFamily = interFont,
-                        fontWeight = FontWeight.Light
-                    )
+                        Text(
+                            text = "Rs.1200/month",
+                            color = MaterialTheme.colorScheme.secondary,
+                            textAlign = TextAlign.Justify,
+                            fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                            fontFamily = interFont,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Text(
+                            text = " (per person)",
+                            color = MaterialTheme.colorScheme.secondary,
+                            textAlign = TextAlign.Justify,
+                            fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                            fontFamily = interFont,
+                            fontWeight = FontWeight.Light
+                        )
 
-                    Text(
-                        text = "Rs.2400(2 people, 1 room)",
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Justify,
-                        fontSize = MaterialTheme.typography.labelSmall.fontSize,
-                        fontFamily = interFont,
-                        fontWeight = FontWeight.Medium,
-                        textDecoration = TextDecoration.Underline
-                    )
+                    }
+
+                        Text(
+                            text = "Double sharing",
+                            color = MaterialTheme.colorScheme.secondary,
+                            textAlign = TextAlign.Justify,
+                            fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                            fontFamily = interFont,
+                            fontWeight = FontWeight.Medium
+                        )
+
+
+                    Row (
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        Text(
+                            text = "200 Sq.ft ",
+                            color = MaterialTheme.colorScheme.secondary,
+                            textAlign = TextAlign.Justify,
+                            fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                            fontFamily = interFont,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Text(
+                            text = "Rs.2400(2people,1room)",
+                            color = MaterialTheme.colorScheme.secondary,
+                            textAlign = TextAlign.Justify,
+                            fontSize = MaterialTheme.typography.labelSmall.fontSize,
+                            fontFamily = interFont,
+                            fontWeight = FontWeight.W200,
+                            textDecoration = TextDecoration.Underline
+                        )
+                    }
+
                 }
 
                 Row(
@@ -201,7 +227,7 @@ fun RoomItemView() {
                         Text(
                             text = "Book",
                             color = MaterialTheme.colorScheme.primary,
-                            fontSize = MaterialTheme.typography.labelSmall.fontSize
+                            fontSize = MaterialTheme.typography.labelLarge.fontSize
                         )
                     }
                 }
