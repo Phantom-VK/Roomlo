@@ -1,6 +1,7 @@
 package com.app.roomlo.screens.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -60,7 +61,9 @@ fun AppBottomBar(onItemSelected: (Screen) -> Unit) {
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.primary,
-        modifier = Modifier.border(2.dp, MaterialTheme.colorScheme.surface)) {
+        modifier = Modifier
+            .height(MaterialTheme.dimens.logoSize+23.dp)
+            .border(2.dp, MaterialTheme.colorScheme.surface)) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
                 selected = selectedItemIndex == index,
@@ -73,7 +76,7 @@ fun AppBottomBar(onItemSelected: (Screen) -> Unit) {
                         imageVector = if (index == selectedItemIndex) item.selectedIcon else item.unselectedIcon,
                         contentDescription = "${item.title} Button",
                         tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.requiredSize(MaterialTheme.dimens.medium3)
+                        modifier = Modifier.requiredSize(MaterialTheme.dimens.medium2)
                     )
                 },
                 label = { Text(text = item.title)}

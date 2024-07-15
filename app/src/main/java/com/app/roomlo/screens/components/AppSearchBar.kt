@@ -49,9 +49,7 @@ fun AppSearchBar(
             .padding(
                 start = MaterialTheme.dimens.small2,
                 top = 2.dp,
-                end = MaterialTheme.dimens.small2,
-                bottom = MaterialTheme.dimens.extraSmall
-            )
+                end = MaterialTheme.dimens.small2)
             .fillMaxWidth()
             .height(MaterialTheme.dimens.logoSize+12.dp)  // Adjusted height
             .border(
