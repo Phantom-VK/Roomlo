@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -23,8 +22,15 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +46,12 @@ import com.app.roomlo.viewmodels.PropertyViewModel
 @Composable
 fun HomeView(paddingValues: PaddingValues) {
     val viewModel: PropertyViewModel = hiltViewModel()
+    val searchQuery by remember {
+        mutableStateOf("")
+    }
+    val itemCount  = remember {
+        mutableIntStateOf(4)
+    }
     Column(
         modifier = Modifier
             .padding(paddingValues)
@@ -48,7 +60,7 @@ fun HomeView(paddingValues: PaddingValues) {
     ) {
         AppSearchBar(
             placeHolder = "Search",
-            searchQuery = viewModel.searchQuery
+            searchQuery = searchQuery
 
         )
 
@@ -65,7 +77,7 @@ fun HomeView(paddingValues: PaddingValues) {
             OutlinedButton(
                 onClick = { /*TODO*/ },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(50),
                 modifier = Modifier
                     .height(MaterialTheme.dimens.buttonHeight)
@@ -73,7 +85,8 @@ fun HomeView(paddingValues: PaddingValues) {
                 Text(
                     text = "Filters",
                     fontFamily = interFont,
-                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Light,
                     fontSize = MaterialTheme.typography.labelLarge.fontSize,
                     color = MaterialTheme.colorScheme.secondary
                 )
@@ -88,7 +101,7 @@ fun HomeView(paddingValues: PaddingValues) {
             OutlinedButton(
                 onClick = { /*TODO*/ },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.surface),
                 shape = RoundedCornerShape(50),
                 modifier = Modifier
                     .height(MaterialTheme.dimens.buttonHeight)
@@ -96,7 +109,8 @@ fun HomeView(paddingValues: PaddingValues) {
                 Text(
                     text = "Rent",
                     fontFamily = interFont,
-                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Light,
                     fontSize = MaterialTheme.typography.labelLarge.fontSize,
                     color = MaterialTheme.colorScheme.secondary
                 )
@@ -117,7 +131,8 @@ fun HomeView(paddingValues: PaddingValues) {
                 Text(
                     text = "City",
                     fontFamily = interFont,
-                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Normal,
+                    fontWeight = FontWeight.Light,
                     fontSize = MaterialTheme.typography.labelLarge.fontSize,
                     color = MaterialTheme.colorScheme.secondary,
                     textDecoration = TextDecoration.Underline
@@ -132,24 +147,27 @@ fun HomeView(paddingValues: PaddingValues) {
         }
         Row(
             modifier = Modifier
-                .padding(MaterialTheme.dimens.small1)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            Text(
-                text = "20 Rooms",
-                fontFamily = interFont,
-                fontWeight = FontWeight.Normal,
-                fontSize = MaterialTheme.typography.labelLarge.fontSize,
-                color = MaterialTheme.colorScheme.secondary,
-            )
-            Icon(
-                imageVector = Icons.Outlined.ArrowDropDown,
-                contentDescription = "Room Count",
-                tint = MaterialTheme.colorScheme.secondary,
-
+            TextButton(onClick = { /*TODO*/ }) {
+                Text(
+                    text = "20 Rooms",
+                    fontFamily = interFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                    color = MaterialTheme.colorScheme.secondary,
                 )
+                Icon(
+                    imageVector = Icons.Outlined.ArrowDropDown,
+                    contentDescription = "Room Count",
+                    tint = MaterialTheme.colorScheme.secondary,
+
+                    )
+
+            }
+
         }
 
 

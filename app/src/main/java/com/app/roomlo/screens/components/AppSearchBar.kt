@@ -3,8 +3,10 @@ package com.app.roomlo.screens.components
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,45 +38,56 @@ fun AppSearchBar(
     onQueryChange : (String) -> Unit = {},
     onMicClicked : () -> Unit= {}
 ){
-        SearchBar(
-            query = searchQuery,
-            onQueryChange = onTextChange,
-            onSearch = { /* TODO */ },
-            active = false,
-            onActiveChange = { /* TODO */ },
-            shape = RoundedCornerShape(20.dp),
-            modifier = modifier
-                .padding(
-                    start = MaterialTheme.dimens.small2,
-                    top = 2.dp,
-                    end = MaterialTheme.dimens.small2,
-                    bottom = MaterialTheme.dimens.small1
-                )
-                .fillMaxWidth()
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    shape = RoundedCornerShape(30.dp)
-                ),
-            placeholder = {
+    SearchBar(
+        query = searchQuery,
+        onQueryChange = onTextChange,
+        onSearch = { /* TODO */ },
+        active = false,
+        onActiveChange = { /* TODO */ },
+        shape = RoundedCornerShape(30.dp),
+        modifier = modifier
+            .padding(
+                start = MaterialTheme.dimens.small2,
+                top = 2.dp,
+                end = MaterialTheme.dimens.small2,
+                bottom = MaterialTheme.dimens.extraSmall
+            )
+            .fillMaxWidth()
+            .height(MaterialTheme.dimens.logoSize+12.dp)  // Adjusted height
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.surface,
+                shape = RoundedCornerShape(30.dp)
+            ),
+        placeholder = {
+            Box(
+                modifier = Modifier.fillMaxHeight(),
+                contentAlignment = Alignment.CenterStart
+            ) {
                 Text("Search")
-            } ,
-            leadingIcon = {
-
+            }
+        },
+        leadingIcon = {
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(start = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
                 Icon(
                     imageVector = Icons.Rounded.Search,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.secondary,
                 )
-
-            },
-            colors = SearchBarDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.primary,
-            ),
-            tonalElevation = 0.dp
-        ) {
-            // Search suggestions or results
-        }
+            }
+        },
+        colors = SearchBarDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.primary,
+        ),
+        tonalElevation = 0.dp
+    ) {
+        // Search suggestions or results
+    }
 
 
 

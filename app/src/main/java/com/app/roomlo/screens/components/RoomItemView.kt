@@ -52,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -235,14 +236,16 @@ private fun SlidingImages(
 
         Box(
             modifier = Modifier
-                .size(width = MaterialTheme.dimens.large, height = MaterialTheme.dimens.large-30.dp)
+                .size(width = MaterialTheme.dimens.large+30.dp, height = MaterialTheme.dimens.large)
         ) {
             HorizontalPager(state = pagerState) { page ->
                 Image(
                     painter = imageSlider[page],
                     contentDescription = "Room Image",
                     modifier = Modifier
-                        .size(width = MaterialTheme.dimens.large,height = MaterialTheme.dimens.large-30.dp)
+                        .size(width = MaterialTheme.dimens.large+30.dp,height = MaterialTheme.dimens.large),
+                    contentScale = ContentScale.Crop
+
                 )
             }
         }
