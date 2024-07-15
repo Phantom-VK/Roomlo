@@ -8,7 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class RoomViewModel @Inject constructor() : ViewModel() {
+class PropertyViewModel @Inject constructor() : ViewModel() {
 
 
     private var _searchQuery by mutableStateOf("")

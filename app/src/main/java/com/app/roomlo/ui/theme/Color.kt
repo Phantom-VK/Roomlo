@@ -10,9 +10,9 @@ val LightThemeRed = Color(0xFFE53935)  // Red
 val PrimaryButtonTextLight = Color(0xFFFFFFFF)  // White
 val LightThemeGreen = Color(0xFF43A047)  // Green
 val SecondaryButtonTextLight = Color(0xFFFFFFFF)  // White
-val LightThemeLightGrey = Color(0xFFCCCCCC)  // Light Gray
-val LightThemeVLightGrey = Color(0xFF999999)  // Very Light Gray
-val LightThemeDarkGrey = Color(0xFF616161)  // Dark Gray
+val LightThemeLightGrey = Color(0xFF999999)  // Light Gray
+val LightThemeVLightGrey = Color(0xFFE2E2E2)  // Very Light Gray
+val LightThemeDarkGrey = Color(0xFFBDBDBD)  // Dark Gray
 
 //DARK THEME
 val DarkThemeVeryDarkGrey = Color(0xFF212121)  // Very Dark Gray
@@ -23,4 +23,4 @@ val DarkThemeGreen = Color(0xFF66BB6A)  // Green
 val SecondaryButtonTextDark = Color(0xFF000000)  // Black
 val DarkThemeDarkGrey = Color(0xFF292929)  // Dark Gray
 val DarkThemeMedGrey = Color(0xFF616161)  // Medium Gray
-val DarkThemeLightGrey = Color(0xFFBDBDBD)  // Light Gray
+val DarkThemeLightGrey = Color(0xFF616161)  // Light Gray

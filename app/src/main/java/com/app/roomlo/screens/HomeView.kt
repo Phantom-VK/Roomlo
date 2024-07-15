@@ -1,47 +1,143 @@
 package com.app.roomlo.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.ArrowDropDown
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.roomlo.screens.components.AppSearchBar
 import com.app.roomlo.screens.components.RoomItemView
-import com.app.roomlo.viewmodels.RoomViewModel
+import com.app.roomlo.ui.theme.dimens
+import com.app.roomlo.ui.theme.interFont
+import com.app.roomlo.viewmodels.PropertyViewModel
+
 
 @Composable
-fun HomeView(paddingValues: PaddingValues){
-    val viewModel:RoomViewModel = hiltViewModel<RoomViewModel>()
+fun HomeView(paddingValues: PaddingValues) {
+    val viewModel: PropertyViewModel = hiltViewModel()
     Column(
         modifier = Modifier
-            .padding(paddingValues)
+            .padding(top = paddingValues.calculateTopPadding())
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.primary)
     ) {
-        AppSearchBar(viewModel.searchQuery)
-        Spacer(modifier = Modifier.height(5.dp))
+        AppSearchBar(
+            placeHolder = "Search",
+            searchQuery = viewModel.searchQuery
+
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = MaterialTheme.dimens.small1, bottom = MaterialTheme.dimens.small2),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+
+
+            // Filters Button
+            OutlinedButton(
+                onClick = { /*TODO*/ },
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+                shape = RoundedCornerShape(50),
+                modifier = Modifier
+                    .height(MaterialTheme.dimens.buttonHeight)
+            ) {
+                Text(
+                    text = "Filters",
+                    fontFamily = interFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = "Filters",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            // Rent Button
+            OutlinedButton(
+                onClick = { /*TODO*/ },
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+                shape = RoundedCornerShape(50),
+                modifier = Modifier
+                    .height(MaterialTheme.dimens.buttonHeight)
+            ) {
+                Text(
+                    text = "Rent",
+                    fontFamily = interFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Icon(
+                    imageVector = Icons.Filled.ArrowDropDown,
+                    contentDescription = "Rent",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            // City Text Button
+            TextButton(
+                onClick = { /*TODO*/ },
+                shape = RoundedCornerShape(50),
+                modifier = Modifier
+                    .height(MaterialTheme.dimens.buttonHeight)
+            ) {
+                Text(
+                    text = "City",
+                    fontFamily = interFont,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Icon(
+                    imageVector = Icons.Outlined.ArrowDropDown,
+                    contentDescription = "City",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+        }
+
+
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            item {
-                RoomItemView()
-                RoomItemView()
-                RoomItemView()
-                RoomItemView()
-                RoomItemView()
-                RoomItemView()
-                RoomItemView()
+            items(4) {
                 RoomItemView()
             }
         }
+
+
     }
+
 
 }

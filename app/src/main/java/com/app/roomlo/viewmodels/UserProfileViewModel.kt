@@ -17,7 +17,7 @@ class UserProfileViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    val profilePictureUrl = MutableStateFlow("")
+    private val profilePictureUrl = MutableStateFlow("")
 
     fun uploadProfilePicture(uri: Uri, context: Context) {
         val storageReference =

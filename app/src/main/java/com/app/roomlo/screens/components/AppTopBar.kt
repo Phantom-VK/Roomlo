@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ArrowBack
@@ -85,9 +86,8 @@ fun AppTopBar(
         if (!title.contains("Profile")) {
             Box(
                 modifier = Modifier
-                    .size(MaterialTheme.dimens.logoSize)
                     .clip(CircleShape)
-                    .border(1.dp, MaterialTheme.colorScheme.secondary)
+                    .wrapContentSize()
                     .clickable {
                         onTrailingIconClicked()
                     },

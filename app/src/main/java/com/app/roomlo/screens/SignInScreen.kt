@@ -135,9 +135,7 @@ fun SignInScreen(
                 focusedLabelColor = MaterialTheme.colorScheme.secondary,
                 focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
                 focusedTextColor = MaterialTheme.colorScheme.secondary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                errorLabelColor = MaterialTheme.colorScheme.error,
-
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
                 )
         )
 
