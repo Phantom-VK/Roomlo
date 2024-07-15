@@ -99,6 +99,7 @@ fun RoomItemView() {
         shape = RoundedCornerShape(MaterialTheme.dimens.small2),
         modifier = Modifier
             .fillMaxWidth()
+            .padding(1.dp)
             .wrapContentHeight(),
         border = BorderStroke(1.dp, Color(0xFFC2C2C2))
     ) {

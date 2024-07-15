@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -26,6 +26,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.roomlo.screens.components.AppSearchBar
@@ -40,7 +42,7 @@ fun HomeView(paddingValues: PaddingValues) {
     val viewModel: PropertyViewModel = hiltViewModel()
     Column(
         modifier = Modifier
-            .padding(top = paddingValues.calculateTopPadding())
+            .padding(paddingValues)
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.primary)
     ) {
@@ -53,7 +55,7 @@ fun HomeView(paddingValues: PaddingValues) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = MaterialTheme.dimens.small1, bottom = MaterialTheme.dimens.small2),
+                .padding(top = MaterialTheme.dimens.small1, bottom = MaterialTheme.dimens.small1),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
@@ -117,27 +119,57 @@ fun HomeView(paddingValues: PaddingValues) {
                     fontFamily = interFont,
                     fontWeight = FontWeight.Normal,
                     fontSize = MaterialTheme.typography.labelLarge.fontSize,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.secondary,
+                    textDecoration = TextDecoration.Underline
                 )
                 Icon(
                     imageVector = Icons.Outlined.ArrowDropDown,
                     contentDescription = "City",
-                    tint = MaterialTheme.colorScheme.secondary
-                )
+                    tint = MaterialTheme.colorScheme.secondary,
+
+                    )
             }
+        }
+        Row(
+            modifier = Modifier
+                .padding(MaterialTheme.dimens.small1)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start
+        ) {
+            Text(
+                text = "20 Rooms",
+                fontFamily = interFont,
+                fontWeight = FontWeight.Normal,
+                fontSize = MaterialTheme.typography.labelLarge.fontSize,
+                color = MaterialTheme.colorScheme.secondary,
+            )
+            Icon(
+                imageVector = Icons.Outlined.ArrowDropDown,
+                contentDescription = "Room Count",
+                tint = MaterialTheme.colorScheme.secondary,
+
+                )
         }
 
 
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            items(4) {
+            items(6) {
                 RoomItemView()
             }
         }
 
 
     }
+}
 
 
+
+
+@Preview(showBackground = true)
+@Composable
+fun HomeViewPreview(){
+    HomeView(paddingValues = PaddingValues())
 }
