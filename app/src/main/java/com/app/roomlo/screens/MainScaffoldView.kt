@@ -170,7 +170,7 @@ fun HomeScreen(
                 Screen.HomeView -> HomeView(paddingValues = paddingValues)
                 Screen.WishlistView -> WishlistView(paddingValues)
                 Screen.MapView -> MapScreen(navController = navController)
-                Screen.PropertyView -> PropertyView(paddingValues)
+                Screen.PropertyView -> PropertyView(paddingValues, navController)
                 else -> HomeView(paddingValues = paddingValues)
             }
         }

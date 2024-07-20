@@ -51,5 +51,10 @@ fun Navigation(
                 navController = navController
             )
         }
+
+        composable(Screen.ListPropertyScreen.route){
+            ListPropertyScreen(navController = navController)
+
+        }
     }
 }

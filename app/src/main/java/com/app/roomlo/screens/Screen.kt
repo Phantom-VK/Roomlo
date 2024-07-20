@@ -9,4 +9,5 @@ enum class Screen(val route: String) {
     MapView("map_screen"),
     PropertyView("property_screen"),
     WishlistView("wishlist_screen"),
+    ListPropertyScreen("list_property_screen")
 }

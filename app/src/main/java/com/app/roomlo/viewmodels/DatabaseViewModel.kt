@@ -48,7 +48,7 @@ class DatabaseViewModel @Inject constructor(
             if (success) {
                 Toast.makeText(context, "Successfully uploaded property !", Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(context, "Error saving profile", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Error while uploading property", Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -59,7 +59,7 @@ class DatabaseViewModel @Inject constructor(
             if (success) {
                 Toast.makeText(context, "Property updated!", Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(context, "Error updating profile", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, "Error updating property", Toast.LENGTH_LONG).show()
             }
         }
     }

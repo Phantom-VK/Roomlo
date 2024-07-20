@@ -16,12 +16,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
 import com.app.roomlo.screens.components.RoomItemView
 import com.app.roomlo.ui.theme.dimens
 
 
 @Composable
-fun PropertyView(paddingValues:PaddingValues){
+fun PropertyView(paddingValues:PaddingValues,
+                 navController: NavController){
 
     Column(
         modifier = Modifier
@@ -35,7 +37,9 @@ fun PropertyView(paddingValues:PaddingValues){
             horizontalArrangement = Arrangement.End
         ) {
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    navController.navigate(Screen.ListPropertyScreen.route)
+                },
                 colors = ButtonDefaults.buttonColors(
                     MaterialTheme.colorScheme.onSecondary
                 )) {
