@@ -21,4 +21,6 @@
 #-renamesourcefileattribute SourceFile
 
 # Keep User class and its members
--keep class com.app.roomlo.data.User { *; }
+-keep class com.app.roomlo.dataclasses.User { *; }
+-keep class com.app.roomlo.dataclasses.Property{*;}
+-keep class com.app.roomlo.dataclasses.PropertiesList{*;}

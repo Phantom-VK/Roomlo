@@ -4,16 +4,15 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.roomlo.data.Property
-import com.app.roomlo.data.PropertyRepository
-import com.app.roomlo.data.User
-import com.app.roomlo.data.UserRepository
+import com.app.roomlo.repository.PropertyRepository
+import com.app.roomlo.dataclasses.User
+import com.app.roomlo.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DatabaseViewModel @Inject constructor(
+class UserViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val propertyRepository: PropertyRepository
 ) : ViewModel() {
@@ -42,27 +41,7 @@ class DatabaseViewModel @Inject constructor(
         }
     }
 
-    fun addPropertyToDatabase(property: Property, context: Context, uid: String) {
-        viewModelScope.launch {
-            val success =propertyRepository.addPropertyToDatabase(property, uid)
-            if (success) {
-                Toast.makeText(context, "Successfully uploaded property !", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(context, "Error while uploading property", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
 
-    fun updatePropertyDetails(updatedUser: Property, context: Context) {
-        viewModelScope.launch {
-            val success = propertyRepository.updatePropertyDetails(updatedUser)
-            if (success) {
-                Toast.makeText(context, "Property updated!", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(context, "Error updating property", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
 
 
 }

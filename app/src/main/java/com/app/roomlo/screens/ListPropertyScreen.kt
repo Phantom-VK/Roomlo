@@ -2,7 +2,7 @@ package com.app.roomlo.screens
 
 import android.net.Uri
 import android.util.Log
-import android.widget.Button
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,30 +42,35 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.app.roomlo.R
+import com.app.roomlo.repository.PreferenceHelper
+import com.app.roomlo.dataclasses.Property
 import com.app.roomlo.screens.components.UnderlineTextField
 import com.app.roomlo.ui.theme.baloo
 import com.app.roomlo.ui.theme.dimens
-import com.app.roomlo.viewmodels.AuthState
+import com.app.roomlo.viewmodels.PropertyViewModel
 
 @Composable
-fun ListPropertyScreen(navController: NavController) {
+fun ListPropertyScreen(navController: NavController, preferenceHelper: PreferenceHelper) {
     var propertyName by remember { mutableStateOf("") }
     var propertyAddress by remember { mutableStateOf("") }
     var rent by remember { mutableStateOf("") }
     var size by remember { mutableStateOf("") }
+    var sharingType by remember { mutableStateOf("") }
     var extraDescription by remember { mutableStateOf("") }
     var listOfPhotos by remember { mutableStateOf(listOf<Uri>()) }
+
+    val context = LocalContext.current
+    val propertyVM: PropertyViewModel = hiltViewModel<PropertyViewModel>()
 
     val pickMultipleMedia = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(4)
     ) { uris ->
         listOfPhotos = uris.takeIf { it.isNotEmpty() } ?: listOfPhotos
-        Log.d("PhotoPicker", "Number of items selected: ${uris.size}")
     }
 
     Column(
@@ -75,81 +80,49 @@ fun ListPropertyScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Header(navController)
+        PropertyDetailsForm(
+            propertyName = propertyName,
+            onPropertyNameChange = { propertyName = it },
+            propertyAddress = propertyAddress,
+            onPropertyAddressChange = { propertyAddress = it },
+            rent = rent,
+            onRentChange = { rent = it },
+            sharingType = sharingType,
+            onSharingTypeChange = { sharingType = it },
+            size = size,
+            onSizeChange = { size = it },
+            extraDescription = extraDescription,
+            onExtraDescriptionChange = { extraDescription = it }
+        )
 
-        Column (
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(
-                start = MaterialTheme.dimens.small1,
-                end = MaterialTheme.dimens.small1
-            )
-        ){
-            PropertyDetailField(
-                value = propertyName,
-                onValueChange = { propertyName = it },
-                hint = "Property Name",
-                imageVector = Icons.Filled.Home
-            )
-            PropertyDetailField(
-                value = propertyAddress,
-                onValueChange = { propertyAddress = it },
-                hint = "Address",
-                imageVector = Icons.Filled.LocationOn
-            )
-            PropertyDetailField(
-                value = rent,
-                onValueChange = { rent = it },
-                hint = "Rent",
-                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_currency_rupee_24)
-            )
-            PropertyDetailField(
-                value = size,
-                onValueChange = { size = it },
-                hint = "Size (Sq Ft)",
-                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_crop_square_24)
-            )
-            PropertyDetailField(
-                value = extraDescription,
-                onValueChange = { extraDescription = it },
-                hint = "More Details",
-                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_more_24)
-            )
-        }
-
-
-        Row(modifier = Modifier.wrapContentSize()) {
-            IconButton(onClick = {
-                pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            }) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.baseline_add_a_photo_24),
-                    contentDescription = "Add Photo",
-                    modifier = Modifier.size(MaterialTheme.dimens.logoSize)
-                )
-            }
-        }
-
+        AddPhotoButton(pickMultipleMedia)
         LazyImageGrid(uriList = listOfPhotos)
-        Column (
-            modifier = Modifier.fillMaxSize().padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Bottom
-        ){
-            Button(
-                onClick = {
-                    //TODO
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding( bottom = MaterialTheme.dimens.small3)
-                    .height(MaterialTheme.dimens.logoSize),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
-            ) {
-                Text(text = "Upload Property", color = MaterialTheme.colorScheme.primary)
+
+        UploadButton(
+            onClick = {
+                preferenceHelper.userId?.let { id ->
+                    val property = Property(
+                        owner = preferenceHelper.username,
+                        propertyName = propertyName,
+                        ownerId = id,
+                        address = propertyAddress,
+                        rent = rent,
+                        size = size,
+                        propertyImages = listOfPhotos.map { it.toString() },
+                    )
+                    propertyVM.addPropertyToDatabase(
+                        property,
+                        context = context,
+                        id
+                    )
+                    propertyVM.uploadPropertyImages(property, context)
+
+                }
+
+                navController.navigateUp()
             }
-        }
-
+        )
     }
-
 }
 
 @Composable
@@ -180,6 +153,64 @@ fun Header(navController: NavController) {
 }
 
 @Composable
+fun PropertyDetailsForm(
+    propertyName: String,
+    onPropertyNameChange: (String) -> Unit,
+    propertyAddress: String,
+    onPropertyAddressChange: (String) -> Unit,
+    rent: String,
+    onRentChange: (String) -> Unit,
+    size: String,
+    sharingType: String,
+    onSharingTypeChange: (String) -> Unit,
+    onSizeChange: (String) -> Unit,
+    extraDescription: String,
+    onExtraDescriptionChange: (String) -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(horizontal = MaterialTheme.dimens.small1)
+    ) {
+        PropertyDetailField(
+            value = propertyName,
+            onValueChange = onPropertyNameChange,
+            hint = "Property Name",
+            imageVector = Icons.Filled.Home
+        )
+        PropertyDetailField(
+            value = propertyAddress,
+            onValueChange = onPropertyAddressChange,
+            hint = "Address",
+            imageVector = Icons.Filled.LocationOn
+        )
+        PropertyDetailField(
+            value = rent,
+            onValueChange = onRentChange,
+            hint = "Rent",
+            imageVector = ImageVector.vectorResource(id = R.drawable.baseline_currency_rupee_24)
+        )
+        PropertyDetailField(
+            value = size,
+            onValueChange = onSizeChange,
+            hint = "Size (Sq Ft)",
+            imageVector = ImageVector.vectorResource(id = R.drawable.baseline_crop_square_24)
+        )
+        PropertyDetailField(
+            value = sharingType,
+            onValueChange = onSharingTypeChange,
+            hint = "Sharing type (Double/Triple/Single)",
+            imageVector = ImageVector.vectorResource(id = R.drawable.baseline_crop_square_24)
+        )
+        PropertyDetailField(
+            value = extraDescription,
+            onValueChange = onExtraDescriptionChange,
+            hint = "More Details",
+            imageVector = ImageVector.vectorResource(id = R.drawable.baseline_more_24)
+        )
+    }
+}
+
+@Composable
 fun PropertyDetailField(
     value: String,
     onValueChange: (String) -> Unit,
@@ -193,6 +224,21 @@ fun PropertyDetailField(
         keyboardType = KeyboardType.Text,
         imageVector = imageVector
     )
+}
+
+@Composable
+fun AddPhotoButton(pickMultipleMedia: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>) {
+    Row(modifier = Modifier.wrapContentSize()) {
+        IconButton(onClick = {
+            pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }) {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_add_a_photo_24),
+                contentDescription = "Add Photo",
+                modifier = Modifier.size(MaterialTheme.dimens.logoSize)
+            )
+        }
+    }
 }
 
 @Composable
@@ -219,10 +265,31 @@ fun LazyImageGrid(uriList: List<Uri>) {
     }
 }
 
-
-
-@Preview(showBackground = true)
 @Composable
-fun ListPropertyScreenPreview() {
-    ListPropertyScreen(navController = NavController(LocalContext.current))
+fun UploadButton(onClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        Button(
+            onClick = onClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = MaterialTheme.dimens.small3)
+                .height(MaterialTheme.dimens.logoSize),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
+        ) {
+            Text(text = "Upload Property", color = MaterialTheme.colorScheme.primary)
+        }
+    }
 }
+
+//@Preview(showBackground = true)
+//@Composable
+//fun ListPropertyScreenPreview() {
+//    ListPropertyScreen(navController = NavController(LocalContext.current),
+//        preferenceHelper = PreferenceHelper())
+//}

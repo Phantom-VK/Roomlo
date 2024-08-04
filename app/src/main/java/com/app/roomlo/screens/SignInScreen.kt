@@ -46,7 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.app.roomlo.R
-import com.app.roomlo.data.PreferenceHelper
+import com.app.roomlo.repository.PreferenceHelper
+import com.app.roomlo.navigation.Screen
 import com.app.roomlo.ui.theme.dimens
 import com.app.roomlo.viewmodels.AuthState
 import com.app.roomlo.viewmodels.AuthViewModel

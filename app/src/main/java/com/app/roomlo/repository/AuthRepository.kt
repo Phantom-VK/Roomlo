@@ -1,4 +1,4 @@
-package com.app.roomlo.data
+package com.app.roomlo.repository
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth

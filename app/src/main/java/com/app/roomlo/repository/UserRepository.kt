@@ -1,5 +1,6 @@
-package com.app.roomlo.data
+package com.app.roomlo.repository
 
+import com.app.roomlo.dataclasses.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException

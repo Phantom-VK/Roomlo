@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
-import com.app.roomlo.data.UserRepository
+import com.app.roomlo.repository.UserRepository
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.storage.storage

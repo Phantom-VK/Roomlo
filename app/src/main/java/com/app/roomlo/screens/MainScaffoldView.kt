@@ -38,7 +38,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.app.roomlo.data.PreferenceHelper
+import com.app.roomlo.repository.PreferenceHelper
+import com.app.roomlo.navigation.Screen
 import com.app.roomlo.screens.components.AppBottomBar
 import com.app.roomlo.screens.components.AppTopBar
 import com.app.roomlo.ui.theme.dimens
@@ -66,6 +67,10 @@ fun HomeScreen(
     val userId = preferenceHelper.userId
     if (userId != null) {
         sharedViewModel.fetchUserDetails()
+        if(preferenceHelper.username.isEmpty())
+        sharedViewModel.userDetails.collectAsState().value?.let { user ->
+            preferenceHelper.username = user.name
+        }
     }
 
 
@@ -170,7 +175,7 @@ fun HomeScreen(
                 Screen.HomeView -> HomeView(paddingValues = paddingValues)
                 Screen.WishlistView -> WishlistView(paddingValues)
                 Screen.MapView -> MapScreen(navController = navController)
-                Screen.PropertyView -> PropertyView(paddingValues, navController)
+                Screen.PropertyView -> PropertyView(paddingValues, navController, preferenceHelper)
                 else -> HomeView(paddingValues = paddingValues)
             }
         }

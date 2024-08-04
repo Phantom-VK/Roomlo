@@ -1,4 +1,4 @@
-package com.app.roomlo.screens
+package com.app.roomlo.navigation
 
 enum class Screen(val route: String) {
     SplashScreen("splash_screen"),

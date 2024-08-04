@@ -1,13 +1,12 @@
 package com.app.roomlo.di
 
 import android.content.Context
-import com.app.roomlo.data.AuthRepository
-import com.app.roomlo.data.PreferenceHelper
-import com.app.roomlo.data.Property
-import com.app.roomlo.data.PropertyRepository
-import com.app.roomlo.data.UserRepository
+import com.app.roomlo.repository.AuthRepository
+import com.app.roomlo.repository.PreferenceHelper
+import com.app.roomlo.repository.PropertyRepository
+import com.app.roomlo.repository.UserRepository
 import com.app.roomlo.viewmodels.AuthViewModel
-import com.app.roomlo.viewmodels.DatabaseViewModel
+import com.app.roomlo.viewmodels.UserViewModel
 import com.app.roomlo.viewmodels.PropertyViewModel
 import com.app.roomlo.viewmodels.SharedViewModel
 import com.app.roomlo.viewmodels.UserProfileViewModel
@@ -52,8 +51,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDatabaseVM(userRepository: UserRepository,propertyRepository:PropertyRepository ): DatabaseViewModel {
-        return DatabaseViewModel(userRepository, propertyRepository)
+    fun provideDatabaseVM(userRepository: UserRepository,propertyRepository:PropertyRepository ): UserViewModel {
+        return UserViewModel(userRepository, propertyRepository)
     }
 
     @Provides
@@ -66,7 +65,7 @@ object AppModule {
     @Singleton
     fun provideAuthVM(
         sharedViewModel: SharedViewModel,
-        dbViewModel: DatabaseViewModel,
+        dbViewModel: UserViewModel,
         preferenceHelper: PreferenceHelper,
         authRepository: AuthRepository
     ): AuthViewModel {
@@ -86,7 +85,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRoomVM(): PropertyViewModel {
-        return PropertyViewModel()
+    fun providePropertyVM(propertyRepository: PropertyRepository): PropertyViewModel {
+        return PropertyViewModel(propertyRepository)
     }
 }

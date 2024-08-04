@@ -1,5 +1,6 @@
 package com.app.roomlo.screens
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,8 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -23,6 +24,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -36,21 +38,25 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.roomlo.screens.components.AppSearchBar
-import com.app.roomlo.screens.components.RoomItemView
+import com.app.roomlo.screens.components.PropertyItemView
 import com.app.roomlo.ui.theme.dimens
 import com.app.roomlo.ui.theme.interFont
 import com.app.roomlo.viewmodels.PropertyViewModel
+import com.app.roomlo.viewmodels.SharedViewModel
 
 
 @Composable
 fun HomeView(paddingValues: PaddingValues) {
-    val viewModel: PropertyViewModel = hiltViewModel()
+    val viewModel: SharedViewModel = hiltViewModel()
     val searchQuery by remember {
         mutableStateOf("")
     }
-    val itemCount  = remember {
+    val itemCount = remember {
         mutableIntStateOf(4)
     }
+    viewModel.fetchAllProperties()
+    val propertiesList by viewModel.allProperties.collectAsState()
+    Log.d("HomeView", "HomeView: $propertiesList")
     Column(
         modifier = Modifier
             .padding(paddingValues)
@@ -150,8 +156,10 @@ fun HomeView(paddingValues: PaddingValues) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start
         ) {
-            TextButton(onClick = { /*TODO*/ },
-                modifier = Modifier.height(MaterialTheme.dimens.buttonHeight)) {
+            TextButton(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.height(MaterialTheme.dimens.buttonHeight)
+            ) {
                 Text(
                     text = "20 Rooms",
                     fontFamily = interFont,
@@ -174,8 +182,11 @@ fun HomeView(paddingValues: PaddingValues) {
         LazyColumn(
             modifier = Modifier.fillMaxSize()
         ) {
-            items(6) {
-                RoomItemView()
+
+            propertiesList?.propertyList?.let { properties ->
+                items(properties) { property ->
+                    PropertyItemView(property)
+                }
             }
         }
 
@@ -184,10 +195,8 @@ fun HomeView(paddingValues: PaddingValues) {
 }
 
 
-
-
 @Preview(showBackground = true)
 @Composable
-fun HomeViewPreview(){
+fun HomeViewPreview() {
     HomeView(paddingValues = PaddingValues())
 }

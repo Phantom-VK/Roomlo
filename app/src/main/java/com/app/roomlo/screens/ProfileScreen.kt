@@ -39,12 +39,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.app.roomlo.data.User
+import com.app.roomlo.dataclasses.User
+import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.screens.components.ProfileImage
 import com.app.roomlo.screens.components.UnderlineTextField
 import com.app.roomlo.ui.theme.baloo
 import com.app.roomlo.ui.theme.dimens
-import com.app.roomlo.viewmodels.DatabaseViewModel
+import com.app.roomlo.viewmodels.UserViewModel
 import com.app.roomlo.viewmodels.SharedViewModel
 import com.app.roomlo.viewmodels.UserProfileViewModel
 
@@ -54,11 +55,12 @@ import com.app.roomlo.viewmodels.UserProfileViewModel
 fun ProfileScreen(
 
     navController: NavController,
+    preferenceHelper: PreferenceHelper
 ) {
     val context = LocalContext.current
     val profileViewModel: UserProfileViewModel = hiltViewModel<UserProfileViewModel>()
     val sharedViewModel: SharedViewModel = hiltViewModel<SharedViewModel>()
-    val dbViewModel: DatabaseViewModel = hiltViewModel<DatabaseViewModel>()
+    val dbViewModel: UserViewModel = hiltViewModel<UserViewModel>()
 
 
     val user by sharedViewModel.userDetails.collectAsState()
@@ -192,6 +194,7 @@ fun ProfileScreen(
             Button(
                 onClick = {
 
+                    preferenceHelper.username = name
                     dbViewModel.updateUserDetails(
                         User(
                             name = name.trim(),

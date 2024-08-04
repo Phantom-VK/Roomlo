@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.app.roomlo.screens.Screen
+import com.app.roomlo.navigation.Screen
 import com.app.roomlo.ui.theme.dimens
 import com.app.roomlo.viewmodels.UserProfileViewModel
 

@@ -1,4 +1,4 @@
-package com.app.roomlo.screens
+package com.app.roomlo.navigation
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -6,7 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.app.roomlo.data.PreferenceHelper
+import com.app.roomlo.repository.PreferenceHelper
+import com.app.roomlo.screens.HomeScreen
+import com.app.roomlo.screens.ListPropertyScreen
+import com.app.roomlo.screens.MapScreen
+import com.app.roomlo.screens.ProfileScreen
+import com.app.roomlo.screens.SignInScreen
+import com.app.roomlo.screens.SignUpScreen
+import com.app.roomlo.screens.SplashScreen
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
@@ -30,7 +37,8 @@ fun Navigation(
 
         composable(Screen.ProfileScreen.route) {
             ProfileScreen(
-                navController = navController
+                navController = navController,
+                preferenceHelper = preferenceHelper
             )
         }
 
@@ -53,7 +61,7 @@ fun Navigation(
         }
 
         composable(Screen.ListPropertyScreen.route){
-            ListPropertyScreen(navController = navController)
+            ListPropertyScreen(navController = navController, preferenceHelper)
 
         }
     }

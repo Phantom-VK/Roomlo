@@ -1,4 +1,4 @@
-package com.app.roomlo.data
+package com.app.roomlo.repository
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -11,12 +11,18 @@ class PreferenceHelper(context: Context) {
     companion object {
         private const val PREF_NAME = "app_preferences"
         private const val USER_UID = "userId"
+        private const val USER_NAME = "username"
     }
 
     var userId: String?
         get() = sharedPreferences.getString(USER_UID, null)
         set(value) {
             sharedPreferences.edit().putString(USER_UID, value).apply()
+        }
+    var username:String
+        get() = sharedPreferences.getString(USER_NAME, null).toString()
+        set(value) {
+            sharedPreferences.edit().putString(USER_NAME, value).apply()
         }
 
 }

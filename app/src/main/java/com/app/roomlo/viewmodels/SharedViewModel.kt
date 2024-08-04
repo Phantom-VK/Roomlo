@@ -1,16 +1,18 @@
 package com.app.roomlo.viewmodels
 
-import androidx.lifecycle.MutableLiveData
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.app.roomlo.data.Property
-import com.app.roomlo.data.PropertyRepository
-import com.app.roomlo.data.User
-import com.app.roomlo.data.UserRepository
+import com.app.roomlo.dataclasses.PropertiesList
+import com.app.roomlo.dataclasses.Property
+import com.app.roomlo.repository.PropertyRepository
+import com.app.roomlo.dataclasses.User
+import com.app.roomlo.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,8 +25,11 @@ class SharedViewModel @Inject constructor(
     private val _userDetails = MutableStateFlow<User?>(null)
     val userDetails: StateFlow<User?> = _userDetails
 
-    private val _propertyDetails = MutableStateFlow<Property?>(null)
-    val propertyDetails: StateFlow<Property?> = _propertyDetails
+    private val _userProperties = MutableStateFlow<PropertiesList?>(null)
+    val userProperties: StateFlow<PropertiesList?> = _userProperties
+
+    private val _allProperties = MutableStateFlow<PropertiesList?>(null)
+    val allProperties: StateFlow<PropertiesList?> = _allProperties
 
 
     fun fetchUserDetails() {
@@ -34,17 +39,24 @@ class SharedViewModel @Inject constructor(
         }
     }
 
-    fun fetchUserProperties(){
+    fun fetchUserProperties() {
         viewModelScope.launch {
-            val propertyDetails = propertyRepository.fetchPropertyDetails()
-            _propertyDetails.value = propertyDetails
+            val userProperties = propertyRepository.fetchUserProperties()
+            _userProperties.value = userProperties
         }
     }
 
-    fun fetchAllProperties(){
-        viewModelScope.launch {
+     fun fetchAllProperties() {
+            try {
+                viewModelScope.launch{
+                    val allProperties = propertyRepository.fetchAllProperties()
+                    _allProperties.value = allProperties
+                }
 
-        }
+            } catch (e: Exception) {
+                Log.e("PropertyViewModel", "Error fetching properties", e)
+            }
+
     }
 }
 

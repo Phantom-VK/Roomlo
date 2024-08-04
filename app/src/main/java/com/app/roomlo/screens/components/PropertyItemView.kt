@@ -1,5 +1,6 @@
 package com.app.roomlo.screens.components
 
+import android.net.Uri
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -47,10 +48,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.app.roomlo.R
+import com.app.roomlo.dataclasses.Property
 import com.app.roomlo.ui.theme.dimens
 import com.app.roomlo.ui.theme.interFont
 import kotlinx.coroutines.CoroutineScope
@@ -59,27 +61,27 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 
 @OptIn(ExperimentalFoundationApi::class)
-@Preview(showBackground = true)
 @Composable
-fun RoomItemView() {
-    val imageSlider = listOf(
-        painterResource(id = R.drawable.rooom_img_1),
-        painterResource(id = R.drawable.room_img_2),
-        painterResource(id = R.drawable.room_img_3)
-    )
-    val pagerState = rememberPagerState(pageCount = { imageSlider.size })
+fun PropertyItemView(
+    propertyItem: Property
+) {
+
+    val pagerState = rememberPagerState(pageCount = { propertyItem.propertyImages.size})
     val coroutineScope = rememberCoroutineScope()
     var isHovered by remember { mutableStateOf(false) }
+    val uriList = propertyItem.propertyImages.map {
+        Uri.parse(it)
+    }
 
     LaunchedEffect(isHovered) {
         if (isHovered) {
             while (true) {
                 yield()
-                delay(1500)
+                delay(800)
                 pagerState.animateScrollToPage(
                     page = (pagerState.currentPage + 1) % pagerState.pageCount,
                     animationSpec = tween(
-                        durationMillis = 600, // Adjust the duration for slower animation
+                        durationMillis = 800, // Adjust the duration for slower animation
                         easing = EaseInOut
                     )
                 )
@@ -103,7 +105,7 @@ fun RoomItemView() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            SlidingImages(coroutineScope, pagerState, imageSlider)
+            SlidingImages(coroutineScope, pagerState, uriList)
 
 
             Column(
@@ -128,7 +130,7 @@ fun RoomItemView() {
                     Row {
 
                         Text(
-                            text = "Rs.1200/month",
+                            text = "Rs.${propertyItem.rent}/month",
                             color = MaterialTheme.colorScheme.secondary,
                             textAlign = TextAlign.Justify,
                             fontSize = MaterialTheme.typography.labelSmall.fontSize,
@@ -147,7 +149,7 @@ fun RoomItemView() {
                     }
 
                         Text(
-                            text = "Double sharing",
+                            text = propertyItem.sharingType,
                             color = MaterialTheme.colorScheme.secondary,
                             textAlign = TextAlign.Justify,
                             fontSize = MaterialTheme.typography.labelSmall.fontSize,
@@ -160,7 +162,7 @@ fun RoomItemView() {
                         horizontalArrangement = Arrangement.SpaceBetween
                     ){
                         Text(
-                            text = "200 Sq.ft ",
+                            text = "${propertyItem.size} Sq.ft ",
                             color = MaterialTheme.colorScheme.secondary,
                             textAlign = TextAlign.Justify,
                             fontSize = MaterialTheme.typography.labelSmall.fontSize,
@@ -169,7 +171,7 @@ fun RoomItemView() {
                         )
 
                         Text(
-                            text = "Rs.2400(2people,1room)",
+                            text = "Owner: ${propertyItem.owner}",
                             color = MaterialTheme.colorScheme.secondary,
                             textAlign = TextAlign.Justify,
                             fontSize = MaterialTheme.typography.labelSmall.fontSize,
@@ -241,56 +243,56 @@ fun RoomItemView() {
 private fun SlidingImages(
     coroutineScope: CoroutineScope,
     pagerState: PagerState,
-    imageSlider: List<Painter>
+    imageUris: List<Uri>
 ) {
+    val iconSize: Dp = MaterialTheme.dimens.small3
+    val imageSize: Dp = MaterialTheme.dimens.large + 30.dp
 
-
-        Icon(
-            painter = painterResource(id = R.drawable.baseline_arrow_back_ios_24),
-            contentDescription = "Previous Image",
-            tint = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier
-                .size(MaterialTheme.dimens.small3)
-                .clickable {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(
-                            page = (pagerState.currentPage - 1 + imageSlider.size) % imageSlider.size
-                        )
-                    }
+    Icon(
+        painter = painterResource(id = R.drawable.baseline_arrow_back_ios_24),
+        contentDescription = "Previous Image",
+        tint = MaterialTheme.colorScheme.secondary,
+        modifier = Modifier
+            .size(iconSize)
+            .clickable {
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(
+                        page = (pagerState.currentPage - 1 + imageUris.size) % imageUris.size
+                    )
                 }
-        )
-
-        Box(
-            modifier = Modifier
-                .size(width = MaterialTheme.dimens.large+30.dp, height = MaterialTheme.dimens.large)
-        ) {
-            HorizontalPager(state = pagerState) { page ->
-                Image(
-                    painter = imageSlider[page],
-                    contentDescription = "Room Image",
-                    modifier = Modifier
-                        .size(width = MaterialTheme.dimens.large+30.dp,height = MaterialTheme.dimens.large),
-                    contentScale = ContentScale.Crop
-
-                )
             }
+    )
+
+    Box(
+        modifier = Modifier
+            .size(width = imageSize, height = imageSize)
+    ) {
+        HorizontalPager(state = pagerState) { page ->
+            val painter: Painter = rememberAsyncImagePainter(model = imageUris[page])
+            Image(
+                painter = painter,
+                contentDescription = "Room Image",
+                modifier = Modifier
+                    .size(width = imageSize, height = imageSize),
+                contentScale = ContentScale.Crop
+            )
         }
-
-        Icon(
-            painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
-            contentDescription = "Next Image",
-            tint = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier
-                .size(MaterialTheme.dimens.small3)
-                .clickable {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(
-                            page = (pagerState.currentPage + 1) % imageSlider.size
-                        )
-                    }
-                }
-        )
-
     }
+
+    Icon(
+        painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
+        contentDescription = "Next Image",
+        tint = MaterialTheme.colorScheme.secondary,
+        modifier = Modifier
+            .size(iconSize)
+            .clickable {
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(
+                        page = (pagerState.currentPage + 1) % imageUris.size
+                    )
+                }
+            }
+    )
+}
 
 

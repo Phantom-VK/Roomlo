@@ -39,7 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.app.roomlo.R
-import com.app.roomlo.data.User
+import com.app.roomlo.dataclasses.User
+import com.app.roomlo.navigation.Screen
 import com.app.roomlo.ui.theme.dimens
 import com.app.roomlo.viewmodels.AuthState
 import com.app.roomlo.viewmodels.AuthViewModel

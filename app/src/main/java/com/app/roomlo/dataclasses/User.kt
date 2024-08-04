@@ -1,4 +1,4 @@
-package com.app.roomlo.data
+package com.app.roomlo.dataclasses
 
 data class User(
     val name: String = "",

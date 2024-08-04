@@ -25,7 +25,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.app.roomlo.R
-import com.app.roomlo.screens.Screen
+import com.app.roomlo.navigation.Screen
 import com.app.roomlo.ui.theme.dimens
 
 @Composable

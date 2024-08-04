@@ -3,9 +3,9 @@ package com.app.roomlo.viewmodels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.app.roomlo.data.AuthRepository
-import com.app.roomlo.data.PreferenceHelper
-import com.app.roomlo.data.User
+import com.app.roomlo.repository.AuthRepository
+import com.app.roomlo.repository.PreferenceHelper
+import com.app.roomlo.dataclasses.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val dbViewModel: DatabaseViewModel,
+    private val dbViewModel: UserViewModel,
     private val sharedViewModel: SharedViewModel,
     preferenceHelper: PreferenceHelper,
     private val authRepository: AuthRepository

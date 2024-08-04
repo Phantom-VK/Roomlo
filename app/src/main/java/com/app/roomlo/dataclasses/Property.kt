@@ -1,13 +1,14 @@
-package com.app.roomlo.data
+package com.app.roomlo.dataclasses
 
 data class Property(
     val owner: String = "",
+    val propertyName: String = "",
     val ownerId:String = "",
-    val price: String = "",
+    val rent: String = "",
     val sharingType: String = "",
     val size: String = "",
-    val location:String = "",
+    val address:String = "",
     val createdAt: String = "",
     val updatedAt: String = "",
-    val profileImageUrl: String = ""
+    var propertyImages: List<String> = emptyList()
 )
