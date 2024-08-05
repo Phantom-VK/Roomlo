@@ -51,12 +51,11 @@ fun HomeView(paddingValues: PaddingValues) {
     val searchQuery by remember {
         mutableStateOf("")
     }
-    val itemCount = remember {
-        mutableIntStateOf(4)
-    }
+//    val itemCount = remember {
+//        mutableIntStateOf(4)
+//    }
     viewModel.fetchAllProperties()
     val propertiesList by viewModel.allProperties.collectAsState()
-    Log.d("HomeView", "HomeView: $propertiesList")
     Column(
         modifier = Modifier
             .padding(paddingValues)
@@ -64,7 +63,6 @@ fun HomeView(paddingValues: PaddingValues) {
             .background(MaterialTheme.colorScheme.primary)
     ) {
         AppSearchBar(
-            placeHolder = "Search",
             searchQuery = searchQuery
 
         )

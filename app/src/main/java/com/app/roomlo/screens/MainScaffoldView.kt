@@ -1,7 +1,9 @@
 package com.app.roomlo.screens
 
 import android.app.Activity
+import android.os.Build
 import androidx.activity.compose.BackHandler
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -40,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.navigation.Screen
+import com.app.roomlo.repository.Permission
 import com.app.roomlo.screens.components.AppBottomBar
 import com.app.roomlo.screens.components.AppTopBar
 import com.app.roomlo.ui.theme.dimens
@@ -47,18 +50,22 @@ import com.app.roomlo.viewmodels.AuthState
 import com.app.roomlo.viewmodels.AuthViewModel
 import com.app.roomlo.viewmodels.SharedViewModel
 import kotlinx.coroutines.launch
-
+@RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
 fun HomeScreen(
     navController: NavController,
     preferenceHelper: PreferenceHelper,
    ) {
+    val context = LocalContext.current
 
     val authViewModel: AuthViewModel = hiltViewModel()
     val sharedViewModel: SharedViewModel = hiltViewModel()
+    val permissions = Permission()
 
+    if (!permissions.hasPermissions(context = context)){
+        permissions.PermissionLauncher(context = context)
+    }
 
-    val context = LocalContext.current
     BackHandler {
         // Exit the app when back button is pressed
         (context as? Activity)?.finish()
@@ -68,9 +75,14 @@ fun HomeScreen(
     if (userId != null) {
         sharedViewModel.fetchUserDetails()
         if(preferenceHelper.username.isEmpty())
-        sharedViewModel.userDetails.collectAsState().value?.let { user ->
-            preferenceHelper.username = user.name
-        }
+            sharedViewModel.userDetails.collectAsState().value?.let { user ->
+                preferenceHelper.username = user.name
+            }
+
+        if(preferenceHelper.userId!!.isEmpty())
+            sharedViewModel.userDetails.collectAsState().value?.let { user ->
+                preferenceHelper.userId = user.uid
+            }
     }
 
 

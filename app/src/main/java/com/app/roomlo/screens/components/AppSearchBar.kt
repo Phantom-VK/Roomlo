@@ -33,10 +33,7 @@ fun AppSearchBar(
     modifier : Modifier = Modifier,
     searchQuery : String,
     onTextChange : (String) -> Unit ={},
-    placeHolder : String,
-    onCloseClicked : () -> Unit = {},
-    onQueryChange : (String) -> Unit = {},
-    onMicClicked : () -> Unit= {}
+
 ){
     SearchBar(
         query = searchQuery,

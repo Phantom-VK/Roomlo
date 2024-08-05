@@ -37,7 +37,7 @@ class Permission {
         val requestPermissions =
             rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
                 if (results.all { it.value }) {
-                    Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
+
 
                 } else {
                     Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()

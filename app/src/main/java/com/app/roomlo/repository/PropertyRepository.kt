@@ -14,6 +14,8 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -27,7 +29,6 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
     private val storageRef = Firebase.storage.reference
     private val userId = preferenceHelper.userId?.trim()
 
-    //TODO Add owner name instead of userID in all functions
     suspend fun fetchUserProperties(): PropertiesList? {
         val allProperties = mutableListOf<Property>()
         return try {
@@ -40,12 +41,12 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
                     .await()
 
 
-                if (userPropertiesCollection != null) {
-                    Log.d(
-                        "PropertyRepository",
-                        "UserProperties collection size for user $userId: ${userPropertiesCollection.documents.size}"
-                    )
-                }
+//                if (userPropertiesCollection != null) {
+//                    Log.d(
+//                        "PropertyRepository",
+//                        "UserProperties collection size for user $userId: ${userPropertiesCollection.documents.size}"
+//                    )
+//                }
 
                 if (userPropertiesCollection != null) {
                     for (userProperty in userPropertiesCollection.documents) {
@@ -58,7 +59,7 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
 
             PropertiesList(propertyList = allProperties)
         } catch (e: FirebaseFirestoreException) {
-            Log.e("PropertyRepository", "Failed to fetch user properties", e)
+//            Log.e("PropertyRepository", "Failed to fetch user properties", e)
             PropertiesList(propertyList = emptyList())
         }
     }
@@ -69,22 +70,22 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
         return try {
             // Fetch all documents under the "Properties" collection
             val propertiesCollection = db.collection("Properties").get().await()
-            Log.d("PropertyRepository", "Number of documents: ${propertiesCollection.documents.size}")
+//            Log.d("PropertyRepository", "Number of documents: ${propertiesCollection.documents.size}")
 
             // Check if documents exist
             if (propertiesCollection.documents.isEmpty()) {
-                Log.d("PropertyRepository", "No documents found in the Properties collection.")
+//                Log.d("PropertyRepository", "No documents found in the Properties collection.")
                 return PropertiesList(propertyList = allProperties)
             }
 
             // Iterate over each user document
             for (document in propertiesCollection.documents) {
                 val userId = document.id
-                Log.d("PropertyRepository", "Document ID: $userId")
+//                Log.d("PropertyRepository", "Document ID: $userId")
 
                 // Fetch all documents under the "UserProperties" sub-collection for each user
                 val userPropertiesCollection = document.reference.collection("UserProperties").get().await()
-                Log.d("PropertyRepository", "UserProperties collection size for user $userId: ${userPropertiesCollection.documents.size}")
+//                Log.d("PropertyRepository", "UserProperties collection size for user $userId: ${userPropertiesCollection.documents.size}")
 
                 // Add each property to the allProperties list
                 for (userProperty in userPropertiesCollection.documents) {
@@ -97,7 +98,7 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
             // Return the list of properties
             PropertiesList(propertyList = allProperties)
         } catch (e: FirebaseFirestoreException) {
-            Log.e("PropertyRepository", "Failed to fetch all properties", e)
+//            Log.e("PropertyRepository", "Failed to fetch all properties", e)
             PropertiesList(propertyList = emptyList())
         }
     }
@@ -124,7 +125,7 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
             }
             true
         } catch (e: Exception) {
-            logError("Failed to add property to database", e)
+//            logError("Failed to add property to database", e)
             false
         }
     }
@@ -143,7 +144,7 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
             }
                 true
         } catch (e: Exception) {
-            logError("Failed to update property details", e)
+//            logError("Failed to update property details", e)
             false
         }
     }
@@ -155,53 +156,72 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
             return false
         }
         val propertyName = property.propertyName
-
-        val imageList = mutableListOf<String>()
-        Log.d("imagelist", "before uploading images $uriList")
+//        Log.d("imagelist", "before uploading images $uriList")
 
         return try {
             coroutineScope {
-                uriList.forEachIndexed { index, uriString ->
-                    launch {
-                        val imageRef = storageRef.child("property_photos/$userId/$propertyName/${propertyName}_${index}")
+                uriList.mapIndexed { index, uriString ->
+                    async {
+                        val imageRef = storageRef.child("property_photos/${property.ownerId}/$propertyName/${propertyName}_${index}")
                         val uri = Uri.parse(uriString)
-                        imageRef.putFile(uri).await() // Await the upload
-                        val downloadUrl = imageRef.downloadUrl.await() // Await the URL retrieval
-                        imageList.add(downloadUrl.toString())
+                        imageRef.putFile(uri)
+
                     }
                 }
-            }
 
-            Log.d("IMAGELIST", "uploadPropertyPictures: $imageList")
-            updatePropertyImages(property, imageList, context)
+            }
+                downloadUrls(property)
+                true
         } catch (e: Exception) {
             Toast.makeText(context, "Upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
             false
         }
     }
 
-    private suspend fun updatePropertyImages(property: Property, imageList: List<String>, context: Context): Boolean {
+    private suspend fun downloadUrls(property: Property) {
+        val imageList = mutableListOf<String>()
+        try {
+            coroutineScope {
+                val listResult = storageRef.child("property_photos/${property.ownerId}/${property.propertyName}").listAll().await()
+                val downloadUrlJobs = listResult.items.map { imageRef ->
+                    async {
+                        val downloadUrl = imageRef.downloadUrl.await()
+                        downloadUrl.toString()
+                    }
+                }
+                imageList.addAll(downloadUrlJobs.awaitAll())
+            }
+            updatePropertyImages(property, imageList)
+        } catch (e: Exception) {
+//            Log.e("downloadUrls", "Error downloading URLs: ${e.localizedMessage}", e)
+        }
+    }
+
+
+
+
+    private suspend fun updatePropertyImages(property: Property, imageList: List<String>): Boolean {
         val db = Firebase.firestore
-        var propertyRef: DocumentReference? = null
-        userId?.let {
-             propertyRef = db.collection("Properties")
-                .document(it)
+        val userId = preferenceHelper.userId
+
+        return if (userId != null) {
+            val propertyRef = db.collection("Properties")
+                .document(userId)
                 .collection("UserProperties")
                 .document(property.propertyName)
-        }
 
-            return try {
-                propertyRef?.update("propertyImages", imageList)?.await() // Await the update
+            try {
+                propertyRef.update("propertyImages", imageList).await() // Await the update
                 true
             } catch (e: Exception) {
-                Log.e(
-                    "PropertyRepository",
-                    "Failed to update property images: ${e.localizedMessage}",
-                    e
-                )
+//                Log.e("PropertyRepository", "Failed to update property images: ${e.localizedMessage}", e)
                 false
             }
+        } else {
+            false
         }
+    }
+
 
 
     private fun Property.toMap(): Map<String, Any?> {
@@ -219,7 +239,7 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
         )
     }
 
-    private fun logError(message: String, exception: Exception) {
-        Log.e("PropertyRepository", "$message: ${exception.localizedMessage}", exception)
-    }
+//    private fun logError(message: String, exception: Exception) {
+////        Log.e("PropertyRepository", "$message: ${exception.localizedMessage}", exception)
+//    }
 }

@@ -69,6 +69,10 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-appcheck-playintegrity:18.0.0")
+    implementation("com.google.firebase:firebase-appcheck-safetynet:16.1.2")
+    implementation("com.google.firebase:firebase-appcheck-debug")
+
+
 
     // coil-compose
     implementation("io.coil-kt:coil-compose:2.6.0")
