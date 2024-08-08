@@ -10,12 +10,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.navigation.Navigation
+import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.ui.theme.RoomLoTheme
 import com.google.firebase.FirebaseApp
-import com.google.firebase.appcheck.FirebaseAppCheck
-import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -28,17 +26,9 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
 
-        try {
-            FirebaseApp.initializeApp(this)
-            val firebaseAppCheck = FirebaseAppCheck.getInstance()
-            firebaseAppCheck.installAppCheckProviderFactory(
-                PlayIntegrityAppCheckProviderFactory.getInstance()
-            )
-        } catch (e: Exception) {
-            // Handle initialization error
-            e.printStackTrace()
-        }
+
 
         setContent {
             RoomLoTheme {
