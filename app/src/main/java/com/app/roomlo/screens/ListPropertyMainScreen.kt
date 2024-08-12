@@ -16,16 +16,20 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,24 +37,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.app.roomlo.navigation.Screen
 import com.app.roomlo.screens.components.AppSearchBar
 import com.app.roomlo.ui.theme.dimens
 import com.app.roomlo.ui.theme.interFont
 
 @Composable
-fun ListPropertyScaffoldView(
+fun ListPropertyScaffoldScreen(
     navController: NavController
 
-    ){
+) {
 
-    var city by remember { mutableStateOf("") }
-    var locality by remember { mutableStateOf("") }
-    var landstreet by remember { mutableStateOf("") }
-    var currentScreen by remember { mutableStateOf("") }
 
-    Scaffold (){
-        paddingValues->
+    var progress by remember { mutableFloatStateOf(0.33f) }
+    var currentScreen by rememberSaveable { mutableStateOf(Screen.ListPropertyDetailsView) }
+
+
+    Scaffold() { paddingValues ->
 
         Column(
             modifier = Modifier
@@ -90,25 +95,83 @@ fun ListPropertyScaffoldView(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text(text = "Add $currentScreen",
-                    fontSize = MaterialTheme.typography.headlineSmall.fontSize,)
+                Text(
+                    text = "Add ${currentScreen.route}",
+                    fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                    color = MaterialTheme.colorScheme.secondary
+                )
             }
-//            First three text fields
-            AddressScreen(city, locality, landstreet)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                TextButton(onClick = {
+
+                    currentScreen = Screen.ListPropertyAddressView
+                    if (progress > 0.3) {
+                        progress = 0.33f
+                    }
+
+                }) {
+                    Text(
+                        text = "Address",
+                        fontFamily = interFont,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+                TextButton(onClick = {
+                    currentScreen = Screen.ListPropertyDetailsView
+                    if (progress != 0.66f){
+                            progress = 0.66f
+                        }
+
+                }) {
+                    Text(
+                        text = "Details",
+                        fontFamily = interFont,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+                TextButton(onClick = {
+
+                    currentScreen = Screen.ListPropertyImagesView
+                    if (progress != 1f){
+                        progress = 1f
+                    }
+                }) {
+                    Text(
+                        text = "Images",
+                        fontFamily = interFont,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
+            LinearProgressIndicator(
+                progress = { progress },
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.onSecondary
+            )
+
+            when(currentScreen){
+                Screen.ListPropertyAddressView -> AddressScreen()
+                Screen.ListPropertyDetailsView -> PropertyDetailsFormScreen()
+                Screen.ListPropertyImagesView -> PropertyImagesUploadView()
+                else -> AddressScreen()
+            }
+
         }
     }
 }
 
 
-
-
 @Composable
-private fun AddressScreen(city: String, locality: String, landstreet: String) {
-    var city1 = city
-    var locality1 = locality
-    var landstreet1 = landstreet
+fun AddressScreen() {
+    var city by remember { mutableStateOf("") }
+    var locality by remember { mutableStateOf("") }
+    var landstreet by remember { mutableStateOf("") }
 
-    var searchquery by remember { mutableStateOf("") }
+    val searchquery by remember { mutableStateOf("") }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -117,62 +180,69 @@ private fun AddressScreen(city: String, locality: String, landstreet: String) {
         horizontalArrangement = Arrangement.Center
     ) {
 
-        Column (){
+        Column {
             AddressTextField(
-                value = city1,
+                value = city,
                 placeholder = "City",
                 onValueChange = {
-                    city1 = it
+                    city = it
                 })
             AddressTextField(
-                value = locality1,
+                value = locality,
                 placeholder = "Locality",
-                onValueChange = { locality1 = it })
+                onValueChange = { locality = it })
             AddressTextField(
-                value = landstreet1,
+                value = landstreet,
                 placeholder = "Landmark/Street",
-                onValueChange = { landstreet1 = it })
-            Spacer(modifier = Modifier.height(MaterialTheme.dimens.buttonHeight+20.dp))
+                onValueChange = { landstreet = it })
+            Spacer(modifier = Modifier.height(MaterialTheme.dimens.buttonHeight + 15.dp))
             HorizontalDivider(thickness = 3.dp)
-
 
 
         }
 
 
-
-
     }
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(MaterialTheme.dimens.small1),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
-    ){
-        Icon(imageVector = Icons.Filled.LocationOn,
+    ) {
+        Icon(
+            imageVector = Icons.Filled.LocationOn,
             contentDescription = "Location",
-            tint = MaterialTheme.colorScheme.onSecondary)
-        Text(text = "Mark your Property on Map",
+            tint = MaterialTheme.colorScheme.onSecondary
+        )
+        Text(
+            text = "Mark your Property on Map",
             fontFamily = interFont,
             fontSize = MaterialTheme.typography.titleMedium.fontSize,
-            fontWeight = FontWeight.Medium)
+            fontWeight = FontWeight.Medium,
+            color = MaterialTheme.colorScheme.secondary
+        )
 
     }
-    Text(text = "Set property location by using search box and move the map",
+    Text(
+        text = "Set property location by using search box and move the map",
         fontFamily = interFont,
         fontSize = MaterialTheme.typography.labelSmall.fontSize,
-        fontWeight = FontWeight.Light)
+        fontWeight = FontWeight.Light,
+        color = MaterialTheme.colorScheme.secondary
+    )
     Spacer(modifier = Modifier.height(MaterialTheme.dimens.small2))
     AppSearchBar(searchQuery = searchquery)
 
 
 //TODO Empty space for map
-    Column (
-        modifier = Modifier.fillMaxSize().padding(MaterialTheme.dimens.small1),
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(MaterialTheme.dimens.small1),
         verticalArrangement = Arrangement.Bottom,
         horizontalAlignment = Alignment.CenterHorizontally
-    ){
+    ) {
         Button(
             onClick = { /* TODO: Implement change password functionality */ },
             modifier = Modifier
@@ -186,17 +256,47 @@ private fun AddressScreen(city: String, locality: String, landstreet: String) {
 }
 
 
+//TODO create details screen
 @Composable
-fun AddressTextField(value:String,placeholder:String ,onValueChange:(String)->Unit){
+fun PropertyDetailsFormScreen(){
+    Text(text = "Property Details Here!")
+    Row (
+        modifier = Modifier.fillMaxWidth().padding(MaterialTheme.dimens.small2),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        Text(text = "House Type:")
+
+
+        Button(onClick = { /*TODO*/ },
+            shape = ButtonDefaults.outlinedShape) {
+            Text(text = "Independent House", fontSize = MaterialTheme.typography.labelSmall.fontSize)
+        }
+        Button(onClick = { /*TODO*/ }) {
+            Text(text = "Apartment/Flat",fontSize = MaterialTheme.typography.labelSmall.fontSize)
+        }
+    }
+
+
+
+}
+
+@Composable
+fun PropertyImagesUploadView(){
+    Text(text = "Property Images Here!")
+}
+
+@Composable
+fun AddressTextField(value: String, placeholder: String, onValueChange: (String) -> Unit) {
 
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(MaterialTheme.dimens.small1 - 7.dp),
-        value = value ,
-        label ={Text(text = placeholder)} ,
-        onValueChange =onValueChange,
-        placeholder = {Text(text = placeholder)},
+        value = value,
+        label = { Text(text = placeholder) },
+        onValueChange = onValueChange,
+        placeholder = { Text(text = placeholder) },
         shape = OutlinedTextFieldDefaults.shape,
         colors = TextFieldDefaults.colors(
             focusedContainerColor = MaterialTheme.colorScheme.primary,
@@ -211,16 +311,16 @@ fun AddressTextField(value:String,placeholder:String ,onValueChange:(String)->Un
             cursorColor = MaterialTheme.colorScheme.secondary
         )
 
-        )
+    )
 }
-
-
 
 
 @Preview(showBackground = true)
 @Composable
-fun ListPropertyScaffoldViewPreview(){
-    ListPropertyScaffoldView(navController = NavController(LocalContext.current))
+fun ListPropertyScaffoldViewPreview() {
+    ListPropertyScaffoldScreen(navController = NavController(LocalContext.current))
 }
+
+
 
 
