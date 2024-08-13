@@ -4,10 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
@@ -23,6 +26,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -259,23 +263,144 @@ fun AddressScreen() {
 //TODO create details screen
 @Composable
 fun PropertyDetailsFormScreen(){
-    Text(text = "Property Details Here!")
     Row (
-        modifier = Modifier.fillMaxWidth().padding(MaterialTheme.dimens.small2),
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(MaterialTheme.dimens.small1 - 7.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ){
-        Text(text = "House Type:")
+        Row (Modifier.weight(1f)){
+            Column(
+
+                verticalArrangement = Arrangement.Center
+            ){
+                Text(text = "Price:")
+            }
+            Spacer(modifier = Modifier.weight(0.02f))
+            Column{
+                TextField(value = "Floor no.", onValueChange = {})
+
+            }
+        }
+        Row (Modifier.weight(1f)){
+
+            Text(text = "Price:")
+
+            Spacer(modifier = Modifier.weight(0.02f))
+            Column{
+                TextField(value = "Floor no.", onValueChange = {})
+
+            }
+        }
 
 
-        Button(onClick = { /*TODO*/ },
-            shape = ButtonDefaults.outlinedShape) {
-            Text(text = "Independent House", fontSize = MaterialTheme.typography.labelSmall.fontSize)
-        }
-        Button(onClick = { /*TODO*/ }) {
-            Text(text = "Apartment/Flat",fontSize = MaterialTheme.typography.labelSmall.fontSize)
-        }
     }
+    HorizontalDivider(thickness = 1.dp)
+    Row (
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(MaterialTheme.dimens.small1 - 7.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        Column(
+            modifier = Modifier.weight(0.75f),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(text = "House Type:")
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            OutlinedRoundedButton(text = "Independent House", onClick = { TODO() })
+        }
+        Spacer(modifier = Modifier.weight(0.02f))
+        Column (modifier = Modifier.weight(1f)){
+            OutlinedRoundedButton(text = "Apartment/FLat", onClick = { TODO() })
+        }
+
+    }
+    HorizontalDivider(thickness = 1.dp)
+    Row (
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(MaterialTheme.dimens.small1 - 7.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        Column(
+            modifier = Modifier.weight(0.75f),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(text = "Sharing Type:")
+        }
+
+
+
+        Column (modifier = Modifier.weight(1f)){
+            OutlinedRoundedButton(text = "Single Sharing", onClick = { TODO() })
+            OutlinedRoundedButton(text = "Tripple Sharing", onClick = { TODO() })
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            OutlinedRoundedButton(text = "Double Sharing", onClick = { TODO() })
+        }
+
+    }
+    HorizontalDivider(thickness = 1.dp)
+    Row (
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(MaterialTheme.dimens.small1 - 7.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        Column(
+            modifier = Modifier.weight(0.75f),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(text = "For:")
+        }
+
+        Column (modifier = Modifier.weight(1f)){
+            OutlinedRoundedButton(text = "Boys Only", onClick = { TODO() })
+            OutlinedRoundedButton(text = "Girls Only", onClick = { TODO() })
+        }
+        Column (modifier = Modifier.weight(1f)){
+            OutlinedRoundedButton(text = "Both Boys & Girls", onClick = { TODO() })
+            OutlinedRoundedButton(text = "Family only", onClick = { TODO() })
+        }
+
+    }
+    HorizontalDivider(thickness = 1.dp)
+
+    Row (
+        modifier = Modifier
+            .wrapContentSize()
+            .padding(MaterialTheme.dimens.small1 - 7.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        Column(
+            modifier = Modifier.weight(0.75f),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(text = "Floor:")
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            OutlinedRoundedButton(text = "Ground Floor", onClick = { TODO() })
+        }
+        Spacer(modifier = Modifier.weight(0.02f))
+        Column (modifier = Modifier.weight(1f)){
+            TextField(value = "Floor no.", onValueChange = {})
+
+        }
+
+    }
+    HorizontalDivider(thickness = 1.dp)
+
 
 
 
@@ -312,6 +437,30 @@ fun AddressTextField(value: String, placeholder: String, onValueChange: (String)
         )
 
     )
+}
+
+@Composable
+fun OutlinedRoundedButton(
+    text: String,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(MaterialTheme.dimens.small1), // Set corner radius
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.background // Button background color
+        ),
+        border = ButtonDefaults.outlinedButtonBorder.copy( // Add outline with secondary color
+            width = 1.dp,
+        ),
+        modifier = Modifier.wrapContentSize()
+    ) {
+        Text(
+            text = text,
+            color = MaterialTheme.colorScheme.secondary, // Text color
+            fontSize = 10.sp, // Text size
+        )
+    }
 }
 
 
