@@ -6,7 +6,6 @@ import android.widget.Toast
 import com.app.roomlo.dataclasses.PropertiesList
 import com.app.roomlo.dataclasses.Property
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
@@ -20,64 +19,57 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PropertyRepository @Inject constructor(private val preferenceHelper: PreferenceHelper) {
+class PropertyRepository @Inject constructor(
+    private val preferenceHelper: PreferenceHelper
+) {
 
     private val db: FirebaseFirestore = Firebase.firestore
     private val storageRef = Firebase.storage.reference
-    private val userId = preferenceHelper.userId?.trim()
+    private val userId: String? = preferenceHelper.userId?.trim()
 
-    suspend fun fetchUserProperties(): PropertiesList? {
-        val allProperties = mutableListOf<Property>()
+    suspend fun fetchUserProperties(): PropertiesList {
         return try {
-            userId?.let {
-                val userPropertiesCollection = db.collection("Properties")
-                    .document(it)
+            val allProperties = userId?.let { userId ->
+                db.collection("Properties")
+                    .document(userId)
                     .collection("UserProperties")
                     .get()
                     .await()
+                    .documents
+                    .mapNotNull { it.toObject<Property>() }
+            } ?: emptyList()
 
-                userPropertiesCollection?.let { collection ->
-                    for (userProperty in collection.documents) {
-                        userProperty.toObject<Property>()?.let { property ->
-                            allProperties.add(property)
-                        }
-                    }
-                }
-            }
             PropertiesList(propertyList = allProperties)
-        } catch (e: FirebaseFirestoreException) {
+        } catch (e: Exception) {
             PropertiesList(propertyList = emptyList())
         }
     }
 
-    suspend fun fetchAllProperties(): PropertiesList? {
-        val allProperties = mutableListOf<Property>()
+    suspend fun fetchAllProperties(): PropertiesList {
         return try {
-            val propertiesCollection = db.collection("Properties").get().await()
-            if (propertiesCollection.documents.isEmpty()) {
-                return PropertiesList(propertyList = allProperties)
-            }
-
-            for (document in propertiesCollection.documents) {
-                val userId = document.id
-                val userPropertiesCollection = document.reference.collection("UserProperties").get().await()
-                for (userProperty in userPropertiesCollection.documents) {
-                    userProperty.toObject<Property>()?.let { property ->
-                        allProperties.add(property)
-                    }
+            val allProperties = db.collection("Properties")
+                .get()
+                .await()
+                .documents
+                .flatMap { document ->
+                    document.reference
+                        .collection("UserProperties")
+                        .get()
+                        .await()
+                        .documents
+                        .mapNotNull { it.toObject<Property>() }
                 }
-            }
+
             PropertiesList(propertyList = allProperties)
-        } catch (e: FirebaseFirestoreException) {
+        } catch (e: Exception) {
             PropertiesList(propertyList = emptyList())
         }
     }
 
     suspend fun addPropertyToDatabase(property: Property): Boolean {
         return try {
-            val propertyMap = property.toMap().filterValues { it != null }
-            val userId = preferenceHelper.userId
-            if (userId != null) {
+            val propertyMap = property.toMap()
+            userId?.let { userId ->
                 db.collection("Properties")
                     .document(userId)
                     .collection("UserProperties")
@@ -98,12 +90,12 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
 
     suspend fun updatePropertyDetails(updatedProperty: Property): Boolean {
         return try {
-            val propertyMap = updatedProperty.toMap().filterValues { it != null }
-            if (userId != null) {
-                db.collection("Properties").document(userId)
+            userId?.let { userId ->
+                db.collection("Properties")
+                    .document(userId)
                     .collection("UserProperties")
                     .document(updatedProperty.propertyName)
-                    .update(propertyMap)
+                    .update(updatedProperty.toMap())
                     .await()
             }
             true
@@ -113,27 +105,20 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
     }
 
     suspend fun uploadPropertyPictures(property: Property, context: Context): Boolean {
-        val uriList = property.propertyImages
-        if (uriList.isEmpty()) {
-            return false
-        }
-        val propertyName = property.propertyName
+        if (property.propertyImages.isEmpty()) return false
 
         return try {
-            val imageList = mutableListOf<String>()
-            coroutineScope {
-                uriList.mapIndexed { index, uriString ->
+            val imageList = coroutineScope {
+                property.propertyImages.mapIndexed { index, uriString ->
                     async {
-                        val imageRef = storageRef.child("property_photos/${property.ownerId}/$propertyName/${propertyName}_${index}")
+                        val imageRef = storageRef.child("property_photos/${property.ownerId}/${property.propertyName}/${property.propertyName}_$index")
                         val uri = Uri.parse(uriString)
                         imageRef.putFile(uri).await()
-                        val downloadUrl = imageRef.downloadUrl.await()
-                        imageList.add(downloadUrl.toString())
+                        imageRef.downloadUrl.await().toString()
                     }
                 }.awaitAll()
             }
             updatePropertyImages(property, imageList)
-            true
         } catch (e: Exception) {
             Toast.makeText(context, "Upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
             false
@@ -141,22 +126,19 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
     }
 
     private suspend fun updatePropertyImages(property: Property, imageList: List<String>): Boolean {
-        val userId = preferenceHelper.userId
-        return if (userId != null) {
-            val propertyRef = db.collection("Properties")
-                .document(userId)
-                .collection("UserProperties")
-                .document(property.propertyName)
-
+        return userId?.let { userId ->
             try {
-                propertyRef.update("propertyImages", imageList).await()
+                db.collection("Properties")
+                    .document(userId)
+                    .collection("UserProperties")
+                    .document(property.propertyName)
+                    .update("propertyImages", imageList)
+                    .await()
                 true
             } catch (e: Exception) {
                 false
             }
-        } else {
-            false
-        }
+        } ?: false
     }
 
     private fun Property.toMap(): Map<String, Any?> {
@@ -171,6 +153,6 @@ class PropertyRepository @Inject constructor(private val preferenceHelper: Prefe
             "propertyImages" to propertyImages,
             "ownerId" to ownerId,
             "address" to address
-        )
+        ).filterValues { it != null }
     }
 }

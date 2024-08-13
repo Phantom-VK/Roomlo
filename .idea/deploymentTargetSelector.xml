@@ -13,9 +13,6 @@
         </DropdownSelection>
         <DialogSelection />
       </SelectionState>
-      <SelectionState runConfigName="ListPropertyScreenPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="ListPropertyScaffoldView">
         <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2024-08-08T05:52:37.045302527Z">
@@ -26,6 +23,9 @@
           </Target>
         </DropdownSelection>
         <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="ListPropertyScaffoldViewPreview (1)">
+        <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="ListPropertyScaffoldViewPreview">
         <option name="selectionMode" value="DROPDOWN" />

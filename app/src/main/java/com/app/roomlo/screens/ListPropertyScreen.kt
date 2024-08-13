@@ -1,39 +1,20 @@
 package com.app.roomlo.screens
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -47,8 +28,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.app.roomlo.R
-import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.dataclasses.Property
+import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.screens.components.UnderlineTextField
 import com.app.roomlo.ui.theme.baloo
 import com.app.roomlo.ui.theme.dimens
@@ -65,7 +46,7 @@ fun ListPropertyScreen(navController: NavController, preferenceHelper: Preferenc
     var listOfPhotos by remember { mutableStateOf(listOf<Uri>()) }
 
     val context = LocalContext.current
-    val propertyVM: PropertyViewModel = hiltViewModel<PropertyViewModel>()
+    val propertyVM: PropertyViewModel = hiltViewModel()
 
     val pickMultipleMedia = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(4)
@@ -87,10 +68,10 @@ fun ListPropertyScreen(navController: NavController, preferenceHelper: Preferenc
             onPropertyAddressChange = { propertyAddress = it },
             rent = rent,
             onRentChange = { rent = it },
-            sharingType = sharingType,
-            onSharingTypeChange = { sharingType = it },
             size = size,
             onSizeChange = { size = it },
+            sharingType = sharingType,
+            onSharingTypeChange = { sharingType = it },
             extraDescription = extraDescription,
             onExtraDescriptionChange = { extraDescription = it }
         )
@@ -100,26 +81,17 @@ fun ListPropertyScreen(navController: NavController, preferenceHelper: Preferenc
 
         UploadButton(
             onClick = {
-                preferenceHelper.userId?.let { id ->
-                    val property = Property(
-                        owner = preferenceHelper.username,
-                        propertyName = propertyName,
-                        ownerId = id,
-                        address = propertyAddress,
-                        rent = rent,
-                        size = size,
-                        propertyImages = listOfPhotos.map { it.toString() },
-                    )
-                    propertyVM.addPropertyToDatabase(
-                        property,
-                        context = context,
-                        id
-                    )
-                    propertyVM.uploadPropertyImages(property, context)
-
-                }
-
-                navController.navigateUp()
+                uploadProperty(
+                    propertyVM = propertyVM,
+                    preferenceHelper = preferenceHelper,
+                    propertyName = propertyName,
+                    propertyAddress = propertyAddress,
+                    rent = rent,
+                    size = size,
+                    listOfPhotos = listOfPhotos,
+                    context = context,
+                    navController = navController
+                )
             }
         )
     }
@@ -161,9 +133,9 @@ fun PropertyDetailsForm(
     rent: String,
     onRentChange: (String) -> Unit,
     size: String,
+    onSizeChange: (String) -> Unit,
     sharingType: String,
     onSharingTypeChange: (String) -> Unit,
-    onSizeChange: (String) -> Unit,
     extraDescription: String,
     onExtraDescriptionChange: (String) -> Unit
 ) {
@@ -287,9 +259,29 @@ fun UploadButton(onClick: () -> Unit) {
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun ListPropertyScreenPreview() {
-//    ListPropertyScreen(navController = NavController(LocalContext.current),
-//        preferenceHelper = PreferenceHelper())
-//}
+private fun uploadProperty(
+    propertyVM: PropertyViewModel,
+    preferenceHelper: PreferenceHelper,
+    propertyName: String,
+    propertyAddress: String,
+    rent: String,
+    size: String,
+    listOfPhotos: List<Uri>,
+    context: android.content.Context,
+    navController: NavController
+) {
+    preferenceHelper.userId?.let { id ->
+        val property = Property(
+            owner = preferenceHelper.username,
+            propertyName = propertyName,
+            ownerId = id,
+            address = propertyAddress,
+            rent = rent,
+            size = size,
+            propertyImages = listOfPhotos.map { it.toString() },
+        )
+        propertyVM.addPropertyToDatabase(property, context)
+        propertyVM.uploadPropertyImages(property, context)
+    }
+    navController.navigateUp()
+}

@@ -13,47 +13,45 @@ import javax.inject.Inject
 @HiltViewModel
 class PropertyViewModel @Inject constructor(
     private val propertyRepository: PropertyRepository
-
 ) : ViewModel() {
 
-    fun addPropertyToDatabase(property: Property, context: Context, uid: String) {
+    fun addPropertyToDatabase(property: Property, context: Context) {
+        executeDatabaseOperation(
+            context = context,
+            operation = { propertyRepository.addPropertyToDatabase(property) },
+            successMessage = "Successfully uploaded property!",
+            errorMessage = "Error while uploading property"
+        )
+    }
+
+    fun updatePropertyDetails(updatedProperty: Property, context: Context) {
+        executeDatabaseOperation(
+            context = context,
+            operation = { propertyRepository.updatePropertyDetails(updatedProperty) },
+            successMessage = "Property updated!",
+            errorMessage = "Error updating property"
+        )
+    }
+
+    fun uploadPropertyImages(property: Property, context: Context) {
+        executeDatabaseOperation(
+            context = context,
+            operation = { propertyRepository.uploadPropertyPictures(property, context) },
+            successMessage = "Property images uploaded!",
+            errorMessage = "Error uploading property images"
+        )
+    }
+
+    private fun executeDatabaseOperation(
+        context: Context,
+        operation: suspend () -> Boolean,
+        successMessage: String,
+        errorMessage: String
+    ) {
         viewModelScope.launch {
-            val success =propertyRepository.addPropertyToDatabase(property)
-            if (success) {
-                Toast.makeText(context, "Successfully uploaded property !", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(context, "Error while uploading property", Toast.LENGTH_LONG).show()
-            }
+            val success = operation()
+            val message = if (success) successMessage else errorMessage
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         }
     }
-
-    fun updatePropertyDetails(updatedUser: Property, context: Context) {
-        viewModelScope.launch {
-            val success = propertyRepository.updatePropertyDetails(updatedUser)
-            if (success) {
-                Toast.makeText(context, "Property updated!", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(context, "Error updating property", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    fun uploadPropertyImages(property: Property,
-                             context: Context){
-
-            viewModelScope.launch {
-                val success = propertyRepository.uploadPropertyPictures(property, context)
-                if (success) {
-                    Toast.makeText(context, "Property updated!", Toast.LENGTH_LONG).show()
-                } else {
-                    Toast.makeText(context, "Error updating property", Toast.LENGTH_LONG).show()
-                }
-            }
-
-
-    }
-
-
-
-
 }
