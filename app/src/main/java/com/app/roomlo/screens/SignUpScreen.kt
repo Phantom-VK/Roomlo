@@ -62,11 +62,11 @@ fun SignUpScreen(
     val passwordVisible = remember {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
 
 
 
     val authState by authViewModel.authState.collectAsState()
-    val context = LocalContext.current
 
 
     LaunchedEffect(authState) {

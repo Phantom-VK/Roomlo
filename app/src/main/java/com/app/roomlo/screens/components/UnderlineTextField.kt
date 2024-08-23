@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -62,4 +64,16 @@ fun UnderlineTextField(
             cursorColor = MaterialTheme.colorScheme.secondary
         )
     )
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun UnderlineTextFieldPreview() {
+    UnderlineTextField(
+        value = "",
+        onValueChange = {},
+        hint = "Hint",
+        imageVector = Icons.Filled.AccountBox,
+        keyboardType = KeyboardType.Text)
 }

@@ -72,9 +72,10 @@ fun SignInScreen(
     val passwordVisible = remember {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
 
     val authState by authViewModel.authState.collectAsState()
-    val context = LocalContext.current
+
 
     val userId = preferenceHelper.userId
     if (userId != null) {
