@@ -1,6 +1,6 @@
 package com.app.roomlo.navigation
 
-enum class Screen(val route: String) {
+enum class Screen(var route: String) {
     SplashScreen("splash_screen"),
     HomeView("home_screen"),
     ProfileScreen("profile_screen"),
@@ -14,4 +14,5 @@ enum class Screen(val route: String) {
     ListPropertyScaffoldScreen("list_property_scaffold_screen"),
     ListPropertyDetailsView("Property Details"),
     ListPropertyImagesView("Property Images"),
+    ListPropertyCurrentScreen(ListPropertyAddressView.route)
 }

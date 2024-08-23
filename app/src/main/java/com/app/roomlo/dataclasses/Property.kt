@@ -1,28 +1,28 @@
 package com.app.roomlo.dataclasses
 
-data class Property(
-    val owner: String = "",
-    val propertyName: String = "",
-    val ownerId:String = "",
-    val rent: String = "",
-    val sharingType: String = "",
-    val size: String = "",
-    val address:String = "",
-    val createdAt: String = "",
-    val updatedAt: String = "",
-    var propertyImages: List<String> = emptyList()
-)
+//data class Property(
+//    val owner: String = "",
+//    val propertyName: String = "",
+//    val ownerId:String = "",
+//    val rent: String = "",
+//    val sharingType: String = "",
+//    val size: String = "",
+//    val address:String = "",
+//    val createdAt: String = "",
+//    val updatedAt: String = "",
+//    var propertyImages: List<String> = emptyList()
+//)
 
-data class Temp(
+data class Property(
     val owner: String = "",
     val propertyName: String = "",
     val ownerId:String = "",
     val ownerMobNo:String = "",
     val ownerEmail:String = "",
-    val rent: String = "",
+    var rent: String = "",
     val sharingType: String = "",
-    val size: String = "",
-    val address:String = "",
+    var size: String = "",
+    var address:String = "",
     val createdAt: String = "",
     val updatedAt: String = "",
     val housetype: String = "",
