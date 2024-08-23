@@ -1,51 +1,23 @@
 package com.app.roomlo.screens
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.app.roomlo.dataclasses.Property
 import com.app.roomlo.navigation.Screen
 import com.app.roomlo.screens.components.AppSearchBar
 import com.app.roomlo.ui.theme.dimens
@@ -54,7 +26,7 @@ import com.app.roomlo.ui.theme.interFont
 @Composable
 fun ListPropertyScaffoldScreen(navController: NavController) {
     var progress by remember { mutableFloatStateOf(0.33f) }
-    var currentScreen by rememberSaveable { mutableStateOf(Screen.ListPropertyAddressView) }
+    val property = remember { Property() }
 
     Scaffold { paddingValues ->
         Column(
@@ -64,112 +36,30 @@ fun ListPropertyScaffoldScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopBar(navController)
-            HorizontalDivider(thickness = 3.dp)
-            ScreenTitle(currentScreen)
-            ScreenTabs(currentScreen, progress) { newScreen, newProgress ->
-                currentScreen = newScreen
+            HorizontalDivider(thickness = 3.dp, modifier = Modifier.fillMaxWidth())
+            ScreenTitle(Screen.ListPropertyCurrentScreen)
+            ScreenTabs(Screen.ListPropertyCurrentScreen, progress) { newScreen, newProgress ->
+                Screen.ListPropertyCurrentScreen.route = newScreen.route
                 progress = newProgress
             }
             LinearProgressIndicator(
                 progress = progress,
                 modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.onSecondary
+                color = MaterialTheme.colorScheme.onSecondary,
             )
 
-            when (currentScreen) {
-                Screen.ListPropertyAddressView -> AddressScreen()
-                Screen.ListPropertyDetailsView -> PropertyDetailsFormScreen()
-                Screen.ListPropertyImagesView -> PropertyImagesUploadView()
-
-                else -> AddressScreen()
+            when (Screen.ListPropertyCurrentScreen.route) {
+                Screen.ListPropertyAddressView.route -> AddressScreen(property, navController)
+                Screen.ListPropertyDetailsView.route -> PropertyDetailsFormScreen(property, navController)
+                Screen.ListPropertyImagesView.route -> PropertyImagesUploadView(property, navController)
+                else -> AddressScreen(property, navController)
             }
         }
     }
 }
 
 @Composable
-fun TopBar(navController: NavController) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = MaterialTheme.dimens.medium2),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(onClick = { navController.navigateUp() }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Go Back",
-                tint = MaterialTheme.colorScheme.secondary
-            )
-        }
-        Text(
-            text = "List Property",
-            fontFamily = interFont,
-            fontWeight = FontWeight.Medium,
-            fontSize = MaterialTheme.typography.titleLarge.fontSize,
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.padding(start = MaterialTheme.dimens.small2)
-        )
-    }
-}
-
-@Composable
-fun ScreenTitle(currentScreen: Screen) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Add ${currentScreen.route}",
-            fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-            color = MaterialTheme.colorScheme.secondary
-        )
-    }
-}
-
-@Composable
-fun ScreenTabs(
-    currentScreen: Screen,
-    progress: Float,
-    onTabSelected: (Screen, Float) -> Unit
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        ScreenTab(
-            label = "Address",
-            isSelected = currentScreen == Screen.ListPropertyAddressView,
-            onClick = { onTabSelected(Screen.ListPropertyAddressView, 0.33f) }
-        )
-        ScreenTab(
-            label = "Details",
-            isSelected = currentScreen == Screen.ListPropertyDetailsView,
-            onClick = { onTabSelected(Screen.ListPropertyDetailsView, 0.66f) }
-        )
-        ScreenTab(
-            label = "Images",
-            isSelected = currentScreen == Screen.ListPropertyImagesView,
-            onClick = { onTabSelected(Screen.ListPropertyImagesView, 1f) }
-        )
-    }
-}
-
-@Composable
-fun ScreenTab(label: String, isSelected: Boolean, onClick: () -> Unit) {
-    TextButton(onClick = onClick) {
-        Text(
-            text = label,
-            fontFamily = interFont,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-        )
-    }
-}
-
-@Composable
-fun AddressScreen() {
+fun AddressScreen(property: Property, navController: NavController) {
     var city by remember { mutableStateOf("") }
     var locality by remember { mutableStateOf("") }
     var landmark by remember { mutableStateOf("") }
@@ -184,7 +74,7 @@ fun AddressScreen() {
         AddressTextField(value = locality, placeholder = "Locality", onValueChange = { locality = it })
         AddressTextField(value = landmark, placeholder = "Landmark/Street", onValueChange = { landmark = it })
         Spacer(modifier = Modifier.height(MaterialTheme.dimens.buttonHeight + 15.dp))
-        HorizontalDivider(thickness = 3.dp)
+        HorizontalDivider(thickness = 3.dp, modifier = Modifier.fillMaxWidth())
 
         Row(
             modifier = Modifier
@@ -219,14 +109,15 @@ fun AddressScreen() {
         // TODO: Placeholder for map
 
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(MaterialTheme.dimens.small1),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Bottom,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = { /* TODO: Handle Save & Continue */ },
+                onClick = {
+                    property.address = "$city, $locality, $landmark"
+                    navController.navigate(Screen.ListPropertyDetailsView.route)
+                },
                 modifier = Modifier.padding(MaterialTheme.dimens.small2),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
             ) {
@@ -236,22 +127,28 @@ fun AddressScreen() {
     }
 }
 
-
 @Composable
-fun PropertyDetailsFormScreen() {
+fun PropertyDetailsFormScreen(property: Property, navController: NavController) {
+    // Form fields here...
+    // Example field handling
+    var roomPrice by remember { mutableStateOf("") }
+    var roomSize by remember { mutableStateOf("") }
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
             .padding(start = MaterialTheme.dimens.small1)
     ) {
+
+
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = roomPrice,
+                    onValueChange = { roomPrice = it },
                     label = { Text("Room Price") },
                     modifier = Modifier
                         .weight(1f)
@@ -271,8 +168,8 @@ fun PropertyDetailsFormScreen() {
                 )
 
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = {},
+                    value = roomSize,
+                    onValueChange = { roomSize = it },
                     label = { Text("Room Size") },
                     modifier = Modifier
                         .weight(1f)
@@ -291,22 +188,23 @@ fun PropertyDetailsFormScreen() {
                     )
                 )
             }
+            HorizontalDivider(
+                thickness = 1.dp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 5.dp, end = 5.dp)
+            )
         }
 
-        item { Spacer(modifier = Modifier.height(MaterialTheme.dimens.small1)) }
-
-        item { SectionWithOptions("Floor:", listOf("1st", "2nd", "Custom")) }
-        item { SectionWithOptions("Deposit:", listOf("1 Month", "2 Months", "Custom")) }
-        item { SectionWithOptions("Maintenance:", listOf("Included", "Custom")) }
-        item { SectionWithOptions("Electricity Bill:", listOf("Included", "Separate")) }
-        item { SectionWithOptions("Parking:", listOf("Bike", "Car", "Both", "None")) }
-        item { SectionWithOptions("Non-veg:", listOf("Yes", "No")) }
-        item { SectionWithOptions("Wifi:", listOf("Yes", "No")) }
-        item { SectionWithOptions("Facilities:", listOf("Bathroom", "Toilet", "Balcony", "Custom")) }
+        // Additional fields...
 
         item {
             OutlinedButton(
-                onClick = { /* TODO: Handle Save & Continue */ },
+                onClick = {
+                    property.rent = roomPrice.toIntOrNull().toString()
+                    property.size = roomSize.toIntOrNull().toString()
+                    navController.navigate(Screen.ListPropertyImagesView.route)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(
@@ -314,7 +212,7 @@ fun PropertyDetailsFormScreen() {
                         start = MaterialTheme.dimens.small2,
                         end = MaterialTheme.dimens.small2
                     )
-                    .height(MaterialTheme.dimens.buttonHeight) // Assuming you've defined a dimension for button height
+                    .height(MaterialTheme.dimens.buttonHeight)
             ) {
                 Text("Save and Continue")
             }
@@ -323,66 +221,7 @@ fun PropertyDetailsFormScreen() {
 }
 
 @Composable
-fun SectionWithOptions(label: String, options: List<String>) {
-    Text(
-        text = label,
-        fontFamily = interFont,
-        modifier = Modifier.padding(vertical = MaterialTheme.dimens.small1)
-    )
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Start
-    ) {
-        items(options.size) { index ->
-            if (options[index] == "Custom") {
-                CustomOptionWithTextField(textFieldPlaceholder = "Custom")
-            } else {
-                OptionButton(text = options[index])
-                Spacer(modifier = Modifier.width(MaterialTheme.dimens.small1))
-
-            }
-        }
-    }
-}
-
-@Composable
-fun OptionButton(text: String) {
-    OutlinedButton(
-        onClick = { /* TODO: Handle click */ },
-        shape = RoundedCornerShape(7.dp)
-    ) {
-        Text(text, fontSize = 12.sp) // Adjusted font size
-    }
-}
-
-@Composable
-fun CustomOptionWithTextField(textFieldPlaceholder: String) {
-    OutlinedTextField(
-        value = "",
-        onValueChange = {},
-        label = { Text(textFieldPlaceholder, fontSize = 12.sp) },
-        modifier = Modifier
-            .padding(horizontal = 4.dp)
-            .width(100.dp)
-            .height(48.dp), // Matching the button height
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.primary,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-            focusedTextColor = MaterialTheme.colorScheme.secondary,
-            unfocusedTextColor = MaterialTheme.colorScheme.background,
-            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-            focusedLabelColor = MaterialTheme.colorScheme.secondary,
-            cursorColor = MaterialTheme.colorScheme.secondary
-        )
-    )
-}
-
-
-@Composable
-fun PropertyImagesUploadView() {
+fun PropertyImagesUploadView(property: Property, navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -411,7 +250,9 @@ fun PropertyImagesUploadView() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Button(
-                onClick = { /* TODO: Handle Save & Continue */ },
+                onClick = {
+                    // Save the property and move to the next screen or finish
+                },
                 modifier = Modifier.padding(MaterialTheme.dimens.small2),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
             ) {
@@ -421,29 +262,115 @@ fun PropertyImagesUploadView() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddressTextField(value: String, placeholder: String, onValueChange: (String) -> Unit) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(placeholder) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = MaterialTheme.dimens.small2)
+fun TopBar(navController: NavController) {
+    TopAppBar(
+        title = {
+            Text(
+                text = "Property Listing",
+                fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back"
+                )
+            }
+        },
+        actions = {
+            TextButton(onClick = { /* Add logic */ }) {
+                Text(text = "Help", color = MaterialTheme.colorScheme.secondary)
+            }
+        }
     )
 }
 
 @Composable
-fun HorizontalDivider(thickness: Dp) {
-    Divider(
-        color = MaterialTheme.colorScheme.primary,
-        thickness = thickness,
-        modifier = Modifier.fillMaxWidth()
+fun ScreenTitle(currentScreen: Screen) {
+    // Display the title based on the current screen
+    Text(
+        text = when (currentScreen.route) {
+            Screen.ListPropertyAddressView.route -> "Property Address"
+            Screen.ListPropertyDetailsView.route -> "Property Details"
+            Screen.ListPropertyImagesView.route -> "Upload Photos & Videos"
+            else -> "Property Address"
+        },
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        modifier = Modifier.padding(16.dp)
+    )
+}
+
+@Composable
+fun ScreenTabs(currentScreen: Screen, progress: Float, onTabSelected: (Screen, Float) -> Unit) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        item {
+            TabItem(
+                screen = Screen.ListPropertyAddressView,
+                isSelected = currentScreen == Screen.ListPropertyAddressView,
+                onClick = { onTabSelected(Screen.ListPropertyAddressView, 0.33f) }
+            )
+        }
+        item {
+            TabItem(
+                screen = Screen.ListPropertyDetailsView,
+                isSelected = currentScreen == Screen.ListPropertyDetailsView,
+                onClick = { onTabSelected(Screen.ListPropertyDetailsView, 0.66f) }
+            )
+        }
+        item {
+            TabItem(
+                screen = Screen.ListPropertyImagesView,
+                isSelected = currentScreen == Screen.ListPropertyImagesView,
+                onClick = { onTabSelected(Screen.ListPropertyImagesView, 1.0f) }
+            )
+        }
+    }
+}
+
+@Composable
+fun TabItem(screen: Screen, isSelected: Boolean, onClick: () -> Unit) {
+    TextButton(onClick = onClick) {
+        Text(
+            text = screen.route,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+            color = if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f)
+        )
+    }
+}
+
+@Composable
+fun AddressTextField(value: String, placeholder: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(placeholder) },
+        modifier = Modifier.fillMaxWidth(),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.primary,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = MaterialTheme.colorScheme.secondary,
+            unfocusedTextColor = MaterialTheme.colorScheme.background,
+            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+            cursorColor = MaterialTheme.colorScheme.secondary
+        )
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ListPropertyScaffoldScreenPreview() {
+fun ListPropertyPreview(){
     ListPropertyScaffoldScreen(navController = rememberNavController())
 }
