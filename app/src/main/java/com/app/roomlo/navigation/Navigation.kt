@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.screens.HomeScreen
-import com.app.roomlo.screens.ListPropertyScaffoldScreen
 import com.app.roomlo.screens.ListPropertyScreen
 import com.app.roomlo.screens.MapScreen
 import com.app.roomlo.screens.ProfileScreen
@@ -67,10 +66,7 @@ fun Navigation(
 
         }
 
-        //New screen for listing property
-        composable(Screen.ListPropertyScaffoldScreen.route){
-            ListPropertyScaffoldScreen(navController = navController)
-        }
+
 
     }
 }

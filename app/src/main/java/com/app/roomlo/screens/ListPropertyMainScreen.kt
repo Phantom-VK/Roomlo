@@ -1,14 +1,35 @@
-package com.app.roomlo.screens
-
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -19,14 +40,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.roomlo.dataclasses.Property
 import com.app.roomlo.navigation.Screen
-import com.app.roomlo.screens.components.AppSearchBar
-import com.app.roomlo.ui.theme.dimens
-import com.app.roomlo.ui.theme.interFont
+
 
 @Composable
 fun ListPropertyScaffoldScreen(navController: NavController) {
-    var progress by remember { mutableFloatStateOf(0.33f) }
-    val property = remember { Property() }
+    var currentScreen by remember { mutableStateOf<Screen>(Screen.ListPropertyAddressView) }
+    val property = remember { mutableStateOf(Property()) }
 
     Scaffold { paddingValues ->
         Column(
@@ -36,183 +55,211 @@ fun ListPropertyScaffoldScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TopBar(navController)
-            HorizontalDivider(thickness = 3.dp, modifier = Modifier.fillMaxWidth())
-            ScreenTitle(Screen.ListPropertyCurrentScreen)
-            ScreenTabs(Screen.ListPropertyCurrentScreen, progress) { newScreen, newProgress ->
-                Screen.ListPropertyCurrentScreen.route = newScreen.route
-                progress = newProgress
+            Divider()
+            ScreenTitle(currentScreen)
+            ScreenTabs(currentScreen) { newScreen ->
+                currentScreen = newScreen
             }
             LinearProgressIndicator(
-                progress = progress,
+                progress = when (currentScreen) {
+                    Screen.ListPropertyAddressView -> 0.33f
+                    Screen.ListPropertyDetailsView -> 0.66f
+                    Screen.ListPropertyImagesView -> 1f
+                    else -> 0.0f
+                },
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.onSecondary,
             )
 
-            when (Screen.ListPropertyCurrentScreen.route) {
-                Screen.ListPropertyAddressView.route -> AddressScreen(property, navController)
-                Screen.ListPropertyDetailsView.route -> PropertyDetailsFormScreen(property, navController)
-                Screen.ListPropertyImagesView.route -> PropertyImagesUploadView(property, navController)
-                else -> AddressScreen(property, navController)
+            when (currentScreen) {
+                Screen.ListPropertyAddressView -> AddressScreen(navController, property.value) {
+                    currentScreen = Screen.ListPropertyDetailsView
+                }
+                Screen.ListPropertyDetailsView -> PropertyDetailsFormScreen(property.value) {
+                    currentScreen = Screen.ListPropertyImagesView
+                }
+                Screen.ListPropertyImagesView -> PropertyImagesUploadView(property.value) {
+                    // TODO: Handle final submission
+                }
+
+                else -> AddressScreen(navController = navController, property = property.value) {
+
+                }
             }
         }
     }
 }
 
 @Composable
-fun AddressScreen(property: Property, navController: NavController) {
-    var city by remember { mutableStateOf("") }
-    var locality by remember { mutableStateOf("") }
-    var landmark by remember { mutableStateOf("") }
+fun TopBar(navController: NavController) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = { navController.navigateUp() }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Go Back",
+                tint = MaterialTheme.colorScheme.secondary
+            )
+        }
+        Text(
+            text = "List Property",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.secondary,
+            modifier = Modifier.padding(start = 8.dp)
+        )
+    }
+}
+
+@Composable
+fun ScreenTitle(currentScreen: Screen) {
+    Text(
+        text = "Add ${currentScreen.route.capitalize()}",
+        style = MaterialTheme.typography.headlineSmall,
+        color = MaterialTheme.colorScheme.secondary,
+        modifier = Modifier.padding(vertical = 16.dp)
+    )
+}
+
+@Composable
+fun ScreenTabs(currentScreen: Screen, onTabSelected: (Screen) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        ScreenTab("Address", currentScreen == Screen.ListPropertyAddressView) {
+            onTabSelected(Screen.ListPropertyAddressView)
+        }
+        ScreenTab("Details", currentScreen == Screen.ListPropertyDetailsView) {
+            onTabSelected(Screen.ListPropertyDetailsView)
+        }
+        ScreenTab("Images", currentScreen == Screen.ListPropertyImagesView) {
+            onTabSelected(Screen.ListPropertyImagesView)
+        }
+    }
+}
+
+@Composable
+fun ScreenTab(label: String, isSelected: Boolean, onClick: () -> Unit) {
+    TextButton(onClick = onClick) {
+        Text(
+            text = label,
+            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+        )
+    }
+}
+
+@Composable
+fun AddressScreen(navController: NavController, property: Property, onNext: () -> Unit) {
+    var city by remember { mutableStateOf(property.city) }
+    var locality by remember { mutableStateOf(property.locality) }
+    var landmark by remember { mutableStateOf(property.landmark) }
     var searchQuery by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(MaterialTheme.dimens.small1)
+            .padding(16.dp)
     ) {
-        AddressTextField(value = city, placeholder = "City", onValueChange = { city = it })
-        AddressTextField(value = locality, placeholder = "Locality", onValueChange = { locality = it })
-        AddressTextField(value = landmark, placeholder = "Landmark/Street", onValueChange = { landmark = it })
-        Spacer(modifier = Modifier.height(MaterialTheme.dimens.buttonHeight + 15.dp))
-        HorizontalDivider(thickness = 3.dp, modifier = Modifier.fillMaxWidth())
+        AddressTextField(value = city, placeholder = "City") { city = it }
+        AddressTextField(value = locality, placeholder = "Locality") { locality = it }
+        AddressTextField(value = landmark, placeholder = "Landmark/Street") { landmark = it }
+        Spacer(modifier = Modifier.height(16.dp))
+        Divider()
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(MaterialTheme.dimens.small1),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = Icons.Filled.LocationOn,
-                contentDescription = "Location",
-                tint = MaterialTheme.colorScheme.onSecondary
-            )
-            Text(
-                text = "Mark your Property on Map",
-                fontFamily = interFont,
-                fontSize = MaterialTheme.typography.titleMedium.fontSize,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
+        Text(
+            text = "Mark your Property on Map",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(vertical = 8.dp)
+        )
         Text(
             text = "Set property location by using search box and move the map",
-            fontFamily = interFont,
-            fontSize = MaterialTheme.typography.labelSmall.fontSize,
-            fontWeight = FontWeight.Light,
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.secondary
         )
-        Spacer(modifier = Modifier.height(MaterialTheme.dimens.small2))
-        AppSearchBar(searchQuery = searchQuery)
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            label = { Text("Search location") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-        // TODO: Placeholder for map
+        // TODO: Add map component here
 
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = {
+                property.apply {
+                    this.city = city
+                    this.locality = locality
+                    this.landmark = landmark
+                    address = "$city, $locality, $landmark"
+                }
+                onNext()
+            },
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Button(
-                onClick = {
-                    property.address = "$city, $locality, $landmark"
-                    navController.navigate(Screen.ListPropertyDetailsView.route)
-                },
-                modifier = Modifier.padding(MaterialTheme.dimens.small2),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
-            ) {
-                Text(text = "Save & Continue", color = MaterialTheme.colorScheme.secondary)
-            }
+            Text("Save & Continue")
         }
     }
 }
 
 @Composable
-fun PropertyDetailsFormScreen(property: Property, navController: NavController) {
-    // Form fields here...
-    // Example field handling
-    var roomPrice by remember { mutableStateOf("") }
-    var roomSize by remember { mutableStateOf("") }
+fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
-            .padding(start = MaterialTheme.dimens.small1)
+            .padding(16.dp)
     ) {
-
-
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 OutlinedTextField(
-                    value = roomPrice,
-                    onValueChange = { roomPrice = it },
+                    value = property.rent,
+                    onValueChange = { property.rent = it },
                     label = { Text("Room Price") },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(end = 8.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.primary,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-                        focusedTextColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.background,
-                        focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                        cursorColor = MaterialTheme.colorScheme.secondary
-                    )
+                        .padding(end = 8.dp)
                 )
-
                 OutlinedTextField(
-                    value = roomSize,
-                    onValueChange = { roomSize = it },
+                    value = property.size,
+                    onValueChange = { property.size = it },
                     label = { Text("Room Size") },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 8.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.primary,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-                        focusedTextColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.background,
-                        focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                        cursorColor = MaterialTheme.colorScheme.secondary
-                    )
+                        .padding(start = 8.dp)
                 )
             }
-            HorizontalDivider(
-                thickness = 1.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 5.dp, end = 5.dp)
-            )
         }
 
-        // Additional fields...
+        item { Spacer(modifier = Modifier.height(16.dp)) }
+
+        item { SectionWithOptions("Floor:", listOf("1st", "2nd", "Custom")) { property.floor = it } }
+        item { SectionWithOptions("Deposit:", listOf("1 Month", "2 Months", "Custom")) { property.deposit = it } }
+        item { SectionWithOptions("Maintenance:", listOf("Included", "Custom")) { property.maintenance = it } }
+        item { SectionWithOptions("Electricity Bill:", listOf("Included", "Separate")) { property.electricbill = it } }
+        item { SectionWithOptions("Parking:", listOf("Bike", "Car", "Both", "None")) { property.parking = it } }
+        item { SectionWithOptions("Non-veg:", listOf("Yes", "No")) { property.nonveg = it } }
+        item { SectionWithOptions("Wifi:", listOf("Yes", "No")) { property.wifi = it } }
+        item {
+            SectionWithOptions("Facilities:", listOf("Bathroom", "Toilet", "Balcony", "Custom")) { facility ->
+                property.Amenities += facility
+            }
+        }
 
         item {
-            OutlinedButton(
-                onClick = {
-                    property.rent = roomPrice.toIntOrNull().toString()
-                    property.size = roomSize.toIntOrNull().toString()
-                    navController.navigate(Screen.ListPropertyImagesView.route)
-                },
+            Button(
+                onClick = onNext,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        top = MaterialTheme.dimens.small2,
-                        start = MaterialTheme.dimens.small2,
-                        end = MaterialTheme.dimens.small2
-                    )
-                    .height(MaterialTheme.dimens.buttonHeight)
+                    .padding(vertical = 16.dp)
             ) {
                 Text("Save and Continue")
             }
@@ -221,129 +268,81 @@ fun PropertyDetailsFormScreen(property: Property, navController: NavController) 
 }
 
 @Composable
-fun PropertyImagesUploadView(property: Property, navController: NavController) {
+fun SectionWithOptions(label: String, options: List<String>, onOptionSelected: (String) -> Unit) {
+    Text(
+        text = label,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(vertical = 8.dp)
+    )
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(options) { option ->
+            if (option == "Custom") {
+                CustomOptionWithTextField(textFieldPlaceholder = "Custom", onValueChange = onOptionSelected)
+            } else {
+                OptionButton(text = option, onClick = { onOptionSelected(option) })
+            }
+        }
+    }
+}
+
+@Composable
+fun OptionButton(text: String, onClick: () -> Unit) {
+    OutlinedButton(
+        onClick = onClick,
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Text(text, fontSize = 14.sp)
+    }
+}
+
+@Composable
+fun CustomOptionWithTextField(textFieldPlaceholder: String, onValueChange: (String) -> Unit) {
+    var value by remember { mutableStateOf("") }
+    OutlinedTextField(
+        value = value,
+        onValueChange = {
+            value = it
+            onValueChange(it)
+        },
+        label = { Text(textFieldPlaceholder, fontSize = 14.sp) },
+        modifier = Modifier
+            .width(120.dp)
+            .height(56.dp)
+    )
+}
+
+@Composable
+fun PropertyImagesUploadView(property: Property, onSubmit: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(MaterialTheme.dimens.small1)
+            .padding(16.dp)
     ) {
-        Spacer(modifier = Modifier.height(MaterialTheme.dimens.small2))
         Text(
             text = "Upload Photos & Videos",
-            fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+            style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Medium,
-            color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Text(
             text = "Upload images and videos to help buyers visualize the property.",
-            fontSize = MaterialTheme.typography.labelSmall.fontSize,
-            fontWeight = FontWeight.Light,
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
+
         // TODO: Add image and video upload components
-        Spacer(modifier = Modifier.height(MaterialTheme.dimens.medium1))
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick = onSubmit,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Button(
-                onClick = {
-                    // Save the property and move to the next screen or finish
-                },
-                modifier = Modifier.padding(MaterialTheme.dimens.small2),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
-            ) {
-                Text(text = "Save & Continue", color = MaterialTheme.colorScheme.secondary)
-            }
+            Text("Submit Listing")
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar(navController: NavController) {
-    TopAppBar(
-        title = {
-            Text(
-                text = "Property Listing",
-                fontSize = MaterialTheme.typography.headlineSmall.fontSize,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
-                )
-            }
-        },
-        actions = {
-            TextButton(onClick = { /* Add logic */ }) {
-                Text(text = "Help", color = MaterialTheme.colorScheme.secondary)
-            }
-        }
-    )
-}
-
-@Composable
-fun ScreenTitle(currentScreen: Screen) {
-    // Display the title based on the current screen
-    Text(
-        text = when (currentScreen.route) {
-            Screen.ListPropertyAddressView.route -> "Property Address"
-            Screen.ListPropertyDetailsView.route -> "Property Details"
-            Screen.ListPropertyImagesView.route -> "Upload Photos & Videos"
-            else -> "Property Address"
-        },
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(16.dp)
-    )
-}
-
-@Composable
-fun ScreenTabs(currentScreen: Screen, progress: Float, onTabSelected: (Screen, Float) -> Unit) {
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        item {
-            TabItem(
-                screen = Screen.ListPropertyAddressView,
-                isSelected = currentScreen == Screen.ListPropertyAddressView,
-                onClick = { onTabSelected(Screen.ListPropertyAddressView, 0.33f) }
-            )
-        }
-        item {
-            TabItem(
-                screen = Screen.ListPropertyDetailsView,
-                isSelected = currentScreen == Screen.ListPropertyDetailsView,
-                onClick = { onTabSelected(Screen.ListPropertyDetailsView, 0.66f) }
-            )
-        }
-        item {
-            TabItem(
-                screen = Screen.ListPropertyImagesView,
-                isSelected = currentScreen == Screen.ListPropertyImagesView,
-                onClick = { onTabSelected(Screen.ListPropertyImagesView, 1.0f) }
-            )
-        }
-    }
-}
-
-@Composable
-fun TabItem(screen: Screen, isSelected: Boolean, onClick: () -> Unit) {
-    TextButton(onClick = onClick) {
-        Text(
-            text = screen.route,
-            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary.copy(alpha = 0.6f)
-        )
     }
 }
 
@@ -353,24 +352,14 @@ fun AddressTextField(value: String, placeholder: String, onValueChange: (String)
         value = value,
         onValueChange = onValueChange,
         label = { Text(placeholder) },
-        modifier = Modifier.fillMaxWidth(),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.primary,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-            focusedTextColor = MaterialTheme.colorScheme.secondary,
-            unfocusedTextColor = MaterialTheme.colorScheme.background,
-            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-            focusedLabelColor = MaterialTheme.colorScheme.secondary,
-            cursorColor = MaterialTheme.colorScheme.secondary
-        )
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
     )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun ListPropertyPreview(){
+fun ListPropertyScaffoldScreenPreview() {
     ListPropertyScaffoldScreen(navController = rememberNavController())
 }
