@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +45,7 @@ import com.app.roomlo.navigation.Screen
 
 @Composable
 fun ListPropertyScaffoldScreen(navController: NavController) {
-    var currentScreen by remember { mutableStateOf<Screen>(Screen.ListPropertyAddressView) }
+    var currentScreen by remember { mutableStateOf(Screen.ListPropertyAddressView) }
     val property = remember { mutableStateOf(Property()) }
 
     Scaffold { paddingValues ->
@@ -61,11 +62,13 @@ fun ListPropertyScaffoldScreen(navController: NavController) {
                 currentScreen = newScreen
             }
             LinearProgressIndicator(
-                progress = when (currentScreen) {
-                    Screen.ListPropertyAddressView -> 0.33f
-                    Screen.ListPropertyDetailsView -> 0.66f
-                    Screen.ListPropertyImagesView -> 1f
-                    else -> 0.0f
+                progress = {
+                    when (currentScreen) {
+                        Screen.ListPropertyAddressView -> 0.33f
+                        Screen.ListPropertyDetailsView -> 0.66f
+                        Screen.ListPropertyImagesView -> 1f
+                        else -> 0.0f
+                    }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.onSecondary,
@@ -74,12 +77,15 @@ fun ListPropertyScaffoldScreen(navController: NavController) {
             when (currentScreen) {
                 Screen.ListPropertyAddressView -> AddressScreen(navController, property.value) {
                     currentScreen = Screen.ListPropertyDetailsView
+                    Log.d("PropertyListing", "Address Stage: $property")
                 }
                 Screen.ListPropertyDetailsView -> PropertyDetailsFormScreen(property.value) {
                     currentScreen = Screen.ListPropertyImagesView
+                    Log.d("PropertyListing", "Details Stage: $property")
                 }
                 Screen.ListPropertyImagesView -> PropertyImagesUploadView(property.value) {
                     // TODO: Handle final submission
+                    Log.d("PropertyListing", "Final Submission: $property")
                 }
 
                 else -> AddressScreen(navController = navController, property = property.value) {
@@ -210,6 +216,8 @@ fun AddressScreen(navController: NavController, property: Property, onNext: () -
 
 @Composable
 fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
+    var propertyRent by remember { mutableStateOf("") }
+    var propertySize by remember { mutableStateOf("") }
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
@@ -221,16 +229,18 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 OutlinedTextField(
-                    value = property.rent,
-                    onValueChange = { property.rent = it },
+                    value = propertyRent,
+                    onValueChange = { property.rent = it
+                                    propertyRent = it },
                     label = { Text("Room Price") },
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 8.dp)
                 )
                 OutlinedTextField(
-                    value = property.size,
-                    onValueChange = { property.size = it },
+                    value = propertySize,
+                    onValueChange = { property.size = it
+                                    propertySize = it },
                     label = { Text("Room Size") },
                     modifier = Modifier
                         .weight(1f)
