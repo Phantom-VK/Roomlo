@@ -1,4 +1,5 @@
 import android.util.Log
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -17,6 +19,7 @@ import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -26,6 +29,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,6 +46,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.roomlo.dataclasses.Property
 import com.app.roomlo.navigation.Screen
+import java.util.Locale
 
 
 @Composable
@@ -48,7 +54,9 @@ fun ListPropertyScaffoldScreen(navController: NavController) {
     var currentScreen by remember { mutableStateOf(Screen.ListPropertyAddressView) }
     val property = remember { mutableStateOf(Property()) }
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        containerColor = MaterialTheme.colorScheme.primary
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -75,7 +83,7 @@ fun ListPropertyScaffoldScreen(navController: NavController) {
             )
 
             when (currentScreen) {
-                Screen.ListPropertyAddressView -> AddressScreen(navController, property.value) {
+                Screen.ListPropertyAddressView -> AddressScreen( property.value) {
                     currentScreen = Screen.ListPropertyDetailsView
                     Log.d("PropertyListing", "Address Stage: $property")
                 }
@@ -88,7 +96,7 @@ fun ListPropertyScaffoldScreen(navController: NavController) {
                     Log.d("PropertyListing", "Final Submission: $property")
                 }
 
-                else -> AddressScreen(navController = navController, property = property.value) {
+                else -> AddressScreen( property = property.value) {
 
                 }
             }
@@ -123,7 +131,11 @@ fun TopBar(navController: NavController) {
 @Composable
 fun ScreenTitle(currentScreen: Screen) {
     Text(
-        text = "Add ${currentScreen.route.capitalize()}",
+        text = "Add ${currentScreen.route.replaceFirstChar {
+            if (it.isLowerCase()) it.titlecase(
+                Locale.ROOT
+            ) else it.toString()
+        }}",
         style = MaterialTheme.typography.headlineSmall,
         color = MaterialTheme.colorScheme.secondary,
         modifier = Modifier.padding(vertical = 16.dp)
@@ -153,13 +165,13 @@ fun ScreenTab(label: String, isSelected: Boolean, onClick: () -> Unit) {
     TextButton(onClick = onClick) {
         Text(
             text = label,
-            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+            color = if (isSelected) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.secondary
         )
     }
 }
 
 @Composable
-fun AddressScreen(navController: NavController, property: Property, onNext: () -> Unit) {
+fun AddressScreen(property: Property, onNext: () -> Unit) {
     var city by remember { mutableStateOf(property.city) }
     var locality by remember { mutableStateOf(property.locality) }
     var landmark by remember { mutableStateOf(property.landmark) }
@@ -213,38 +225,91 @@ fun AddressScreen(navController: NavController, property: Property, onNext: () -
         }
     }
 }
-
 @Composable
 fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
     var propertyRent by remember { mutableStateOf("") }
     var propertySize by remember { mutableStateOf("") }
+    var propertyName by remember { mutableStateOf("") }
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
             .padding(16.dp)
     ) {
+        item{
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                label = { Text("Property Name") },
+                colors = TextFieldDefaults.colors(
+
+                    focusedContainerColor = MaterialTheme.colorScheme.primary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                    focusedTextColor = MaterialTheme.colorScheme.secondary,
+                    unfocusedTextColor = MaterialTheme.colorScheme.background,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+                    focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                    focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                    cursorColor = MaterialTheme.colorScheme.secondary
+                ),
+                value = propertyName,
+                onValueChange = { property.propertyName = it
+                    propertyName = it },
+
+
+            )
+        }
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 OutlinedTextField(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 8.dp),
+                    colors = TextFieldDefaults.colors(
+
+                        focusedContainerColor = MaterialTheme.colorScheme.primary,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                        focusedTextColor = MaterialTheme.colorScheme.secondary,
+                        unfocusedTextColor = MaterialTheme.colorScheme.background,
+                        focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                        unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                        focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                        cursorColor = MaterialTheme.colorScheme.secondary
+                    ),
                     value = propertyRent,
                     onValueChange = { property.rent = it
                                     propertyRent = it },
-                    label = { Text("Room Price") },
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp)
+                    label = { Text("Property Rent") },
+
                 )
                 OutlinedTextField(
                     value = propertySize,
-                    onValueChange = { property.size = it
-                                    propertySize = it },
-                    label = { Text("Room Size") },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 8.dp)
+                        .padding(start = 8.dp),
+                    colors = TextFieldDefaults.colors(
+
+                        focusedContainerColor = MaterialTheme.colorScheme.primary,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                        focusedTextColor = MaterialTheme.colorScheme.secondary,
+                        unfocusedTextColor = MaterialTheme.colorScheme.background,
+                        focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                        unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+                        focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                        cursorColor = MaterialTheme.colorScheme.secondary
+                    ),
+                    onValueChange = { property.size = it
+                                    propertySize = it },
+                    label = { Text("Property Size") },
+
                 )
             }
         }
@@ -269,7 +334,9 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                 onClick = onNext,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp)
+                    .padding(vertical = 16.dp),
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
+
             ) {
                 Text("Save and Continue")
             }
@@ -300,9 +367,18 @@ fun SectionWithOptions(label: String, options: List<String>, onOptionSelected: (
 
 @Composable
 fun OptionButton(text: String, onClick: () -> Unit) {
+    var selected by remember { mutableStateOf(false) }
+
+    //TODO Add functionality if other button is selected then this button's colors should begone
     OutlinedButton(
-        onClick = onClick,
-        shape = RoundedCornerShape(8.dp)
+        modifier = Modifier.wrapContentSize(),
+        onClick = { onClick()
+                  selected = !selected},
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = if (selected) Color.White else MaterialTheme.colorScheme.secondary,
+            containerColor = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary)
+
     ) {
         Text(text, fontSize = 14.sp)
     }
@@ -320,7 +396,6 @@ fun CustomOptionWithTextField(textFieldPlaceholder: String, onValueChange: (Stri
         label = { Text(textFieldPlaceholder, fontSize = 14.sp) },
         modifier = Modifier
             .width(120.dp)
-            .height(56.dp)
     )
 }
 

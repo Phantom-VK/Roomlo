@@ -1,5 +1,6 @@
 package com.app.roomlo.navigation
 
+import ListPropertyScaffoldScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -64,6 +65,10 @@ fun Navigation(
         composable(Screen.ListPropertyScreen.route){
             ListPropertyScreen(navController = navController, preferenceHelper)
 
+        }
+
+        composable(Screen.ListPropertyScaffoldScreen.route){
+            ListPropertyScaffoldScreen(navController = navController)
         }
 
 

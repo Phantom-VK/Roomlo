@@ -64,7 +64,7 @@ fun PropertyView(
                     if (preferenceHelper.username.isEmpty()) {
                         openAlertDialog.value = true
                     } else {
-                        navController.navigate(Screen.ListPropertyScreen.route)
+                        navController.navigate(Screen.ListPropertyScaffoldScreen.route)
                     }
                 },
                 colors = ButtonDefaults.buttonColors(

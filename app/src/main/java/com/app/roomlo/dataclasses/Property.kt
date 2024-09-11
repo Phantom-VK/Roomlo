@@ -15,7 +15,7 @@ package com.app.roomlo.dataclasses
 
 data class Property(
     val owner: String = "",
-    val propertyName: String = "",
+    var propertyName: String = "",
     val ownerId:String = "",
     val ownerMobNo:String = "",
     val ownerEmail:String = "",
