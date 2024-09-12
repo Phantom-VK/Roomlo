@@ -1,3 +1,5 @@
+package com.app.roomlo.screens
+
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -83,20 +85,22 @@ fun ListPropertyScaffoldScreen(navController: NavController) {
             )
 
             when (currentScreen) {
-                Screen.ListPropertyAddressView -> AddressScreen( property.value) {
+                Screen.ListPropertyAddressView -> AddressScreen(property.value) {
                     currentScreen = Screen.ListPropertyDetailsView
                     Log.d("PropertyListing", "Address Stage: $property")
                 }
+
                 Screen.ListPropertyDetailsView -> PropertyDetailsFormScreen(property.value) {
                     currentScreen = Screen.ListPropertyImagesView
                     Log.d("PropertyListing", "Details Stage: $property")
                 }
+
                 Screen.ListPropertyImagesView -> PropertyImagesUploadView(property.value) {
                     // TODO: Handle final submission
                     Log.d("PropertyListing", "Final Submission: $property")
                 }
 
-                else -> AddressScreen( property = property.value) {
+                else -> AddressScreen(property = property.value) {
 
                 }
             }
@@ -131,11 +135,13 @@ fun TopBar(navController: NavController) {
 @Composable
 fun ScreenTitle(currentScreen: Screen) {
     Text(
-        text = "Add ${currentScreen.route.replaceFirstChar {
-            if (it.isLowerCase()) it.titlecase(
-                Locale.ROOT
-            ) else it.toString()
-        }}",
+        text = "Add ${
+            currentScreen.route.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase(
+                    Locale.ROOT
+                ) else it.toString()
+            }
+        }",
         style = MaterialTheme.typography.headlineSmall,
         color = MaterialTheme.colorScheme.secondary,
         modifier = Modifier.padding(vertical = 16.dp)
@@ -225,23 +231,34 @@ fun AddressScreen(property: Property, onNext: () -> Unit) {
         }
     }
 }
+
 @Composable
 fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
-    var propertyRent by remember { mutableStateOf("") }
-    var propertySize by remember { mutableStateOf("") }
-    var propertyName by remember { mutableStateOf("") }
+    val selectedFloor = remember { mutableStateOf(property.floor) }
+    val selectedDeposit = remember { mutableStateOf(property.deposit) }
+    val selectedMaintenance = remember { mutableStateOf(property.maintenance) }
+    val selectedElectricBill = remember { mutableStateOf(property.electricbill) }
+    val selectedParking = remember { mutableStateOf(property.parking) }
+    val selectedNonveg = remember { mutableStateOf(property.nonveg) }
+    val selectedWifi = remember { mutableStateOf(property.wifi) }
+    val selectedSharingType = remember { mutableStateOf(property.sharingType) }
+    val selectedHouseType = remember { mutableStateOf(property.housetype) }
+    val selectedRoomType = remember { mutableStateOf(property.roomtype) }
+    val selectedAvailableFor = remember { mutableStateOf(property.availablefor) }
+    val selectedBalcony = remember { mutableStateOf(property.balcony) }
+    val selectedBathroom = remember { mutableStateOf(property.bathroom.toString()) }
+    val selectedToilet = remember { mutableStateOf(property.toilet.toString()) }
+    val selectedAmenities = remember { mutableStateOf(property.Amenities) }
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
             .padding(16.dp)
     ) {
-        item{
+        item {
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 label = { Text("Property Name") },
                 colors = TextFieldDefaults.colors(
-
                     focusedContainerColor = MaterialTheme.colorScheme.primary,
                     unfocusedContainerColor = MaterialTheme.colorScheme.primary,
                     focusedTextColor = MaterialTheme.colorScheme.secondary,
@@ -253,11 +270,8 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                     focusedLabelColor = MaterialTheme.colorScheme.secondary,
                     cursorColor = MaterialTheme.colorScheme.secondary
                 ),
-                value = propertyName,
-                onValueChange = { property.propertyName = it
-                    propertyName = it },
-
-
+                value = property.propertyName,
+                onValueChange = { property.propertyName = it }
             )
         }
         item {
@@ -270,7 +284,6 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                         .weight(1f)
                         .padding(end = 8.dp),
                     colors = TextFieldDefaults.colors(
-
                         focusedContainerColor = MaterialTheme.colorScheme.primary,
                         unfocusedContainerColor = MaterialTheme.colorScheme.primary,
                         focusedTextColor = MaterialTheme.colorScheme.secondary,
@@ -282,19 +295,16 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                         focusedLabelColor = MaterialTheme.colorScheme.secondary,
                         cursorColor = MaterialTheme.colorScheme.secondary
                     ),
-                    value = propertyRent,
-                    onValueChange = { property.rent = it
-                                    propertyRent = it },
+                    value = property.rent,
+                    onValueChange = { property.rent = it },
                     label = { Text("Property Rent") },
-
                 )
                 OutlinedTextField(
-                    value = propertySize,
+                    value = property.size,
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 8.dp),
                     colors = TextFieldDefaults.colors(
-
                         focusedContainerColor = MaterialTheme.colorScheme.primary,
                         unfocusedContainerColor = MaterialTheme.colorScheme.primary,
                         focusedTextColor = MaterialTheme.colorScheme.secondary,
@@ -306,26 +316,175 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                         focusedLabelColor = MaterialTheme.colorScheme.secondary,
                         cursorColor = MaterialTheme.colorScheme.secondary
                     ),
-                    onValueChange = { property.size = it
-                                    propertySize = it },
+                    onValueChange = { property.size = it },
                     label = { Text("Property Size") },
-
                 )
             }
         }
 
         item { Spacer(modifier = Modifier.height(16.dp)) }
 
-        item { SectionWithOptions("Floor:", listOf("1st", "2nd", "Custom")) { property.floor = it } }
-        item { SectionWithOptions("Deposit:", listOf("1 Month", "2 Months", "Custom")) { property.deposit = it } }
-        item { SectionWithOptions("Maintenance:", listOf("Included", "Custom")) { property.maintenance = it } }
-        item { SectionWithOptions("Electricity Bill:", listOf("Included", "Separate")) { property.electricbill = it } }
-        item { SectionWithOptions("Parking:", listOf("Bike", "Car", "Both", "None")) { property.parking = it } }
-        item { SectionWithOptions("Non-veg:", listOf("Yes", "No")) { property.nonveg = it } }
-        item { SectionWithOptions("Wifi:", listOf("Yes", "No")) { property.wifi = it } }
         item {
-            SectionWithOptions("Facilities:", listOf("Bathroom", "Toilet", "Balcony", "Custom")) { facility ->
-                property.Amenities += facility
+            SectionWithOptions(
+                label = "Floor:",
+                options = listOf("1st", "2nd", "3rd", "4th", "5th", "Custom"),
+                selectedOption = selectedFloor.value
+            ) { selectedOption ->
+                selectedFloor.value = selectedOption
+                property.floor = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Deposit:",
+                options = listOf("1 Month", "2 Months", "3 Months", "Custom"),
+                selectedOption = selectedDeposit.value
+            ) { selectedOption ->
+                selectedDeposit.value = selectedOption
+                property.deposit = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Maintenance:",
+                options = listOf("Included", "Excluded", "Custom"),
+                selectedOption = selectedMaintenance.value
+            ) { selectedOption ->
+                selectedMaintenance.value = selectedOption
+                property.maintenance = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Electricity Bill:",
+                options = listOf("Included", "Separate"),
+                selectedOption = selectedElectricBill.value
+            ) { selectedOption ->
+                selectedElectricBill.value = selectedOption
+                property.electricbill = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Parking:",
+                options = listOf("Bike", "Car", "Both", "None"),
+                selectedOption = selectedParking.value
+            ) { selectedOption ->
+                selectedParking.value = selectedOption
+                property.parking = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Non-veg:",
+                options = listOf("Allowed", "Not Allowed"),
+                selectedOption = selectedNonveg.value
+            ) { selectedOption ->
+                selectedNonveg.value = selectedOption
+                property.nonveg = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Wifi:",
+                options = listOf("Available", "Not Available"),
+                selectedOption = selectedWifi.value
+            ) { selectedOption ->
+                selectedWifi.value = selectedOption
+                property.wifi = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Sharing Type:",
+                options = listOf("Single", "Double", "Triple", "Custom"),
+                selectedOption = selectedSharingType.value
+            ) { selectedOption ->
+                selectedSharingType.value = selectedOption
+                property.sharingType = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "House Type:",
+                options = listOf("Apartment", "Independent House", "Villa", "Custom"),
+                selectedOption = selectedHouseType.value
+            ) { selectedOption ->
+                selectedHouseType.value = selectedOption
+                property.housetype = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Room Type:",
+                options = listOf("1BHK", "2BHK", "3BHK", "Custom"),
+                selectedOption = selectedRoomType.value
+            ) { selectedOption ->
+                selectedRoomType.value = selectedOption
+                property.roomtype = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Available For:",
+                options = listOf("Family", "Bachelor", "Anyone"),
+                selectedOption = selectedAvailableFor.value
+            ) { selectedOption ->
+                selectedAvailableFor.value = selectedOption
+                property.availablefor = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Balcony:",
+                options = listOf("Yes", "No"),
+                selectedOption = selectedBalcony.value
+            ) { selectedOption ->
+                selectedBalcony.value = selectedOption
+                property.balcony = selectedOption
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Bathroom:",
+                options = listOf("1", "2", "3", "Custom"),
+                selectedOption = selectedBathroom.value
+            ) { selectedOption ->
+                selectedBathroom.value = selectedOption
+                property.bathroom = selectedOption.toIntOrNull() ?: 0
+            }
+        }
+        item {
+            SectionWithOptions(
+                label = "Toilet:",
+                options = listOf("1", "2", "3", "Custom"),
+                selectedOption = selectedToilet.value
+            ) { selectedOption ->
+                selectedToilet.value = selectedOption
+                property.toilet = selectedOption.toIntOrNull() ?: 0
+            }
+        }
+        item {
+            MultiSelectionSection(
+                label = "Amenities:",
+                options = listOf(
+                    "AC",
+                    "TV",
+                    "Fridge",
+                    "Washing Machine",
+                    "Microwave",
+                    "Gas Stove",
+                    "Custom"
+                ),
+                selectedOptions = selectedAmenities.value
+            ) { amenity ->
+                val updatedAmenities = if (selectedAmenities.value.contains(amenity)) {
+                    selectedAmenities.value - amenity
+                } else {
+                    selectedAmenities.value + amenity
+                }
+                selectedAmenities.value = updatedAmenities
+                property.Amenities = updatedAmenities
             }
         }
 
@@ -336,7 +495,6 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                     .fillMaxWidth()
                     .padding(vertical = 16.dp),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
-
             ) {
                 Text("Save and Continue")
             }
@@ -345,7 +503,47 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
 }
 
 @Composable
-fun SectionWithOptions(label: String, options: List<String>, onOptionSelected: (String) -> Unit) {
+fun SectionWithOptions(
+    label: String,
+    options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit
+) {
+    Text(
+        text = label,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(vertical = 8.dp)
+    )
+
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(options) { option ->
+            if (option == "Custom" && selectedOption !in options) {
+                CustomOptionWithTextField(
+                    textFieldPlaceholder = "Custom",
+                    initialValue = selectedOption,
+                    onValueChange = onOptionSelected
+                )
+            } else {
+                OptionButton(
+                    text = option,
+                    isSelected = selectedOption == option,
+                    onClick = { onOptionSelected(option) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MultiSelectionSection(
+    label: String,
+    options: List<String>,
+    selectedOptions: List<String>,
+    onOptionSelected: (String) -> Unit
+) {
     Text(
         text = label,
         style = MaterialTheme.typography.titleMedium,
@@ -357,36 +555,48 @@ fun SectionWithOptions(label: String, options: List<String>, onOptionSelected: (
     ) {
         items(options) { option ->
             if (option == "Custom") {
-                CustomOptionWithTextField(textFieldPlaceholder = "Custom", onValueChange = onOptionSelected)
+                CustomOptionWithTextField(
+                    textFieldPlaceholder = "Custom",
+                    initialValue = "",
+                    onValueChange = onOptionSelected
+                )
             } else {
-                OptionButton(text = option, onClick = { onOptionSelected(option) })
+                OptionButton(
+                    text = option,
+                    isSelected = selectedOptions.contains(option),
+                    onClick = { onOptionSelected(option) }
+                )
             }
         }
     }
 }
 
 @Composable
-fun OptionButton(text: String, onClick: () -> Unit) {
-    var selected by remember { mutableStateOf(false) }
-
-    //TODO Add functionality if other button is selected then this button's colors should begone
+fun OptionButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
     OutlinedButton(
         modifier = Modifier.wrapContentSize(),
-        onClick = { onClick()
-                  selected = !selected},
+        onClick = onClick,
         shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-        colors = ButtonDefaults.outlinedButtonColors(contentColor = if (selected) Color.White else MaterialTheme.colorScheme.secondary,
-            containerColor = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary)
-
+        border = BorderStroke(
+            1.dp,
+            if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+        ),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.secondary,
+            containerColor = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary
+        )
     ) {
         Text(text, fontSize = 14.sp)
     }
 }
 
 @Composable
-fun CustomOptionWithTextField(textFieldPlaceholder: String, onValueChange: (String) -> Unit) {
-    var value by remember { mutableStateOf("") }
+fun CustomOptionWithTextField(
+    textFieldPlaceholder: String,
+    initialValue: String,
+    onValueChange: (String) -> Unit
+) {
+    var value by remember { mutableStateOf(initialValue) }
     OutlinedTextField(
         value = value,
         onValueChange = {
@@ -394,8 +604,7 @@ fun CustomOptionWithTextField(textFieldPlaceholder: String, onValueChange: (Stri
             onValueChange(it)
         },
         label = { Text(textFieldPlaceholder, fontSize = 14.sp) },
-        modifier = Modifier
-            .width(120.dp)
+        modifier = Modifier.width(120.dp)
     )
 }
 

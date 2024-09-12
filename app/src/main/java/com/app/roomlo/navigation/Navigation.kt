@@ -1,6 +1,6 @@
 package com.app.roomlo.navigation
 
-import ListPropertyScaffoldScreen
+import com.app.roomlo.screens.ListPropertyScaffoldScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
