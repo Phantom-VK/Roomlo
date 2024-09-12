@@ -48,6 +48,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.roomlo.dataclasses.Property
 import com.app.roomlo.navigation.Screen
+import com.app.roomlo.ui.theme.dimens
 import java.util.Locale
 
 
@@ -205,12 +206,8 @@ fun AddressScreen(property: Property, onNext: () -> Unit) {
             color = MaterialTheme.colorScheme.secondary
         )
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            label = { Text("Search location") },
-            modifier = Modifier.fillMaxWidth()
-        )
+
+        AddressTextField(value = searchQuery, placeholder = "Search location") { searchQuery = it }
 
         // TODO: Add map component here
 
@@ -225,9 +222,13 @@ fun AddressScreen(property: Property, onNext: () -> Unit) {
                 }
                 onNext()
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = MaterialTheme.dimens.small3)
+                .height(MaterialTheme.dimens.logoSize),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
         ) {
-            Text("Save & Continue")
+            Text("Save & Continue", color = Color.White)
         }
     }
 }
@@ -493,10 +494,11 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                 onClick = onNext,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
-                colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.background)
+                    .padding(bottom = MaterialTheme.dimens.small3)
+                    .height(MaterialTheme.dimens.logoSize),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
             ) {
-                Text("Save and Continue")
+                Text("Save and Continue", color = Color.White)
             }
         }
     }
@@ -579,7 +581,7 @@ fun OptionButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(
             1.dp,
-            if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+            if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary
         ),
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.secondary,
@@ -604,7 +606,19 @@ fun CustomOptionWithTextField(
             onValueChange(it)
         },
         label = { Text(textFieldPlaceholder, fontSize = 14.sp) },
-        modifier = Modifier.width(120.dp)
+        modifier = Modifier.width(120.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.primary,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = MaterialTheme.colorScheme.secondary,
+            unfocusedTextColor = MaterialTheme.colorScheme.background,
+            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+            cursorColor = MaterialTheme.colorScheme.secondary
+        )
     )
 }
 
@@ -633,9 +647,13 @@ fun PropertyImagesUploadView(property: Property, onSubmit: () -> Unit) {
         Spacer(modifier = Modifier.weight(1f))
         Button(
             onClick = onSubmit,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = MaterialTheme.dimens.small3)
+                .height(MaterialTheme.dimens.logoSize),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
         ) {
-            Text("Submit Listing")
+            Text("Submit Listing", color = Color.White)
         }
     }
 }
@@ -643,12 +661,26 @@ fun PropertyImagesUploadView(property: Property, onSubmit: () -> Unit) {
 @Composable
 fun AddressTextField(value: String, placeholder: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(placeholder) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 8.dp),
+        value = value,
+        onValueChange = onValueChange,
+
+        label = { Text(placeholder) },
+
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.primary,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+            focusedTextColor = MaterialTheme.colorScheme.secondary,
+            unfocusedTextColor = MaterialTheme.colorScheme.background,
+            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+            focusedLabelColor = MaterialTheme.colorScheme.secondary,
+            cursorColor = MaterialTheme.colorScheme.secondary
+        )
     )
 }
 
