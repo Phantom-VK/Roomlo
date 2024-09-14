@@ -1,8 +1,15 @@
 package com.app.roomlo.screens
 
+import android.content.Context
+import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +28,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -40,15 +50,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import com.app.roomlo.R
 import com.app.roomlo.dataclasses.Property
 import com.app.roomlo.navigation.Screen
 import com.app.roomlo.ui.theme.dimens
+import com.app.roomlo.viewmodels.PropertyViewModel
 import java.util.Locale
 
 
@@ -56,6 +74,8 @@ import java.util.Locale
 fun ListPropertyScaffoldScreen(navController: NavController) {
     var currentScreen by remember { mutableStateOf(Screen.ListPropertyAddressView) }
     val property = remember { mutableStateOf(Property()) }
+    val context = LocalContext.current
+
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.primary
@@ -96,10 +116,7 @@ fun ListPropertyScaffoldScreen(navController: NavController) {
                     Log.d("PropertyListing", "Details Stage: $property")
                 }
 
-                Screen.ListPropertyImagesView -> PropertyImagesUploadView(property.value) {
-                    // TODO: Handle final submission
-                    Log.d("PropertyListing", "Final Submission: $property")
-                }
+                Screen.ListPropertyImagesView -> PropertyImagesUploadView(property.value, context = context)
 
                 else -> AddressScreen(property = property.value) {
 
@@ -235,6 +252,9 @@ fun AddressScreen(property: Property, onNext: () -> Unit) {
 
 @Composable
 fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
+    val propertyName = remember { mutableStateOf("") }
+    val propertyRent = remember { mutableStateOf("") }
+    val propertySize = remember { mutableStateOf("") }
     val selectedFloor = remember { mutableStateOf(property.floor) }
     val selectedDeposit = remember { mutableStateOf(property.deposit) }
     val selectedMaintenance = remember { mutableStateOf(property.maintenance) }
@@ -249,7 +269,7 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
     val selectedBalcony = remember { mutableStateOf(property.balcony) }
     val selectedBathroom = remember { mutableStateOf(property.bathroom.toString()) }
     val selectedToilet = remember { mutableStateOf(property.toilet.toString()) }
-    val selectedAmenities = remember { mutableStateOf(property.Amenities) }
+    val selectedAmenities = remember { mutableStateOf(property.amenities) }
     LazyColumn(
         modifier = Modifier
             .fillMaxHeight()
@@ -271,8 +291,9 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                     focusedLabelColor = MaterialTheme.colorScheme.secondary,
                     cursorColor = MaterialTheme.colorScheme.secondary
                 ),
-                value = property.propertyName,
-                onValueChange = { property.propertyName = it }
+                value = propertyName.value,
+                onValueChange = { propertyName.value = it
+                    property.propertyName = propertyName.value}
             )
         }
         item {
@@ -296,12 +317,13 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                         focusedLabelColor = MaterialTheme.colorScheme.secondary,
                         cursorColor = MaterialTheme.colorScheme.secondary
                     ),
-                    value = property.rent,
-                    onValueChange = { property.rent = it },
+                    value = propertyRent.value,
+                    onValueChange = { propertyRent.value = it
+                                    property.rent = propertyRent.value},
                     label = { Text("Property Rent") },
                 )
                 OutlinedTextField(
-                    value = property.size,
+                    value = propertySize.value,
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 8.dp),
@@ -317,7 +339,8 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                         focusedLabelColor = MaterialTheme.colorScheme.secondary,
                         cursorColor = MaterialTheme.colorScheme.secondary
                     ),
-                    onValueChange = { property.size = it },
+                    onValueChange = { property.size = it
+                                    property.size = propertySize.value},
                     label = { Text("Property Size") },
                 )
             }
@@ -485,7 +508,7 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                     selectedAmenities.value + amenity
                 }
                 selectedAmenities.value = updatedAmenities
-                property.Amenities = updatedAmenities
+                property.amenities = updatedAmenities
             }
         }
 
@@ -623,7 +646,19 @@ fun CustomOptionWithTextField(
 }
 
 @Composable
-fun PropertyImagesUploadView(property: Property, onSubmit: () -> Unit) {
+fun PropertyImagesUploadView(property: Property, context: Context) {
+    var listOfPhotos by remember { mutableStateOf(property.propertyImages.map { Uri.parse(it) }) }
+    val propertyVM: PropertyViewModel = hiltViewModel()
+    var isSubmitting by remember { mutableStateOf(false) }
+
+    val pickMultipleMedia = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(4)
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            listOfPhotos = uris
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -642,20 +677,40 @@ fun PropertyImagesUploadView(property: Property, onSubmit: () -> Unit) {
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        // TODO: Add image and video upload components
+        Spacer(modifier = Modifier.height(16.dp))
+
+        AddPhotoButton(pickMultipleMedia)
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        LazyImageGrid(uriList = listOfPhotos.map { it.toString() })
 
         Spacer(modifier = Modifier.weight(1f))
+
         Button(
-            onClick = onSubmit,
+            onClick = {
+                isSubmitting = true
+                val updatedProperty = property.copy(propertyImages = listOfPhotos.map { it.toString() })
+                propertyVM.addPropertyToDatabase(updatedProperty, context = context)
+                isSubmitting = !isSubmitting
+
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = MaterialTheme.dimens.small3)
                 .height(MaterialTheme.dimens.logoSize),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary),
+            enabled = !isSubmitting
         ) {
-            Text("Submit Listing", color = Color.White)
+            if (isSubmitting) {
+                CircularProgressIndicator(color = Color.White)
+            } else {
+                Text("Submit Listing", color = Color.White)
+            }
         }
     }
+
+
 }
 
 @Composable
@@ -682,6 +737,45 @@ fun AddressTextField(value: String, placeholder: String, onValueChange: (String)
             cursorColor = MaterialTheme.colorScheme.secondary
         )
     )
+}
+
+@Composable
+fun AddPhotoButton(pickMultipleMedia: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>) {
+    Row(modifier = Modifier.wrapContentSize()) {
+        IconButton(onClick = {
+            pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }) {
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_add_a_photo_24),
+                contentDescription = "Add Photo",
+                modifier = Modifier.size(MaterialTheme.dimens.logoSize)
+            )
+        }
+    }
+}
+
+@Composable
+fun LazyImageGrid(uriList: List<String>) {
+    LazyRow(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = MaterialTheme.dimens.medium2)
+    ) {
+        items(uriList) { uri ->
+            Box(
+                modifier = Modifier
+                    .padding(MaterialTheme.dimens.small1)
+                    .size(100.dp)
+            ) {
+                AsyncImage(
+                    model = uri,
+                    contentDescription = "Property Photo",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)

@@ -30,6 +30,6 @@ data class Property(
     var bathroom: Int = 0,
     var toilet: Int = 0,
     var wifi: String = "",
-    var Amenities: List<String> = emptyList(),
+    var amenities: List<String> = emptyList(),
     var propertyImages: List<String> = emptyList()
 )

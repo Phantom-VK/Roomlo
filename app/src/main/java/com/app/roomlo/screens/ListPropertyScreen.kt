@@ -77,7 +77,7 @@ fun ListPropertyScreen(navController: NavController, preferenceHelper: Preferenc
         )
 
         AddPhotoButton(pickMultipleMedia)
-        LazyImageGrid(uriList = listOfPhotos)
+        LazyImageGrid1(uriList = listOfPhotos)
 
         UploadButton(
             onClick = {
@@ -198,23 +198,10 @@ fun PropertyDetailField(
     )
 }
 
-@Composable
-fun AddPhotoButton(pickMultipleMedia: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>) {
-    Row(modifier = Modifier.wrapContentSize()) {
-        IconButton(onClick = {
-            pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-        }) {
-            Icon(
-                imageVector = ImageVector.vectorResource(id = R.drawable.baseline_add_a_photo_24),
-                contentDescription = "Add Photo",
-                modifier = Modifier.size(MaterialTheme.dimens.logoSize)
-            )
-        }
-    }
-}
+
 
 @Composable
-fun LazyImageGrid(uriList: List<Uri>) {
+fun LazyImageGrid1(uriList: List<Uri>) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()

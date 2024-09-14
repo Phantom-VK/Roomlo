@@ -17,26 +17,23 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
-
 @Singleton
 class PropertyRepository @Inject constructor(
     private val preferenceHelper: PreferenceHelper
 ) {
-
     private val db: FirebaseFirestore = Firebase.firestore
     private val storageRef = Firebase.storage.reference
-    private val userId: String? = preferenceHelper.userId?.trim()
+    private val userId: String? get() = preferenceHelper.userId?.trim()
 
     suspend fun fetchUserProperties(): PropertiesList {
         return try {
-            val allProperties = userId?.let { userId ->
+            val allProperties = userId?.let { uid ->
                 db.collection("Properties")
-                    .document(userId)
+                    .document(uid)
                     .collection("UserProperties")
                     .get()
                     .await()
-                    .documents
-                    .mapNotNull { it.toObject<Property>() }
+                    .toObjects(Property::class.java)
             } ?: emptyList()
 
             PropertiesList(propertyList = allProperties)
@@ -47,18 +44,10 @@ class PropertyRepository @Inject constructor(
 
     suspend fun fetchAllProperties(): PropertiesList {
         return try {
-            val allProperties = db.collection("Properties")
+            val allProperties = db.collectionGroup("UserProperties")
                 .get()
                 .await()
-                .documents
-                .flatMap { document ->
-                    document.reference
-                        .collection("UserProperties")
-                        .get()
-                        .await()
-                        .documents
-                        .mapNotNull { it.toObject<Property>() }
-                }
+                .toObjects(Property::class.java)
 
             PropertiesList(propertyList = allProperties)
         } catch (e: Exception) {
@@ -68,17 +57,16 @@ class PropertyRepository @Inject constructor(
 
     suspend fun addPropertyToDatabase(property: Property): Boolean {
         return try {
-            val propertyMap = property.toMap()
-            userId?.let { userId ->
+            userId?.let { uid ->
                 db.collection("Properties")
-                    .document(userId)
+                    .document(uid)
                     .collection("UserProperties")
                     .document(property.propertyName)
-                    .set(propertyMap)
+                    .set(property)
                     .await()
 
                 db.collection("Properties")
-                    .document(userId)
+                    .document(uid)
                     .set(mapOf("isEmpty" to false), SetOptions.merge())
                     .await()
             }
@@ -90,12 +78,12 @@ class PropertyRepository @Inject constructor(
 
     suspend fun updatePropertyDetails(updatedProperty: Property): Boolean {
         return try {
-            userId?.let { userId ->
+            userId?.let { uid ->
                 db.collection("Properties")
-                    .document(userId)
+                    .document(uid)
                     .collection("UserProperties")
                     .document(updatedProperty.propertyName)
-                    .update(updatedProperty.toMap())
+                    .set(updatedProperty, SetOptions.merge())
                     .await()
             }
             true
@@ -120,39 +108,23 @@ class PropertyRepository @Inject constructor(
             }
             updatePropertyImages(property, imageList)
         } catch (e: Exception) {
-            Toast.makeText(context, "Upload failed: ${e.message}", Toast.LENGTH_SHORT).show()
             false
         }
     }
 
     private suspend fun updatePropertyImages(property: Property, imageList: List<String>): Boolean {
-        return userId?.let { userId ->
-            try {
+        return try {
+            userId?.let { uid ->
                 db.collection("Properties")
-                    .document(userId)
+                    .document(uid)
                     .collection("UserProperties")
                     .document(property.propertyName)
                     .update("propertyImages", imageList)
                     .await()
-                true
-            } catch (e: Exception) {
-                false
             }
-        } ?: false
-    }
-
-    private fun Property.toMap(): Map<String, Any?> {
-        return mapOf(
-            "owner" to owner,
-            "propertyName" to propertyName,
-            "rent" to rent,
-            "sharingType" to sharingType,
-            "size" to size,
-            "createdAt" to createdAt,
-            "updatedAt" to updatedAt,
-            "propertyImages" to propertyImages,
-            "ownerId" to ownerId,
-            "address" to address
-        ).filterValues { it != null }
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }
