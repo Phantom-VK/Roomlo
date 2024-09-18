@@ -37,6 +37,7 @@ class SharedViewModel @Inject constructor(
             val userDetails = userRepository.fetchUserDetails()
             _userDetails.value = userDetails
         }
+
     }
 
     fun fetchUserProperties() {
@@ -58,6 +59,8 @@ class SharedViewModel @Inject constructor(
             }
 
     }
+
+
 }
 
 

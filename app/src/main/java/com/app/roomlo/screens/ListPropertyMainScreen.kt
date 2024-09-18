@@ -28,7 +28,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -55,23 +54,22 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.app.roomlo.R
 import com.app.roomlo.dataclasses.Property
 import com.app.roomlo.navigation.Screen
+import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.ui.theme.dimens
 import com.app.roomlo.viewmodels.PropertyViewModel
 import java.util.Locale
 
 
 @Composable
-fun ListPropertyScaffoldScreen(navController: NavController) {
+fun ListPropertyScaffoldScreen(navController: NavController, preferenceHelper: PreferenceHelper) {
     var currentScreen by remember { mutableStateOf(Screen.ListPropertyAddressView) }
     val property = remember { mutableStateOf(Property()) }
     val context = LocalContext.current
@@ -116,7 +114,7 @@ fun ListPropertyScaffoldScreen(navController: NavController) {
                     Log.d("PropertyListing", "Details Stage: $property")
                 }
 
-                Screen.ListPropertyImagesView -> PropertyImagesUploadView(property.value, context = context)
+                Screen.ListPropertyImagesView -> PropertyImagesUploadView(property.value, context = context, preferenceHelper = preferenceHelper)
 
                 else -> AddressScreen(property = property.value) {
 
@@ -339,7 +337,7 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                         focusedLabelColor = MaterialTheme.colorScheme.secondary,
                         cursorColor = MaterialTheme.colorScheme.secondary
                     ),
-                    onValueChange = { property.size = it
+                    onValueChange = { propertySize.value = it
                                     property.size = propertySize.value},
                     label = { Text("Property Size") },
                 )
@@ -621,6 +619,7 @@ fun CustomOptionWithTextField(
     initialValue: String,
     onValueChange: (String) -> Unit
 ) {
+    //TODO Take care of custom option bug
     var value by remember { mutableStateOf(initialValue) }
     OutlinedTextField(
         value = value,
@@ -646,7 +645,7 @@ fun CustomOptionWithTextField(
 }
 
 @Composable
-fun PropertyImagesUploadView(property: Property, context: Context) {
+fun PropertyImagesUploadView(property: Property, context: Context, preferenceHelper: PreferenceHelper) {
     var listOfPhotos by remember { mutableStateOf(property.propertyImages.map { Uri.parse(it) }) }
     val propertyVM: PropertyViewModel = hiltViewModel()
     var isSubmitting by remember { mutableStateOf(false) }
@@ -690,7 +689,13 @@ fun PropertyImagesUploadView(property: Property, context: Context) {
         Button(
             onClick = {
                 isSubmitting = true
-                val updatedProperty = property.copy(propertyImages = listOfPhotos.map { it.toString() })
+                val updatedProperty = property.copy(propertyImages = listOfPhotos.map { it.toString() },
+                    owner = preferenceHelper.username,
+                    ownerId = preferenceHelper.userId.toString() ,
+                    ownerEmail = preferenceHelper.useremail,
+                    ownerMobNo = preferenceHelper.mobilenumber)
+
+                //TODO handle error
                 propertyVM.addPropertyToDatabase(updatedProperty, context = context)
                 isSubmitting = !isSubmitting
 
@@ -778,8 +783,4 @@ fun LazyImageGrid(uriList: List<String>) {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun ListPropertyScaffoldScreenPreview() {
-    ListPropertyScaffoldScreen(navController = rememberNavController())
-}
+

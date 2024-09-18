@@ -43,8 +43,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepo(preferenceHelper: PreferenceHelper): AuthRepository {
-        return AuthRepository(preferenceHelper)
+    fun provideAuthRepo(preferenceHelper: PreferenceHelper, sharedViewModel: SharedViewModel): AuthRepository {
+        return AuthRepository(preferenceHelper, sharedViewModel)
     }
 
 

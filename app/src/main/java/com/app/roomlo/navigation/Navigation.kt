@@ -9,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.screens.HomeScreen
-import com.app.roomlo.screens.ListPropertyScreen
 import com.app.roomlo.screens.MapScreen
 import com.app.roomlo.screens.ProfileScreen
 import com.app.roomlo.screens.SignInScreen
@@ -25,7 +24,8 @@ fun Navigation(
     NavHost(navController = navController, startDestination = Screen.SplashScreen.route) {
         composable(Screen.SplashScreen.route) {
             SplashScreen(
-                navController = navController
+                navController = navController,
+                preferenceHelper = preferenceHelper
             )
         }
 
@@ -50,8 +50,7 @@ fun Navigation(
 
         composable(Screen.SignInScreen.route) {
             SignInScreen(
-                navController = navController,
-                preferenceHelper = preferenceHelper
+                navController = navController
             )
         }
 
@@ -61,15 +60,12 @@ fun Navigation(
             )
         }
 
-        //old screen for listing property
         composable(Screen.ListPropertyScreen.route){
-            ListPropertyScreen(navController = navController, preferenceHelper)
+            ListPropertyScaffoldScreen(navController = navController, preferenceHelper)
 
         }
 
-        composable(Screen.ListPropertyScaffoldScreen.route){
-            ListPropertyScaffoldScreen(navController = navController)
-        }
+
 
 
 

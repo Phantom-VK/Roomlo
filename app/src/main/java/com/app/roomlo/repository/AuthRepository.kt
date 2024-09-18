@@ -1,5 +1,7 @@
 package com.app.roomlo.repository
 
+import android.util.Log
+import com.app.roomlo.viewmodels.SharedViewModel
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -11,7 +13,7 @@ import javax.inject.Singleton
 import kotlin.coroutines.resumeWithException
 
 @Singleton
-class AuthRepository @Inject constructor( private val preferenceHelper: PreferenceHelper) {
+class AuthRepository @Inject constructor( private val preferenceHelper: PreferenceHelper, private val sharedViewModel: SharedViewModel) {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 
@@ -33,10 +35,11 @@ class AuthRepository @Inject constructor( private val preferenceHelper: Preferen
         auth.signOut()
     }
 
-     fun updateUserIdInPreferences() {
+     fun updateUserIdInPreference() {
         auth.currentUser?.uid?.let {
             preferenceHelper.userId = it
         }
+
     }
 
 }

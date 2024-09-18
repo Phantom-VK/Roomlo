@@ -59,7 +59,6 @@ fun HomeScreen(
     val context = LocalContext.current
 
     val authViewModel: AuthViewModel = hiltViewModel()
-    val sharedViewModel: SharedViewModel = hiltViewModel()
     val permissions = Permission()
 
     if (!permissions.hasPermissions(context = context)){
@@ -70,20 +69,7 @@ fun HomeScreen(
         // Exit the app when back button is pressed
         (context as? Activity)?.finish()
     }
-    // Fetch user details
-    val userId = preferenceHelper.userId
-    if (userId != null) {
-        sharedViewModel.fetchUserDetails()
-        if(preferenceHelper.username.isEmpty())
-            sharedViewModel.userDetails.collectAsState().value?.let { user ->
-                preferenceHelper.username = user.name
-            }
 
-        if(preferenceHelper.userId!!.isEmpty())
-            sharedViewModel.userDetails.collectAsState().value?.let { user ->
-                preferenceHelper.userId = user.uid
-            }
-    }
 
 
     // Checking authentication first

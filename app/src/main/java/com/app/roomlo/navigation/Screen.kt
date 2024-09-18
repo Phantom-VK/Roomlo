@@ -11,8 +11,6 @@ enum class Screen(var route: String) {
     WishlistView("wishlist_screen"),
     ListPropertyScreen("list_property_screen"),
     ListPropertyAddressView("Address"),
-    ListPropertyScaffoldScreen("list_property_scaffold_screen"),
     ListPropertyDetailsView("Property Details"),
     ListPropertyImagesView("Property Images"),
-    ListPropertyCurrentScreen(ListPropertyAddressView.route)
 }

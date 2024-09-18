@@ -1,5 +1,6 @@
 package com.app.roomlo.screens
 
+import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -18,15 +19,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.roomlo.R
 import com.app.roomlo.navigation.Screen
+import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.viewmodels.SharedViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
-    navController: NavController
+    navController: NavController,
+    preferenceHelper: PreferenceHelper
 
 ) {
-    val sharedViewModel: SharedViewModel = hiltViewModel<SharedViewModel>()
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
@@ -45,11 +47,11 @@ fun SplashScreen(
 
         // Delay to show splash screen and allow fetching data
         delay(1000L)
-
         // Navigate based on authentication state or fetched user details
-        if (sharedViewModel.userDetails.value != null) {
+        if(preferenceHelper.userId != null){
+
             navController.navigate(Screen.HomeView.route)
-        } else {
+        }else{
             navController.navigate(Screen.SignInScreen.route)
         }
     }

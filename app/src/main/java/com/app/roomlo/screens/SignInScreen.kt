@@ -1,5 +1,6 @@
 package com.app.roomlo.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -57,10 +58,8 @@ import com.app.roomlo.viewmodels.SharedViewModel
 @Composable
 fun SignInScreen(
     navController: NavHostController,
-    preferenceHelper: PreferenceHelper
 ) {
 
-    val sharedViewModel: SharedViewModel = hiltViewModel<SharedViewModel>()
     val authViewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
 
     var email by remember {
@@ -77,10 +76,6 @@ fun SignInScreen(
     val authState by authViewModel.authState.collectAsState()
 
 
-    val userId = preferenceHelper.userId
-    if (userId != null) {
-        sharedViewModel.fetchUserDetails()
-    }
 
     //TODO White screen after splashscreen page bug
     LaunchedEffect(authState) {

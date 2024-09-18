@@ -17,7 +17,7 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val dbViewModel: UserViewModel,
     private val sharedViewModel: SharedViewModel,
-    preferenceHelper: PreferenceHelper,
+    private val preferenceHelper: PreferenceHelper,
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
@@ -26,8 +26,6 @@ class AuthViewModel @Inject constructor(
     private val userId = preferenceHelper.userId
 
     private val _eventChannel = Channel<AuthEvent>()
-
-
 
     init {
         checkAuthStatus()
@@ -39,6 +37,9 @@ class AuthViewModel @Inject constructor(
             AuthState.Unauthenticated
         } else {
             AuthState.Authenticated
+        }
+        if (currentUser != null) {
+            fetchAndUpdateUserDetails()
         }
     }
 
@@ -53,10 +54,29 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 authRepository.login(email, password)
-                authRepository.updateUserIdInPreferences()
+                authRepository.updateUserIdInPreference()
                 _authState.value = AuthState.Authenticated
+                fetchAndUpdateUserDetails()
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Something went wrong")
+            }
+        }
+    }
+
+    private fun fetchAndUpdateUserDetails() {
+        viewModelScope.launch {
+            sharedViewModel.fetchUserDetails()
+            sharedViewModel.userDetails.collect { user ->
+                user?.let {
+                    preferenceHelper.apply {
+                        username = it.name
+                        useremail = it.email
+                        mobilenumber = it.mobilenumber
+                        profileImageUrl = it.profileImageUrl
+                        userAddress = it.address
+                        wpnumber = it.wpnumber
+                    }
+                }
             }
         }
     }
@@ -75,7 +95,7 @@ class AuthViewModel @Inject constructor(
             try {
                 authRepository.signup(email, password)?.let { firebaseUser ->
                     dbViewModel.addUserToDatabase(user, context, firebaseUser.uid)
-                    authRepository.updateUserIdInPreferences()
+                    authRepository.updateUserIdInPreference()
                     if (userId != null) {
                         sharedViewModel.fetchUserDetails()
                     }

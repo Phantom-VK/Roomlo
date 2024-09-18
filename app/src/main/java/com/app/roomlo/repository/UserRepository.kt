@@ -1,5 +1,6 @@
 package com.app.roomlo.repository
 
+import android.util.Log
 import com.app.roomlo.dataclasses.User
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,7 +24,9 @@ class UserRepository @Inject constructor (private val preferenceHelper: Preferen
             userId?.let {
                 val document = db.collection("Users").document(it).get().await()
                 document.toObject<User>()
+
             }
+
         } catch (e: FirebaseFirestoreException) {
             null
         }
