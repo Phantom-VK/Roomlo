@@ -606,7 +606,7 @@ fun OptionButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
         ),
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.secondary,
-            containerColor = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary
+            containerColor = if (isSelected) Color.Blue else MaterialTheme.colorScheme.primary
         )
     ) {
         Text(text, fontSize = 14.sp)
