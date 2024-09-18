@@ -29,6 +29,7 @@ import com.app.roomlo.screens.components.ProfileImage
 import com.app.roomlo.screens.components.UnderlineTextField
 import com.app.roomlo.ui.theme.baloo
 import com.app.roomlo.ui.theme.dimens
+import com.app.roomlo.viewmodels.AuthViewModel
 import com.app.roomlo.viewmodels.SharedViewModel
 import com.app.roomlo.viewmodels.UserProfileViewModel
 import com.app.roomlo.viewmodels.UserViewModel
@@ -38,13 +39,13 @@ import com.app.roomlo.viewmodels.UserViewModel
 fun ProfileScreen(
     navController: NavController,
     preferenceHelper: PreferenceHelper,
-    sharedViewModel: SharedViewModel = hiltViewModel()
+    sharedViewModel: SharedViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     val profileViewModel: UserProfileViewModel = hiltViewModel()
     val dbViewModel: UserViewModel = hiltViewModel()
 
-    //TODO make profile fields editable
 
     var name by remember { mutableStateOf(preferenceHelper.username) }
     var email by remember { mutableStateOf(preferenceHelper.useremail) }
@@ -52,19 +53,11 @@ fun ProfileScreen(
     var address by remember { mutableStateOf(preferenceHelper.userAddress) }
     var wpNumber by remember { mutableStateOf(preferenceHelper.wpnumber) }
 
-    var isEditing by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         sharedViewModel.fetchUserDetails()
     }
 
-    sharedViewModel.userDetails.collectAsState().value?.let { user ->
-        name = user.name
-        email = user.email
-        mobileNumber = user.mobilenumber
-        address = user.address
-        wpNumber = user.wpnumber
-    }
 
     Column(
         modifier = Modifier
@@ -146,15 +139,7 @@ fun ProfileScreen(
 
             Button(
                 onClick = {
-                    if (isEditing) {
-                        // Save changes
-                        preferenceHelper.apply {
-                            username = name
-                            useremail = email
-                            mobilenumber = mobileNumber
-                            userAddress = address
-                            wpnumber = wpNumber
-                        }
+
 
                         val updatedUser = User(
                             name = name,
@@ -165,15 +150,14 @@ fun ProfileScreen(
                         )
 
                         dbViewModel.updateUserDetails(updatedUser, context)
-                        sharedViewModel.fetchUserDetails()
-                    }
-                    isEditing = !isEditing
+                        authViewModel.fetchAndUpdateUserDetails()
+
                 },
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimary),
                 modifier = Modifier.padding(top = MaterialTheme.dimens.small1)
             ) {
                 Text(
-                    text = if (isEditing) "Save" else "Edit",
+                    text ="Save",
                     color = MaterialTheme.colorScheme.secondary
                 )
             }

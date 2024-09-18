@@ -63,7 +63,7 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun fetchAndUpdateUserDetails() {
+     fun fetchAndUpdateUserDetails() {
         viewModelScope.launch {
             sharedViewModel.fetchUserDetails()
             sharedViewModel.userDetails.collect { user ->
