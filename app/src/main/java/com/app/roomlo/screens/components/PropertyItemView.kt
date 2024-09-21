@@ -20,12 +20,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Share
@@ -56,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -143,9 +146,9 @@ fun PropertyItemView(
                         }
                     ) {
                         Icon(
-                            Icons.Default.ArrowBack,
+                            painterResource(id =R.drawable.baseline_arrow_back_ios_24 ),
                             contentDescription = "Previous",
-                            tint = Color.White
+                            tint = Color.Black
                         )
                     }
                     IconButton(
@@ -158,9 +161,9 @@ fun PropertyItemView(
                         }
                     ) {
                         Icon(
-                            Icons.Default.ArrowForward,
+                            painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
                             contentDescription = "Next",
-                            tint = Color.White
+                            tint = Color.Black
                         )
                     }
                 }
@@ -181,37 +184,44 @@ fun PropertyItemView(
                         style = MaterialTheme.typography.titleMedium,  // Reduced font size
                         fontWeight = FontWeight.Bold
                     )
-                    Text(
-                        text = propertyItem.sharingType,
-                        style = MaterialTheme.typography.bodyMedium  // Reduced font size
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        IconButton(onClick = { /* TODO */ }, modifier = Modifier.size(32.dp)) {  // Reduced size
+                            Icon(Icons.Filled.Share, contentDescription = "Share")
+                        }
+                        Spacer(Modifier.width(MaterialTheme.dimens.small1))
+                        IconButton(onClick = { /* TODO */ }, modifier = Modifier.size(32.dp)) {  // Reduced size
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_favorite_border_24),
+                                contentDescription = "Favorite"
+                            )
+                        }
+                        Spacer(Modifier.width(MaterialTheme.dimens.small1))
+                        IconButton(onClick = { /* TODO */ }, modifier = Modifier.size(32.dp)) {  // Reduced size
+                            Icon(Icons.Outlined.LocationOn, contentDescription = "Location")
+                        }
+                    }
                 }
-                Spacer(modifier = Modifier.height(4.dp))  // Reduced spacing
-                Text(
-                    text = "${propertyItem.size} Sq.ft",
-                    style = MaterialTheme.typography.bodySmall  // Reduced font size
-                )
-                Text(
-                    text = "Owner: ${propertyItem.owner}",
-                    style = MaterialTheme.typography.bodySmall,  // Reduced font size
-                    textDecoration = TextDecoration.Underline
-                )
-                Spacer(modifier = Modifier.height(8.dp))  // Reduced spacing
+                Spacer(modifier = Modifier.height(4.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    IconButton(onClick = { /* TODO */ }, modifier = Modifier.size(32.dp)) {  // Reduced size
-                        Icon(Icons.Filled.Share, contentDescription = "Share")
-                    }
-                    IconButton(onClick = { /* TODO */ }, modifier = Modifier.size(32.dp)) {  // Reduced size
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_favorite_border_24),
-                            contentDescription = "Favorite"
+                ){
+                    Column{
+                        Text(
+                            text = "${propertyItem.sharingType} Sharing ",
+                            style = MaterialTheme.typography.bodySmall
                         )
-                    }
-                    IconButton(onClick = { /* TODO */ }, modifier = Modifier.size(32.dp)) {  // Reduced size
-                        Icon(Icons.Outlined.LocationOn, contentDescription = "Location")
+                        Text(
+                            text = "${propertyItem.size} ",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            text = "Owner: ${propertyItem.owner}",
+                            style = MaterialTheme.typography.bodySmall,  // Reduced font size
+                            textDecoration = TextDecoration.Underline
+                        )
                     }
                     Button(
                         onClick = { /* TODO */ },
@@ -223,6 +233,8 @@ fun PropertyItemView(
                         Text("Book Now", style = MaterialTheme.typography.labelMedium)  // Reduced font size
                     }
                 }
+
+
             }
         }
     }
@@ -282,6 +294,45 @@ private fun SlidingImages(
                 }
             }
     )
+    
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PropertyItemViewPreview() {
+    val sampleProperty = Property(
+        owner = "John Doe",
+        propertyName = "Green View Apartment",
+        ownerId = "OWN12345",
+        ownerMobNo = "+91 9876543210",
+        ownerEmail = "johndoe@example.com",
+        rent = "15000",
+        sharingType = "Double",
+        size = "1200 sqft",
+        address = "123 Green View Street",
+        city = "Mumbai",
+        locality = "Andheri West",
+        landmark = "Near Green Park",
+        floor = "3rd",
+        createdAt = "2024-09-10",
+        updatedAt = "2024-09-17",
+        housetype = "Apartment",
+        roomtype = "2BHK",
+        availablefor = "Family",
+        deposit = "2 Months",
+        maintenance = "Included",
+        electricbill = "Separate",
+        parking = "Car",
+        nonveg = "Allowed",
+        balcony = "Yes",
+        bathroom = 2,
+        toilet = 2,
+        wifi = "Available",
+        amenities = listOf("AC", "TV", "Fridge", "Washing Machine"),
+        propertyImages = listOf("image1.jpg", "image2.jpg", "image3.jpg")
+    )
+
+    PropertyItemView(propertyItem =sampleProperty )
 }
 
 
