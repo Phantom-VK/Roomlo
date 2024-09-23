@@ -63,6 +63,7 @@ fun HomeScreen(
 
     if (!permissions.hasPermissions(context = context)){
         permissions.PermissionLauncher(context = context)
+
     }
 
     BackHandler {

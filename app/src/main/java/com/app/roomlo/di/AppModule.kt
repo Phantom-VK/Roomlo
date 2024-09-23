@@ -6,6 +6,7 @@ import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.repository.PropertyRepository
 import com.app.roomlo.repository.UserRepository
 import com.app.roomlo.viewmodels.AuthViewModel
+import com.app.roomlo.viewmodels.LocationViewModel
 import com.app.roomlo.viewmodels.UserViewModel
 import com.app.roomlo.viewmodels.PropertyViewModel
 import com.app.roomlo.viewmodels.SharedViewModel
@@ -87,5 +88,11 @@ object AppModule {
     @Singleton
     fun providePropertyVM(propertyRepository: PropertyRepository): PropertyViewModel {
         return PropertyViewModel(propertyRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationVM():LocationViewModel{
+        return LocationViewModel()
     }
 }

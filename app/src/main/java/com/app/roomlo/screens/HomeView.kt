@@ -193,8 +193,8 @@ fun HomeView(paddingValues: PaddingValues) {
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun HomeViewPreview() {
-    HomeView(paddingValues = PaddingValues())
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeViewPreview() {
+//    HomeView(paddingValues = PaddingValues())
+//}

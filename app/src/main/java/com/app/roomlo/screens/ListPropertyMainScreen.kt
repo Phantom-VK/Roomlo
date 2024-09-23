@@ -8,6 +8,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -62,9 +65,21 @@ import coil.compose.AsyncImage
 import com.app.roomlo.R
 import com.app.roomlo.dataclasses.Property
 import com.app.roomlo.navigation.Screen
+import com.app.roomlo.repository.LocationUtils
 import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.ui.theme.dimens
+import com.app.roomlo.viewmodels.LocationViewModel
 import com.app.roomlo.viewmodels.PropertyViewModel
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.maps.android.compose.Circle
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import java.util.Locale
 
 
@@ -225,6 +240,7 @@ fun AddressScreen(property: Property, onNext: () -> Unit) {
         AddressTextField(value = searchQuery, placeholder = "Search location") { searchQuery = it }
 
         // TODO: Add map component here
+        MapScreen(viewModel = hiltViewModel<LocationViewModel>())
 
         Spacer(modifier = Modifier.weight(1f))
         Button(
@@ -779,6 +795,56 @@ fun LazyImageGrid(uriList: List<String>) {
                     contentScale = ContentScale.Crop
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun MapScreen(viewModel: LocationViewModel) {
+    //TODO Location is not updating
+    val context = LocalContext.current
+    val locationUtils = LocationUtils(context, viewModel)
+    locationUtils.requestLocationUpdates(viewModel)
+    val location = viewModel.location.value
+    val latlng = if (location != null) LatLng(location.latitude, location.longitude) else LatLng(0.0, 0.0)
+
+
+
+
+
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(latlng, 15f)
+    }
+
+    val isDarkTheme = isSystemInDarkTheme()
+    val mapStyle = if (isDarkTheme) R.raw.map_dark_style else R.raw.map_light_style
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp)  // Fixed height for the map
+            .padding(vertical = 16.dp, horizontal = 8.dp)
+    ) {
+        GoogleMap(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(16.dp))
+                .border(2.dp, MaterialTheme.colorScheme.background, RoundedCornerShape(16.dp)),
+            cameraPositionState = cameraPositionState,
+            properties = MapProperties(
+                mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
+                    LocalContext.current, mapStyle
+                )
+            )
+        ) {
+              Marker(state = rememberMarkerState(position = latlng))
+            Circle(
+                center = latlng,
+                radius = 200.0,  // Radius in meters
+                strokeColor = MaterialTheme.colorScheme.primary,
+                strokeWidth = 2f,
+                fillColor = MaterialTheme.colorScheme.tertiary
+            )
         }
     }
 }

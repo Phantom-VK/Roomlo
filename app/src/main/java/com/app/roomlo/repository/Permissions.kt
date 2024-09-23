@@ -13,6 +13,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.core.content.ContextCompat
 
 
+
+
 class Permission {
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -29,6 +31,14 @@ class Permission {
             context,
             Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
         ) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -37,10 +47,21 @@ class Permission {
         val requestPermissions =
             rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { results ->
                 if (results.all { it.value }) {
-
-
+                    // All permissions granted
                 } else {
-                    Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
+                    // Check specifically for location permissions
+                    when {
+                        results[Manifest.permission.ACCESS_FINE_LOCATION] == true -> {
+                            // Precise location access granted.
+                        }
+                        results[Manifest.permission.ACCESS_COARSE_LOCATION] == true -> {
+                            // Only approximate location access granted.
+                        }
+                        else -> {
+                            // Handle case where location permissions are denied
+                        }
+                    }
+                    Toast.makeText(context, "Some permissions were denied", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -50,18 +71,28 @@ class Permission {
                     arrayOf(
                         Manifest.permission.READ_MEDIA_IMAGES,
                         Manifest.permission.READ_MEDIA_VIDEO,
-                        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED
+                        Manifest.permission.READ_MEDIA_VISUAL_USER_SELECTED,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
                     )
                 )
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestPermissions.launch(
                     arrayOf(
                         Manifest.permission.READ_MEDIA_IMAGES,
-                        Manifest.permission.READ_MEDIA_VIDEO
+                        Manifest.permission.READ_MEDIA_VIDEO,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
                     )
                 )
             } else {
-                requestPermissions.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+                requestPermissions.launch(
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
             }
         }
     }
