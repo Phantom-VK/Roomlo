@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="AppInsightsSettings">
-    <option name="selectedTabId" value="Firebase Crashlytics" />
+    <option name="selectedTabId" value="Android Vitals" />
     <option name="tabSettings">
       <map>
         <entry key="Firebase Crashlytics">
@@ -10,7 +10,7 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.app.roomlo" />
-                  <option name="mobileSdkAppId" value="1:39261818332:android:90c103d0762fc890089319" />
+                  <option name="mobileSdkAppId" value="1:39261818332:android:67aacfc497ba6fcf089319" />
                   <option name="projectId" value="roomlo-bbf77" />
                   <option name="projectNumber" value="39261818332" />
                 </ConnectionSetting>

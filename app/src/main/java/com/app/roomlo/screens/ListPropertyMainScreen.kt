@@ -44,9 +44,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,6 +65,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.app.roomlo.R
+import com.app.roomlo.dataclasses.LocationData
 import com.app.roomlo.dataclasses.Property
 import com.app.roomlo.navigation.Screen
 import com.app.roomlo.repository.LocationUtils
@@ -77,7 +80,6 @@ import com.google.maps.android.compose.Circle
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import java.util.Locale
@@ -87,7 +89,9 @@ import java.util.Locale
 fun ListPropertyScaffoldScreen(navController: NavController, preferenceHelper: PreferenceHelper) {
     var currentScreen by remember { mutableStateOf(Screen.ListPropertyAddressView) }
     val property = remember { mutableStateOf(Property()) }
+    val viewModel: LocationViewModel = hiltViewModel()
     val context = LocalContext.current
+
 
 
     Scaffold(
@@ -119,19 +123,18 @@ fun ListPropertyScaffoldScreen(navController: NavController, preferenceHelper: P
             )
 
             when (currentScreen) {
-                Screen.ListPropertyAddressView -> AddressScreen(property.value) {
+                Screen.ListPropertyAddressView -> AddressScreen(property.value, currentLocation = viewModel.currentlocation.value ) {
                     currentScreen = Screen.ListPropertyDetailsView
-                    Log.d("PropertyListing", "Address Stage: $property")
+
                 }
 
                 Screen.ListPropertyDetailsView -> PropertyDetailsFormScreen(property.value) {
                     currentScreen = Screen.ListPropertyImagesView
-                    Log.d("PropertyListing", "Details Stage: $property")
                 }
 
                 Screen.ListPropertyImagesView -> PropertyImagesUploadView(property.value, context = context, preferenceHelper = preferenceHelper)
 
-                else -> AddressScreen(property = property.value) {
+                else -> AddressScreen(property = property.value,currentLocation = viewModel.currentlocation.value ) {
 
                 }
             }
@@ -208,61 +211,83 @@ fun ScreenTab(label: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun AddressScreen(property: Property, onNext: () -> Unit) {
-    var city by remember { mutableStateOf(property.city) }
-    var locality by remember { mutableStateOf(property.locality) }
-    var landmark by remember { mutableStateOf(property.landmark) }
-    var searchQuery by remember { mutableStateOf("") }
+fun AddressScreen(property: Property, currentLocation: LocationData? = null, onNext: () -> Unit) {
+    // Use rememberSaveable to retain UI state during recomposition
+    var city by rememberSaveable { mutableStateOf(property.city) }
+    var locality by rememberSaveable { mutableStateOf(property.locality) }
+    var landmark by rememberSaveable { mutableStateOf(property.landmark) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
-    Column(
+    val currentLatitude = currentLocation?.latitude ?: 0.0
+    val currentLongitude = currentLocation?.longitude ?: 0.0
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp) // Add space between items
     ) {
-        AddressTextField(value = city, placeholder = "City") { city = it }
-        AddressTextField(value = locality, placeholder = "Locality") { locality = it }
-        AddressTextField(value = landmark, placeholder = "Landmark/Street") { landmark = it }
-        Spacer(modifier = Modifier.height(16.dp))
-        Divider()
-
-        Text(
-            text = "Mark your Property on Map",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.padding(vertical = 8.dp)
-        )
-        Text(
-            text = "Set property location by using search box and move the map",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.secondary
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        AddressTextField(value = searchQuery, placeholder = "Search location") { searchQuery = it }
-
-        // TODO: Add map component here
-        MapScreen(viewModel = hiltViewModel<LocationViewModel>())
-
-        Spacer(modifier = Modifier.weight(1f))
-        Button(
-            onClick = {
-                property.apply {
-                    this.city = city
-                    this.locality = locality
-                    this.landmark = landmark
-                    address = "$city, $locality, $landmark"
-                }
-                onNext()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = MaterialTheme.dimens.small3)
-                .height(MaterialTheme.dimens.logoSize),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
-        ) {
-            Text("Save & Continue", color = Color.White)
+        item {
+            AddressTextField(value = city, placeholder = "City") { city = it }
+        }
+        item {
+            AddressTextField(value = locality, placeholder = "Locality") { locality = it }
+        }
+        item {
+            AddressTextField(value = landmark, placeholder = "Landmark/Street") { landmark = it }
+        }
+        item {
+            Divider()
+        }
+        item {
+            Text(
+                text = "Mark your Property on Map",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+        item {
+            Text(
+                text = "Set property location by using the search box and move the map",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
+        item {
+            AddressTextField(value = searchQuery, placeholder = "Search location") { searchQuery = it }
+        }
+        item {
+            MapScreen(viewModel = hiltViewModel<LocationViewModel>(), currentLatitude, currentLongitude, onLocationSelected = { lat, lng ->
+                property.latitude = lat
+                property.longitude = lng
+            })
+        }
+        item {
+            Spacer(modifier = Modifier.height(10.dp))
+        }
+        item {
+            Button(
+                onClick = {
+                    property.apply {
+                        this.city = city
+                        this.locality = locality
+                        this.landmark = landmark
+                        address = "$city, $locality, $landmark"
+                    }
+                    onNext()
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = MaterialTheme.dimens.small3)
+                    .height(MaterialTheme.dimens.logoSize),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
+            ) {
+                Text("Save & Continue", color = Color.White)
+            }
         }
     }
 }
+
 
 @Composable
 fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
@@ -711,8 +736,9 @@ fun PropertyImagesUploadView(property: Property, context: Context, preferenceHel
                     ownerEmail = preferenceHelper.useremail,
                     ownerMobNo = preferenceHelper.mobilenumber)
 
-                //TODO handle error
+                //TODO handle error, images are not getting upploaded also navigate to list property screen
                 propertyVM.addPropertyToDatabase(updatedProperty, context = context)
+                propertyVM.uploadPropertyImages(property, context)
                 isSubmitting = !isSubmitting
 
             },
@@ -800,29 +826,35 @@ fun LazyImageGrid(uriList: List<String>) {
 }
 
 @Composable
-fun MapScreen(viewModel: LocationViewModel) {
-    //TODO Location is not updating
+fun MapScreen(
+    viewModel: LocationViewModel,
+    initialLatitude: Double,
+    initialLongitude: Double,
+    onLocationSelected: (latitude: Double, longitude: Double) -> Unit
+) {
     val context = LocalContext.current
-    val locationUtils = LocationUtils(context, viewModel)
+    val locationUtils = LocationUtils(context)
     locationUtils.requestLocationUpdates(viewModel)
-    val location = viewModel.location.value
-    val latlng = if (location != null) LatLng(location.latitude, location.longitude) else LatLng(0.0, 0.0)
 
-
-
-
+    var selectedLocation by remember { mutableStateOf(
+        if (initialLatitude != 0.0 && initialLongitude != 0.0) {
+            LatLng(initialLatitude, initialLongitude)
+        } else {
+            viewModel.location.value?.let { LatLng(it.latitude, it.longitude) } ?: LatLng(0.0, 0.0)
+        }
+    ) }
 
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(latlng, 15f)
+        position = CameraPosition.fromLatLngZoom(selectedLocation, 15f)
     }
-
+    //TODO fix dark cricle around map pin
     val isDarkTheme = isSystemInDarkTheme()
     val mapStyle = if (isDarkTheme) R.raw.map_dark_style else R.raw.map_light_style
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)  // Fixed height for the map
+            .height(300.dp)
             .padding(vertical = 16.dp, horizontal = 8.dp)
     ) {
         GoogleMap(
@@ -835,12 +867,16 @@ fun MapScreen(viewModel: LocationViewModel) {
                 mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
                     LocalContext.current, mapStyle
                 )
-            )
+            ),
+            onMapClick = { latLng ->
+                selectedLocation = latLng
+                onLocationSelected(latLng.latitude, latLng.longitude)
+            }
         ) {
-              Marker(state = rememberMarkerState(position = latlng))
+            Marker(state = rememberMarkerState(position = selectedLocation))
             Circle(
-                center = latlng,
-                radius = 200.0,  // Radius in meters
+                center = selectedLocation,
+                radius = 200.0,
                 strokeColor = MaterialTheme.colorScheme.primary,
                 strokeWidth = 2f,
                 fillColor = MaterialTheme.colorScheme.tertiary

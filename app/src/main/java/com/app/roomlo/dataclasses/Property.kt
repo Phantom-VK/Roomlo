@@ -11,6 +11,8 @@ data class Property(
     var rent: String = "",
     var sharingType: String = "",
     var size: String = "",
+    var latitude: Double = 0.0,
+    var longitude: Double = 0.0,
     var address:String = "",
     var city:String = "",
     var locality:String = "",

@@ -1,10 +1,14 @@
 package com.app.roomlo.repository
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.os.Looper
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import com.app.roomlo.dataclasses.LocationData
 import com.app.roomlo.viewmodels.LocationViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -21,7 +25,7 @@ import javax.inject.Inject
  *
  * @param context The context used to access system services and resources.
  */
-class LocationUtils@Inject constructor(private val context: Context, private val viewModel: LocationViewModel) {
+class LocationUtils@Inject constructor(private val context: Context) {
 
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
@@ -47,6 +51,41 @@ class LocationUtils@Inject constructor(private val context: Context, private val
             .build()
 
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+    }
+
+    fun getCurrentLocation(
+        viewModel: LocationViewModel,
+        context: Context
+    ): LocationData? {
+        var currentLocation: LocationData? = null
+
+        // Check permissions for fine and coarse location
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Request permissions here using ActivityCompat#requestPermissions if not granted
+            return null
+        }
+
+        // Get last known location
+        fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+            if (location != null) {
+                // Update the current location and ViewModel
+                currentLocation = LocationData(latitude = location.latitude, longitude = location.longitude)
+                viewModel.updateCurrentLocation(currentLocation!!)
+            }
+        }.addOnFailureListener {
+            // Handle failure to get location (e.g., location services turned off)
+            Toast.makeText(context, "Failed to get location", Toast.LENGTH_SHORT).show()
+            currentLocation = null
+        }
+
+        return currentLocation
     }
 
 

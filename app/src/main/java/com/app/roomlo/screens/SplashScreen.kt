@@ -14,12 +14,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.app.roomlo.R
 import com.app.roomlo.navigation.Screen
+import com.app.roomlo.repository.LocationUtils
 import com.app.roomlo.repository.PreferenceHelper
+import com.app.roomlo.viewmodels.LocationViewModel
 import com.app.roomlo.viewmodels.SharedViewModel
 import kotlinx.coroutines.delay
 
@@ -29,11 +32,16 @@ fun SplashScreen(
     preferenceHelper: PreferenceHelper
 
 ) {
+    val context = LocalContext.current
+    val viewModel: LocationViewModel = hiltViewModel()
+    val locationUtils = LocationUtils(context)
     val scale = remember {
         androidx.compose.animation.core.Animatable(0f)
     }
 
     LaunchedEffect(key1 = true) {
+        //TODO Add a loading screen
+        locationUtils.getCurrentLocation(viewModel, context)
         scale.animateTo(
             targetValue = 0.7f,
             animationSpec = tween(
