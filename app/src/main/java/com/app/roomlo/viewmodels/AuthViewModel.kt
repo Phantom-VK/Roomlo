@@ -111,6 +111,14 @@ class AuthViewModel @Inject constructor(
         authRepository.signout()
         _authState.value = AuthState.Unauthenticated
     }
+
+
+    fun onEvent(authEvent: AuthEvent){
+        when (authEvent){
+            is AuthEvent.Login -> login(email=authEvent.email,password=authEvent.password)
+            is AuthEvent.ShowError -> TODO()
+        }
+    }
 }
 
 sealed class AuthState {
@@ -122,4 +130,5 @@ sealed class AuthState {
 
 sealed class AuthEvent {
     data class ShowError(val message: String) : AuthEvent()
+    data class Login(val email: String, val password: String):AuthEvent()
 }
