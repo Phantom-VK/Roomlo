@@ -55,11 +55,7 @@ fun Navigation(
 
         composable(Screen.SignInScreen.route) {
             SignInScreen(
-                navController = navController,
-                authState = authViewModel.authState.collectAsState().value,
-                onEvent={login: AuthEvent.Login ->  
-                    authViewModel.onEvent(login)
-                }
+                navController = navController
             )
         }
 
