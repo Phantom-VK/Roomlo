@@ -146,7 +146,7 @@ fun PropertyItemView(
                         }
                     ) {
                         Icon(
-                            painterResource(id =R.drawable.baseline_arrow_back_ios_24 ),
+                            painterResource(id = R.drawable.baseline_arrow_back_ios_24),
                             contentDescription = "Previous",
                             tint = Color.Black
                         )
@@ -182,24 +182,41 @@ fun PropertyItemView(
                     Text(
                         text = "₹${propertyItem.rent}/month",
                         style = MaterialTheme.typography.titleMedium,  // Reduced font size
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.secondary
                     )
                     Row(
                         verticalAlignment = Alignment.CenterVertically
-                    ){
-                        IconButton(onClick = { /* TODO */ }, modifier = Modifier.size(32.dp)) {  // Reduced size
-                            Icon(Icons.Filled.Share, contentDescription = "Share")
-                        }
-                        Spacer(Modifier.width(MaterialTheme.dimens.small1))
-                        IconButton(onClick = { /* TODO */ }, modifier = Modifier.size(32.dp)) {  // Reduced size
+                    ) {
+                        IconButton(
+                            onClick = { /* TODO */ },
+                            modifier = Modifier.size(32.dp)
+                        ) {  // Reduced size
                             Icon(
-                                painter = painterResource(id = R.drawable.baseline_favorite_border_24),
-                                contentDescription = "Favorite"
+                                Icons.Filled.Share,
+                                contentDescription = "Share",
+                                tint = MaterialTheme.colorScheme.secondary
                             )
                         }
                         Spacer(Modifier.width(MaterialTheme.dimens.small1))
-                        IconButton(onClick = { /* TODO */ }, modifier = Modifier.size(32.dp)) {  // Reduced size
-                            Icon(Icons.Outlined.LocationOn, contentDescription = "Location")
+                        IconButton(
+                            onClick = { /* TODO */ },
+                            modifier = Modifier.size(32.dp)
+                        ) {  // Reduced size
+                            Icon(
+                                painter = painterResource(id = R.drawable.baseline_favorite_border_24),
+                                contentDescription = "Favorite",
+                                tint = MaterialTheme.colorScheme.secondary
+                            )
+                        }
+                        Spacer(Modifier.width(MaterialTheme.dimens.small1))
+                        IconButton(
+                            onClick = { /* TODO */ },
+                            modifier = Modifier.size(32.dp)
+                        ) {  // Reduced size
+                            Icon(Icons.Outlined.LocationOn,
+                                contentDescription = "Location",
+                                tint = MaterialTheme.colorScheme.secondary)
                         }
                     }
                 }
@@ -207,20 +224,23 @@ fun PropertyItemView(
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
-                ){
-                    Column{
+                ) {
+                    Column {
                         Text(
                             text = "${propertyItem.sharingType} Sharing ",
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
                             text = "${propertyItem.size} ",
-                            style = MaterialTheme.typography.bodySmall
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
                             text = "Owner: ${propertyItem.owner}",
                             style = MaterialTheme.typography.bodySmall,  // Reduced font size
-                            textDecoration = TextDecoration.Underline
+                            textDecoration = TextDecoration.Underline,
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                     Button(
@@ -228,9 +248,15 @@ fun PropertyItemView(
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
                         ),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)  // Reduced padding
+                        contentPadding = PaddingValues(
+                            horizontal = 12.dp,
+                            vertical = 6.dp
+                        )  // Reduced padding
                     ) {
-                        Text("Book Now", style = MaterialTheme.typography.labelMedium)  // Reduced font size
+                        Text(
+                            "Book Now",
+                            style = MaterialTheme.typography.labelMedium
+                        )  // Reduced font size
                     }
                 }
 
@@ -294,7 +320,7 @@ private fun SlidingImages(
                 }
             }
     )
-    
+
 }
 
 @Preview(showBackground = true)
@@ -332,7 +358,7 @@ fun PropertyItemViewPreview() {
         propertyImages = listOf("image1.jpg", "image2.jpg", "image3.jpg")
     )
 
-    PropertyItemView(propertyItem =sampleProperty )
+    PropertyItemView(propertyItem = sampleProperty)
 }
 
 

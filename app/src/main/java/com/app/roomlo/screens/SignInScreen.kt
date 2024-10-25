@@ -67,185 +67,194 @@ import com.app.roomlo.viewmodels.AuthEvent
 import com.app.roomlo.viewmodels.AuthState
 import com.app.roomlo.viewmodels.AuthViewModel
 import com.app.roomlo.viewmodels.SharedViewModel
+import com.app.roomlo.screens.SignInScreen
 
 
 @Composable
 fun SignInScreen(
-	navController: NavHostController
+    navController: NavHostController
 ) {
-	val authViewModel: AuthViewModel= hiltViewModel()
-	val authState by authViewModel.authState.collectAsState()
-	var email by remember {
-		mutableStateOf("")
-	}
-	var password by remember {
-		mutableStateOf("")
-	}
-	val passwordVisible = remember {
-		mutableStateOf(false)
-	}
-	val context = LocalContext.current
+    val authViewModel: AuthViewModel= hiltViewModel()
+    val authState by authViewModel.authState.collectAsState()
+    var email by remember {
+        mutableStateOf("")
+    }
+    var password by remember {
+        mutableStateOf("")
+    }
+    val passwordVisible = remember {
+        mutableStateOf(false)
+    }
+    val context = LocalContext.current
 
-	//TODO White screen after splashscreen page bug
-	LaunchedEffect(authState) {
-		when (authState) {
-			is AuthState.Authenticated -> {
-				navController.navigate(Screen.HomeView.route)
-			}
+    //TODO White screen after splashscreen page bug
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Authenticated -> {
+                navController.navigate(Screen.HomeView.route)
+            }
 
-			is AuthState.Error -> Toast.makeText(
-				context,
-				(authState as AuthState.Error).message, Toast.LENGTH_SHORT
-			).show()
+            is AuthState.Error -> Toast.makeText(
+                context,
+                (authState as AuthState.Error).message, Toast.LENGTH_SHORT
+            ).show()
 
-			else -> Unit
-		}
-	}
-	Column(
-		modifier = Modifier
-			.fillMaxSize()
-			.background(MaterialTheme.colorScheme.surface) //TODO Color is not showing black
-			.padding(MaterialTheme.dimens.medium2),
-		verticalArrangement = Arrangement.Top,
-		horizontalAlignment = Alignment.CenterHorizontally
-	) {
-		Row(
-			modifier = Modifier.fillMaxWidth(),
-			horizontalArrangement = Arrangement.Start,
-			verticalAlignment = Alignment.CenterVertically
-		) {
-			/* Image(
-				 painter = painterResource(id = R.drawable.keyhole_light),
-				 contentDescription = "KeyholeIcon",
-				 contentScale = ContentScale.Fit,
-				 modifier = Modifier.size(MaterialTheme.dimens.logoSize + 30.dp)
+            else -> Unit
+        }
+    }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface) //TODO Color is not showing black
+            .padding(MaterialTheme.dimens.medium2),
+        verticalArrangement = Arrangement.Top,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            /* Image(
+                 painter = painterResource(id = R.drawable.keyhole_light),
+                 contentDescription = "KeyholeIcon",
+                 contentScale = ContentScale.Fit,
+                 modifier = Modifier.size(MaterialTheme.dimens.logoSize + 30.dp)
 
-			 )*/
-			Text(
-				text = "Sign in/Login",
-				fontSize = MaterialTheme.typography.titleLarge.fontSize,
-				modifier = Modifier.padding(top = 100.dp)
-			)
+             )*/
+            Text(
+                text = "Sign in/Login",
+                fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                modifier = Modifier.padding(top = 100.dp)
+            )
 
-		}
-		Spacer(modifier = Modifier.height(MaterialTheme.dimens.medium1))
-		// User ID TextField
-		OutlinedTextField(
-			value = email,
-			onValueChange = { email = it },
-			label = {
-				Text(
-					"Mobile number /email id",
-					style = MaterialTheme.typography.bodyMedium
-				)
-			},
-			keyboardOptions = KeyboardOptions(
-				keyboardType = KeyboardType.Email
-			),
-			singleLine = true,
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(bottom = MaterialTheme.dimens.small1),
-			colors = TextFieldDefaults.colors(
-				focusedContainerColor = MaterialTheme.colorScheme.surface,
-				focusedLabelColor = MaterialTheme.colorScheme.secondary,
-				focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-				focusedTextColor = MaterialTheme.colorScheme.secondary,
-				unfocusedContainerColor = MaterialTheme.colorScheme.surface
-			)
-		)
+        }
+        Spacer(modifier = Modifier.height(MaterialTheme.dimens.medium1))
+        // User ID TextField
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = {
+                Text(
+                    "Mobile number /email id",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Email
+            ),
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = MaterialTheme.dimens.small1),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                focusedTextColor = MaterialTheme.colorScheme.secondary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface
+            )
+        )
 
-		OutlinedTextField(
-			value = password,
-			onValueChange = { password = it },
-			label = { Text("Password", style = MaterialTheme.typography.bodyMedium) },
-			singleLine = true,
-			trailingIcon = {
-				IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
-					Icon(
-						imageVector = if (passwordVisible.value)
-							ImageVector.vectorResource(R.drawable.baseline_visibility_24)
-						else ImageVector.vectorResource(R.drawable.baseline_visibility_off_24),
-						contentDescription = "Password visibility",
-						tint = if (passwordVisible.value) colorResource(id = R.color.purple_700) else Color.Gray
-					)
-				}
-			},
-			visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
-			keyboardOptions = KeyboardOptions(
-				keyboardType = KeyboardType.Password
-			),
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password", style = MaterialTheme.typography.bodyMedium) },
+            singleLine = true,
+            trailingIcon = {
+                IconButton(onClick = { passwordVisible.value = !passwordVisible.value }) {
+                    Icon(
+                        imageVector = if (passwordVisible.value)
+                            ImageVector.vectorResource(R.drawable.baseline_visibility_24)
+                        else ImageVector.vectorResource(R.drawable.baseline_visibility_off_24),
+                        contentDescription = "Password visibility",
+                        tint = if (passwordVisible.value) colorResource(id = R.color.purple_700) else Color.Gray
+                    )
+                }
+            },
+            visualTransformation = if (passwordVisible.value) VisualTransformation.None else PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password
+            ),
 
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(bottom = MaterialTheme.dimens.medium2),
-			colors = TextFieldDefaults.colors(
-				focusedContainerColor = MaterialTheme.colorScheme.surface,
-				focusedLabelColor = MaterialTheme.colorScheme.secondary,
-				focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-				focusedTextColor = MaterialTheme.colorScheme.secondary,
-				unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-				errorLabelColor = MaterialTheme.colorScheme.error,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = MaterialTheme.dimens.medium2),
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedLabelColor = MaterialTheme.colorScheme.secondary,
+                focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+                focusedTextColor = MaterialTheme.colorScheme.secondary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                errorLabelColor = MaterialTheme.colorScheme.error,
 
-				)
-		)
+                )
+        )
 
-		// Sign In Button
-		/*Button(
-			onClick = {
-				onEvent(AuthEvent.Login(email,password))
+        // Sign In Button
+        /*Button(
+            onClick = {
+                onEvent(AuthEvent.Login(email,password))
 
-			},
-			enabled = authState != AuthState.Loading,
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(bottom = MaterialTheme.dimens.small3)
-				.height(MaterialTheme.dimens.logoSize),
-			colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
-		) {
-			Text(text = "Sign In", color = MaterialTheme.colorScheme.primary)
-		}*/
-		Row(horizontalArrangement = Arrangement.Start, modifier = Modifier
-			.fillMaxWidth()
-			.padding(start = 3.dp)) {
-			Text(
-				text = "Forgot password?",
-				style= TextStyle(textDecoration = TextDecoration.Underline),
-				color = Color(0XFF0066FF),
-				modifier = Modifier.clickable { /*TODO*/ })
-		}
+            },
+            enabled = authState != AuthState.Loading,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = MaterialTheme.dimens.small3)
+                .height(MaterialTheme.dimens.logoSize),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
+        ) {
+            Text(text = "Sign In", color = MaterialTheme.colorScheme.primary)
+        }*/
+        Row(horizontalArrangement = Arrangement.Start, modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 3.dp)) {
+            Text(
+                text = "Don't have an account??",
+                style= TextStyle(textDecoration = TextDecoration.Underline),
+                color = Color(0XFF0066FF),
+                modifier = Modifier.clickable {
+                    navController.navigate(Screen.SignUpScreen.route)
+                })
+        }
 
-		// Sign Up Text
-		/* TextButton(onClick = {
-			 navController.navigate(Screen.SignUpScreen.route)
-		 }) {
-			 Text(
-				 text = "Don't have an account? Sign Up.",
-				 color = MaterialTheme.colorScheme.secondary,
-				 textAlign = TextAlign.Center,
-				 fontSize = MaterialTheme.typography.titleMedium.fontSize
-			 )
-		 }*/
-		Box(
-			modifier = Modifier
-				.height(22.dp)
-				.width(65.dp)
-				.clip(RoundedCornerShape(7.dp))
-				.background(
-					brush = Brush.verticalGradient(
-						colors = listOf(Color(0xFFD9E0F6), Color(0xFF006CCF)),
+        // Sign Up Text
+        /* TextButton(onClick = {
+             navController.navigate(Screen.SignUpScreen.route)
+         }) {
+             Text(
+                 text = "Don't have an account? Sign Up.",
+                 color = MaterialTheme.colorScheme.secondary,
+                 textAlign = TextAlign.Center,
+                 fontSize = MaterialTheme.typography.titleMedium.fontSize
+             )
+         }*/
+        Box(
+            modifier = Modifier
+                .height(22.dp)
+                .width(65.dp)
+                .clip(RoundedCornerShape(7.dp))
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(Color(0xFFD9E0F6), Color(0xFF006CCF)),
 
-						)
-				)
-				.clickable { authViewModel.login(email = email,password=password) }
-			, contentAlignment = Alignment.Center
-		) {
-			Text("Continue", color = Color.White)
-		}
+                        )
+                )
+                .clickable { authViewModel.login(email = email,password=password) }
+            , contentAlignment = Alignment.Center
+        ) {
+            Text("Continue", color = Color.White)
+        }
 
-	}
+
+
+
+    }
 }
 
-
-
+//@Preview(showBackground = true)
+//@Composable
+//fun signInScreenPrv(){
+//    SignInScreen(navController = NavHostController(LocalContext.current))
+//}
 

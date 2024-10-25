@@ -79,6 +79,7 @@ fun SignUpScreen(
             else -> Unit
         }
     }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

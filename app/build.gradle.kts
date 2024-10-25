@@ -71,6 +71,7 @@ dependencies {
 
     //Google maps
     implementation("com.google.maps.android:maps-compose:6.1.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 
     // coil-compose
     implementation("io.coil-kt:coil-compose:2.6.0")
@@ -80,7 +81,7 @@ dependencies {
 
     // Dagger-Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
-    implementation("com.google.android.gms:play-services-location:21.3.0")
+
     kapt("com.google.dagger:hilt-compiler:2.51.1")
 
     // Hilt navigation-compose

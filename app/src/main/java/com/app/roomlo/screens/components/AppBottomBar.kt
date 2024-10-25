@@ -79,7 +79,7 @@ fun AppBottomBar(onItemSelected: (Screen) -> Unit) {
                         modifier = Modifier.requiredSize(MaterialTheme.dimens.medium2)
                     )
                 },
-                label = { Text(text = item.title)}
+                label = { Text(text = item.title, color = MaterialTheme.colorScheme.secondary)}
             )
         }
     }

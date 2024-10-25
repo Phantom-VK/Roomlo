@@ -2,7 +2,6 @@ package com.app.roomlo.screens
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -30,6 +29,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.TabRowDefaults.Divider
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -48,6 +48,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.mapSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -84,15 +85,100 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import java.util.Locale
 
-
+// Custom Saver for Property class
+val PropertySaver = mapSaver(
+    save = { property ->
+        mapOf(
+            "owner" to property.owner,
+            "propertyName" to property.propertyName,
+            "ownerId" to property.ownerId,
+            "ownerMobNo" to property.ownerMobNo,
+            "ownerEmail" to property.ownerEmail,
+            "rent" to property.rent,
+            "sharingType" to property.sharingType,
+            "size" to property.size,
+            "latitude" to property.latitude,
+            "longitude" to property.longitude,
+            "address" to property.address,
+            "city" to property.city,
+            "locality" to property.locality,
+            "landmark" to property.landmark,
+            "floor" to property.floor,
+            "createdAt" to property.createdAt,
+            "updatedAt" to property.updatedAt,
+            "housetype" to property.housetype,
+            "roomtype" to property.roomtype,
+            "availablefor" to property.availablefor,
+            "deposit" to property.deposit,
+            "maintenance" to property.maintenance,
+            "electricbill" to property.electricbill,
+            "parking" to property.parking,
+            "nonveg" to property.nonveg,
+            "balcony" to property.balcony,
+            "bathroom" to property.bathroom,
+            "toilet" to property.toilet,
+            "wifi" to property.wifi,
+            "amenities" to property.amenities.toList(),
+            "propertyImages" to property.propertyImages
+        )
+    },
+    restore = { map ->
+        Property(
+            owner = map["owner"] as? String ?: "",
+            propertyName = map["propertyName"] as? String ?: "",
+            ownerId = map["ownerId"] as? String ?: "",
+            ownerMobNo = map["ownerMobNo"] as? String ?: "",
+            ownerEmail = map["ownerEmail"] as? String ?: "",
+            rent = map["rent"] as? String ?: "",
+            sharingType = map["sharingType"] as? String ?: "",
+            size = map["size"] as? String ?: "",
+            latitude = map["latitude"] as? Double ?: 0.0,
+            longitude = map["longitude"] as? Double ?: 0.0,
+            address = map["address"] as? String ?: "",
+            city = map["city"] as? String ?: "",
+            locality = map["locality"] as? String ?: "",
+            landmark = map["landmark"] as? String ?: "",
+            floor = map["floor"] as? String ?: "",
+            createdAt = map["createdAt"] as? String ?: "",
+            updatedAt = map["updatedAt"] as? String ?: "",
+            housetype = map["housetype"] as? String ?: "",
+            roomtype = map["roomtype"] as? String ?: "",
+            availablefor = map["availablefor"] as? String ?: "",
+            deposit = map["deposit"] as? String ?: "",
+            maintenance = map["maintenance"] as? String ?: "",
+            electricbill = map["electricbill"] as? String ?: "",
+            parking = map["parking"] as? String ?: "",
+            nonveg = map["nonveg"] as? String ?: "",
+            balcony = map["balcony"] as? String ?: "",
+            bathroom = map["bathroom"] as? Int ?: 0,
+            toilet = map["toilet"] as? Int ?: 0,
+            wifi = map["wifi"] as? String ?: "",
+            amenities = (map["amenities"] as? List<String>)?.toList() ?: listOf(),
+            propertyImages = (map["propertyImages"] as? List<String>)?.toList() ?: listOf()
+        )
+    }
+)
+// Extension function to create saveable property state
 @Composable
-fun ListPropertyScaffoldScreen(navController: NavController, preferenceHelper: PreferenceHelper) {
-    var currentScreen by remember { mutableStateOf(Screen.ListPropertyAddressView) }
-    val property = remember { mutableStateOf(Property()) }
+fun rememberSaveableProperty(initial: Property = Property()) = rememberSaveable(
+    stateSaver = PropertySaver
+) {
+    mutableStateOf(initial)
+}
+
+
+// Core UI component for property listing with improved structure and bug fixes
+@Composable
+fun ListPropertyScaffoldScreen(
+    navController: NavController,
+    preferenceHelper: PreferenceHelper
+) {
+
+    // State management using rememberSaveable to persist through configuration changes
+    var currentScreen by rememberSaveable { mutableStateOf(Screen.ListPropertyAddressView) }
+    val property = rememberSaveableProperty()
     val viewModel: LocationViewModel = hiltViewModel()
     val context = LocalContext.current
-
-
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.primary
@@ -109,39 +195,70 @@ fun ListPropertyScaffoldScreen(navController: NavController, preferenceHelper: P
             ScreenTabs(currentScreen) { newScreen ->
                 currentScreen = newScreen
             }
-            LinearProgressIndicator(
-                progress = {
-                    when (currentScreen) {
-                        Screen.ListPropertyAddressView -> 0.33f
-                        Screen.ListPropertyDetailsView -> 0.66f
-                        Screen.ListPropertyImagesView -> 1f
-                        else -> 0.0f
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.onSecondary,
+            // Progress indicator showing current step
+            PropertyListingProgress(currentScreen)
+
+            // Main content container with proper state management
+            PropertyListingContent(
+                currentScreen = currentScreen,
+                property = property.value,
+                viewModel = viewModel,
+                context = context,
+                preferenceHelper = preferenceHelper,
+                onScreenChange = { currentScreen = it }
             )
-
-            when (currentScreen) {
-                Screen.ListPropertyAddressView -> AddressScreen(property.value, currentLocation = viewModel.currentlocation.value ) {
-                    currentScreen = Screen.ListPropertyDetailsView
-
-                }
-
-                Screen.ListPropertyDetailsView -> PropertyDetailsFormScreen(property.value) {
-                    currentScreen = Screen.ListPropertyImagesView
-                }
-
-                Screen.ListPropertyImagesView -> PropertyImagesUploadView(property.value, context = context, preferenceHelper = preferenceHelper)
-
-                else -> AddressScreen(property = property.value,currentLocation = viewModel.currentlocation.value ) {
-
-                }
-            }
         }
     }
 }
-
+// Separate progress indicator component for better reusability
+@Composable
+private fun PropertyListingProgress(currentScreen: Screen) {
+    LinearProgressIndicator(
+        progress = {
+            when (currentScreen) {
+                Screen.ListPropertyAddressView -> 0.33f
+                Screen.ListPropertyDetailsView -> 0.66f
+                Screen.ListPropertyImagesView -> 1f
+                else -> 0.0f
+            }
+        },
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.onSecondary,
+    )
+}
+// Main content container with proper navigation handling
+@Composable
+private fun PropertyListingContent(
+    currentScreen: Screen,
+    property: Property,
+    viewModel: LocationViewModel,
+    context: Context,
+    preferenceHelper: PreferenceHelper,
+    onScreenChange: (Screen) -> Unit
+) {
+    when (currentScreen) {
+        Screen.ListPropertyAddressView -> AddressScreen(
+            property = property,
+            currentLocation = viewModel.currentlocation.value
+        ) {
+            onScreenChange(Screen.ListPropertyDetailsView)
+        }
+        Screen.ListPropertyDetailsView -> PropertyDetailsFormScreen(
+            property = property
+        ) {
+            onScreenChange(Screen.ListPropertyImagesView)
+        }
+        Screen.ListPropertyImagesView -> PropertyImagesUploadView(
+            property = property,
+            context = context,
+            preferenceHelper = preferenceHelper
+        )
+        else -> AddressScreen(
+            property = property,
+            currentLocation = viewModel.currentlocation.value
+        ) {}
+    }
+}
 @Composable
 fun TopBar(navController: NavController) {
     Row(
@@ -566,6 +683,7 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
     }
 }
 
+// Updated SectionWithOptions to handle custom input via dialog
 @Composable
 fun SectionWithOptions(
     label: String,
@@ -573,6 +691,8 @@ fun SectionWithOptions(
     selectedOption: String,
     onOptionSelected: (String) -> Unit
 ) {
+    var showCustomDialog by remember { mutableStateOf(false) }
+
     Text(
         text = label,
         style = MaterialTheme.typography.titleMedium,
@@ -584,20 +704,26 @@ fun SectionWithOptions(
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(options) { option ->
-            if (option == "Custom" && selectedOption !in options) {
-                CustomOptionWithTextField(
-                    textFieldPlaceholder = "Custom",
-                    initialValue = selectedOption,
-                    onValueChange = onOptionSelected
-                )
-            } else {
-                OptionButton(
-                    text = option,
-                    isSelected = selectedOption == option,
-                    onClick = { onOptionSelected(option) }
-                )
-            }
+            OptionButton(
+                text = if (option == "Custom" && selectedOption !in options) selectedOption else option,
+                isSelected = selectedOption == option || (option == "Custom" && selectedOption !in options),
+                onClick = {
+                    if (option == "Custom") {
+                        showCustomDialog = true
+                    } else {
+                        onOptionSelected(option)
+                    }
+                }
+            )
         }
+    }
+
+    if (showCustomDialog) {
+        CustomOptionDialog(
+            title = label,
+            onDismiss = { showCustomDialog = false },
+            onConfirm = onOptionSelected
+        )
     }
 }
 
@@ -647,7 +773,7 @@ fun OptionButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
         ),
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.secondary,
-            containerColor = if (isSelected) Color.Blue else MaterialTheme.colorScheme.primary
+            containerColor = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary
         )
     ) {
         Text(text, fontSize = 14.sp)
@@ -682,6 +808,47 @@ fun CustomOptionWithTextField(
             focusedLabelColor = MaterialTheme.colorScheme.secondary,
             cursorColor = MaterialTheme.colorScheme.secondary
         )
+    )
+}
+
+// Custom Dialog for handling custom options
+@Composable
+fun CustomOptionDialog(
+    title: String,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var customValue by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "Enter Custom $title") },
+        text = {
+            OutlinedTextField(
+                value = customValue,
+                onValueChange = { customValue = it },
+                label = { Text("Custom Value") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    if (customValue.isNotEmpty()) {
+                        onConfirm(customValue)
+                        onDismiss()
+                    }
+                }
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
     )
 }
 
@@ -825,6 +992,7 @@ fun LazyImageGrid(uriList: List<String>) {
     }
 }
 
+// Improved MapScreen with fixed marker/pin functionality
 @Composable
 fun MapScreen(
     viewModel: LocationViewModel,
@@ -836,18 +1004,29 @@ fun MapScreen(
     val locationUtils = LocationUtils(context)
     locationUtils.requestLocationUpdates(viewModel)
 
-    var selectedLocation by remember { mutableStateOf(
-        if (initialLatitude != 0.0 && initialLongitude != 0.0) {
-            LatLng(initialLatitude, initialLongitude)
-        } else {
-            viewModel.location.value?.let { LatLng(it.latitude, it.longitude) } ?: LatLng(0.0, 0.0)
-        }
-    ) }
+    // Fixed marker state management
+    val markerState = rememberMarkerState()
+    var selectedLocation by remember {
+        mutableStateOf(
+            if (initialLatitude != 0.0 && initialLongitude != 0.0) {
+                LatLng(initialLatitude, initialLongitude)
+            } else {
+                viewModel.location.value?.let {
+                    LatLng(it.latitude, it.longitude)
+                } ?: LatLng(0.0, 0.0)
+            }
+        )
+    }
+
+    // Update marker position when location changes
+    LaunchedEffect(selectedLocation) {
+        markerState.position = selectedLocation
+    }
 
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(selectedLocation, 15f)
     }
-    //TODO fix dark cricle around map pin
+
     val isDarkTheme = isSystemInDarkTheme()
     val mapStyle = if (isDarkTheme) R.raw.map_dark_style else R.raw.map_light_style
 
@@ -873,13 +1052,18 @@ fun MapScreen(
                 onLocationSelected(latLng.latitude, latLng.longitude)
             }
         ) {
-            Marker(state = rememberMarkerState(position = selectedLocation))
+            // Fixed marker implementation
+            Marker(
+                state = markerState,
+                title = "Selected Location"
+            )
+            // Semi-transparent circle around marker
             Circle(
                 center = selectedLocation,
                 radius = 200.0,
-                strokeColor = MaterialTheme.colorScheme.primary,
+                strokeColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
                 strokeWidth = 2f,
-                fillColor = MaterialTheme.colorScheme.tertiary
+                fillColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f)
             )
         }
     }
