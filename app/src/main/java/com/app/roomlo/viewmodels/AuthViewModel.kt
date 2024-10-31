@@ -77,6 +77,7 @@ class AuthViewModel @Inject constructor(
                         profileImageUrl = it.profileImageUrl
                         userAddress = it.address
                         wpnumber = it.wpnumber
+                        userType = it.userType
                     }
                 }
             }
@@ -99,7 +100,7 @@ class AuthViewModel @Inject constructor(
                     dbViewModel.addUserToDatabase(user, context, firebaseUser.uid)
                     authRepository.updateUserIdInPreference()
                     if (userId != null) {
-                        sharedViewModel.fetchUserDetails()
+                        fetchAndUpdateUserDetails()
                     }
                 }
                 _authState.value = AuthState.Authenticated

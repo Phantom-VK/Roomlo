@@ -17,6 +17,7 @@ class PreferenceHelper(context: Context) {
         private const val PROFILE_IMG_URL = "profileImageUrl"
         private const val USER_ADDRESS = "address"
         private const val USER_WP_NUMBER = "wpNumber"
+        private const val USER_TYPE = "userType"
     }
 
     var userId: String?
@@ -54,5 +55,10 @@ class PreferenceHelper(context: Context) {
         get() = sharedPreferences.getString(USER_WP_NUMBER, null).toString()
         set(value) {
             sharedPreferences.edit().putString(USER_WP_NUMBER, value).apply()
+        }
+    var userType:String
+        get() = sharedPreferences.getString(USER_TYPE, null).toString()
+        set(value) {
+            sharedPreferences.edit().putString(USER_TYPE, value).apply()
         }
 }
