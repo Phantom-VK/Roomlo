@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -202,10 +201,11 @@ fun ListPropertyScaffoldScreen(
             PropertyListingContent(
                 currentScreen = currentScreen,
                 property = property.value,
-                viewModel = viewModel,
+                locationVM = viewModel,
                 context = context,
                 preferenceHelper = preferenceHelper,
-                onScreenChange = { currentScreen = it }
+                onScreenChange = { currentScreen = it },
+                navController = navController
             )
         }
     }
@@ -231,7 +231,8 @@ private fun PropertyListingProgress(currentScreen: Screen) {
 private fun PropertyListingContent(
     currentScreen: Screen,
     property: Property,
-    viewModel: LocationViewModel,
+    navController: NavController,
+    locationVM: LocationViewModel,
     context: Context,
     preferenceHelper: PreferenceHelper,
     onScreenChange: (Screen) -> Unit
@@ -239,7 +240,7 @@ private fun PropertyListingContent(
     when (currentScreen) {
         Screen.ListPropertyAddressView -> AddressScreen(
             property = property,
-            currentLocation = viewModel.currentlocation.value
+            currentLocation = locationVM.currentlocation.value
         ) {
             onScreenChange(Screen.ListPropertyDetailsView)
         }
@@ -251,11 +252,12 @@ private fun PropertyListingContent(
         Screen.ListPropertyImagesView -> PropertyImagesUploadView(
             property = property,
             context = context,
-            preferenceHelper = preferenceHelper
+            preferenceHelper = preferenceHelper,
+            navController = navController
         )
         else -> AddressScreen(
             property = property,
-            currentLocation = viewModel.currentlocation.value
+            currentLocation = locationVM.currentlocation.value
         ) {}
     }
 }
@@ -683,12 +685,70 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
     }
 }
 
-// Updated SectionWithOptions to handle custom input via dialog
+// SectionWithOptions now handles custom values through a dialog instead of a text field
 @Composable
 fun SectionWithOptions(
     label: String,
     options: List<String>,
     selectedOption: String,
+    onOptionSelected: (String) -> Unit
+) {
+    // State for controlling custom input dialog visibility
+    var showCustomDialog by remember { mutableStateOf(false) }
+
+    Text(
+        text = label,
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(vertical = 8.dp)
+    )
+
+    // Horizontal scrollable row of options
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(options) { option ->
+            // Show either the predefined option or custom value
+            val displayText = if (option == "Custom" && selectedOption !in options.filter { it != "Custom" }) {
+                selectedOption
+            } else {
+                option
+            }
+
+            OptionButton(
+                text = displayText,
+                isSelected = selectedOption == option || (option == "Custom" && selectedOption !in options.filter { it != "Custom" }),
+                onClick = {
+                    if (option == "Custom") {
+                        showCustomDialog = true
+                    } else {
+                        onOptionSelected(option)
+                    }
+                }
+            )
+        }
+    }
+
+    // Custom input dialog
+    if (showCustomDialog) {
+        CustomInputDialog(
+            title = "Enter Custom $label",
+            onDismiss = { showCustomDialog = false },
+            onConfirm = { customValue ->
+                onOptionSelected(customValue)
+                showCustomDialog = false
+            }
+        )
+    }
+}
+
+
+// Enhanced MultiSelectionSection with dialog-based custom input
+@Composable
+fun MultiSelectionSection(
+    label: String,
+    options: List<String>,
+    selectedOptions: List<String>,
     onOptionSelected: (String) -> Unit
 ) {
     var showCustomDialog by remember { mutableStateOf(false) }
@@ -703,53 +763,31 @@ fun SectionWithOptions(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(options) { option ->
+        // Display selected custom options first
+        items(selectedOptions.filter { it !in options }) { customOption ->
             OptionButton(
-                text = if (option == "Custom" && selectedOption !in options) selectedOption else option,
-                isSelected = selectedOption == option || (option == "Custom" && selectedOption !in options),
-                onClick = {
-                    if (option == "Custom") {
-                        showCustomDialog = true
-                    } else {
-                        onOptionSelected(option)
-                    }
-                }
+                text = customOption,
+                isSelected = true,
+                onClick = { onOptionSelected(customOption) }
             )
         }
-    }
 
-    if (showCustomDialog) {
-        CustomOptionDialog(
-            title = label,
-            onDismiss = { showCustomDialog = false },
-            onConfirm = onOptionSelected
-        )
-    }
-}
-
-@Composable
-fun MultiSelectionSection(
-    label: String,
-    options: List<String>,
-    selectedOptions: List<String>,
-    onOptionSelected: (String) -> Unit
-) {
-    Text(
-        text = label,
-        style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(vertical = 8.dp)
-    )
-    LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
+        // Display predefined options
         items(options) { option ->
             if (option == "Custom") {
-                CustomOptionWithTextField(
-                    textFieldPlaceholder = "Custom",
-                    initialValue = "",
-                    onValueChange = onOptionSelected
-                )
+                // Custom option button that triggers dialog
+                OutlinedButton(
+                    onClick = { showCustomDialog = true },
+                    modifier = Modifier.wrapContentSize(),
+                    shape = RoundedCornerShape(8.dp),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.secondary,
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text("+ Add Custom", fontSize = 14.sp)
+                }
             } else {
                 OptionButton(
                     text = option,
@@ -758,6 +796,17 @@ fun MultiSelectionSection(
                 )
             }
         }
+    }
+
+    if (showCustomDialog) {
+        CustomInputDialog(
+            title = "Add Custom $label",
+            onDismiss = { showCustomDialog = false },
+            onConfirm = { customValue ->
+                onOptionSelected(customValue)
+                showCustomDialog = false
+            }
+        )
     }
 }
 
@@ -780,64 +829,53 @@ fun OptionButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
     }
 }
 
+// Improved CustomInputDialog with validation and better UX
 @Composable
-fun CustomOptionWithTextField(
-    textFieldPlaceholder: String,
-    initialValue: String,
-    onValueChange: (String) -> Unit
-) {
-    //TODO Take care of custom option bug
-    var value by remember { mutableStateOf(initialValue) }
-    OutlinedTextField(
-        value = value,
-        onValueChange = {
-            value = it
-            onValueChange(it)
-        },
-        label = { Text(textFieldPlaceholder, fontSize = 14.sp) },
-        modifier = Modifier.width(120.dp),
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.primary,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-            focusedTextColor = MaterialTheme.colorScheme.secondary,
-            unfocusedTextColor = MaterialTheme.colorScheme.background,
-            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-            focusedLabelColor = MaterialTheme.colorScheme.secondary,
-            cursorColor = MaterialTheme.colorScheme.secondary
-        )
-    )
-}
-
-// Custom Dialog for handling custom options
-@Composable
-fun CustomOptionDialog(
+fun CustomInputDialog(
     title: String,
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-    var customValue by remember { mutableStateOf("") }
+    var inputValue by remember { mutableStateOf("") }
+    var hasError by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = "Enter Custom $title") },
+        title = { Text(text = title) },
         text = {
-            OutlinedTextField(
-                value = customValue,
-                onValueChange = { customValue = it },
-                label = { Text("Custom Value") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
+            Column {
+                OutlinedTextField(
+                    value = inputValue,
+                    onValueChange = {
+                        inputValue = it
+                        hasError = false
+                    },
+                    label = { Text("Enter value") },
+                    singleLine = true,
+                    isError = hasError,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface
+                    )
+                )
+                if (hasError) {
+                    Text(
+                        text = "This field cannot be empty",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+            }
         },
         confirmButton = {
             TextButton(
                 onClick = {
-                    if (customValue.isNotEmpty()) {
-                        onConfirm(customValue)
-                        onDismiss()
+                    if (inputValue.trim().isEmpty()) {
+                        hasError = true
+                    } else {
+                        onConfirm(inputValue.trim())
                     }
                 }
             ) {
@@ -852,8 +890,19 @@ fun CustomOptionDialog(
     )
 }
 
+// Helper function to validate property data before submission
+fun validateProperty(property: Property): Boolean {
+    return property.propertyName.isNotBlank() &&
+            property.rent.isNotBlank() &&
+            property.size.isNotBlank() &&
+            property.address.isNotBlank() &&
+            property.city.isNotBlank() &&
+            property.locality.isNotBlank() &&
+            property.latitude != 0.0 &&
+            property.longitude != 0.0
+}
 @Composable
-fun PropertyImagesUploadView(property: Property, context: Context, preferenceHelper: PreferenceHelper) {
+fun PropertyImagesUploadView(property: Property, context: Context, preferenceHelper: PreferenceHelper,navController:NavController){
     var listOfPhotos by remember { mutableStateOf(property.propertyImages.map { Uri.parse(it) }) }
     val propertyVM: PropertyViewModel = hiltViewModel()
     var isSubmitting by remember { mutableStateOf(false) }
@@ -905,8 +954,11 @@ fun PropertyImagesUploadView(property: Property, context: Context, preferenceHel
 
                 //TODO handle error, images are not getting upploaded also navigate to list property screen
                 propertyVM.addPropertyToDatabase(updatedProperty, context = context)
-                propertyVM.uploadPropertyImages(property, context)
+                if (property.propertyImages.isNotEmpty()){
+                propertyVM.uploadPropertyImages(property, context)}
+
                 isSubmitting = !isSubmitting
+                navController.navigate(Screen.MainScaffoldView.route)
 
             },
             modifier = Modifier
