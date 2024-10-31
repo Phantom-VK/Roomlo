@@ -1,6 +1,5 @@
 package com.app.roomlo.screens
 
-import android.util.Log
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -23,7 +22,6 @@ import com.app.roomlo.navigation.Screen
 import com.app.roomlo.repository.LocationUtils
 import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.viewmodels.LocationViewModel
-import com.app.roomlo.viewmodels.SharedViewModel
 import kotlinx.coroutines.delay
 
 @Composable
@@ -58,7 +56,7 @@ fun SplashScreen(
         // Navigate based on authentication state or fetched user details
         if(preferenceHelper.userId != null){
 
-            navController.navigate(Screen.HomeView.route)
+            navController.navigate(Screen.MainScaffoldView.route)
         }else{
             navController.navigate(Screen.SignInScreen.route)
         }

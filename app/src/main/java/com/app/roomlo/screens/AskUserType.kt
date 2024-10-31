@@ -1,5 +1,6 @@
 package com.app.roomlo.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +32,10 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,12 +56,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.app.roomlo.R
+import com.app.roomlo.dataclasses.UserType
+import com.app.roomlo.navigation.Screen
 
 @Preview
 @Composable
 fun AskUserType(
 	navController: NavController = rememberNavController()
 ) {
+	var userType by remember{ mutableStateOf("") }
 	Box(modifier = Modifier.fillMaxSize()) {
 		Image(
 			painter = painterResource(id = R.drawable.ask_user_type_bg),
@@ -68,7 +76,7 @@ fun AskUserType(
 			modifier = Modifier.fillMaxSize(),
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
-			MyTopAppBar()
+			MyTopAppBar{navController.navigate(Screen.SignInScreen.route)}
 
 			Spacer(modifier = Modifier.height(149.dp))
 
@@ -85,7 +93,9 @@ fun AskUserType(
 					.height(73.dp)
 					.fillMaxWidth()
 			)
-			CenterBlackBox()
+			CenterBlackBox {
+				val route="${Screen.SignUpScreen.route}/$it"
+				navController.navigate(route)}
 
 			Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.Start) {
 				RadialWhite(modifier = Modifier.offset(x = 170.dp, y = 72.dp))
@@ -95,7 +105,7 @@ fun AskUserType(
 }
 
 @Composable
-private fun CenterBlackBox() {
+private fun CenterBlackBox(onClick: (userType:String) -> Unit) {
 	Box(
 		modifier = Modifier
 			.width(270.dp)
@@ -118,17 +128,17 @@ private fun CenterBlackBox() {
 			OwnerTenantButton(
 				primaryText = "Owner",
 				secondaryText = "Rent Room",
-				onClick = { TODO() })
+				onClick = { onClick(UserType.Owner.type) })
 			OwnerTenantButton(
 				primaryText = "Tenant",
 				secondaryText = "Looking for a room",
-				onClick = { TODO() })
+				onClick = { onClick(UserType.Tenant.type) })
 		}
 	}
 }
 
 @Composable
-private fun MyTopAppBar() {
+private fun MyTopAppBar(loginOnClickListener:()->Unit) {
 	TopAppBar(title =
 	{
 		Row(
@@ -154,7 +164,7 @@ private fun MyTopAppBar() {
 						color = Color.Black,
 						shape = RoundedCornerShape((18.5).dp)
 					)
-					.clickable { TODO() }
+					.clickable { loginOnClickListener() }
 				, contentAlignment = Alignment.Center
 			) {
 				Text(text = "Login", color = Color.White, fontSize = 12.sp)

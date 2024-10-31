@@ -43,7 +43,7 @@ fun ProfileImage(profileViewModel: UserProfileViewModel, profilePictureUrl: Stri
         rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri: Uri? ->
             uri?.let {
                 profileViewModel.uploadProfilePicture(it, context)
-                navController.navigate(Screen.HomeView.route)
+                navController.navigate(Screen.MainScaffoldView.route)
             }
         }
 

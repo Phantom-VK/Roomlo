@@ -48,7 +48,6 @@ import com.app.roomlo.screens.components.AppTopBar
 import com.app.roomlo.ui.theme.dimens
 import com.app.roomlo.viewmodels.AuthState
 import com.app.roomlo.viewmodels.AuthViewModel
-import com.app.roomlo.viewmodels.SharedViewModel
 import kotlinx.coroutines.launch
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @Composable
@@ -123,7 +122,7 @@ fun HomeScreen(
         )
     )
 
-    var currentScreen by rememberSaveable { mutableStateOf(Screen.HomeView) }
+    var currentScreen by rememberSaveable { mutableStateOf(Screen.MainScaffoldView) }
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -169,7 +168,7 @@ fun HomeScreen(
             }
         ) { paddingValues ->
             when (currentScreen) {
-                Screen.HomeView -> HomeView(paddingValues = paddingValues)
+                Screen.MainScaffoldView -> HomeView(paddingValues = paddingValues)
                 Screen.WishlistView -> WishlistView(paddingValues)
                 Screen.MapView -> MapScreen(navController = navController)
                 Screen.PropertyView -> PropertyView(paddingValues, navController, preferenceHelper)

@@ -1,34 +1,24 @@
 package com.app.roomlo.screens
 
-import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,31 +33,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.app.roomlo.R
-import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.navigation.Screen
 import com.app.roomlo.ui.theme.dimens
-import com.app.roomlo.viewmodels.AuthEvent
 import com.app.roomlo.viewmodels.AuthState
 import com.app.roomlo.viewmodels.AuthViewModel
-import com.app.roomlo.viewmodels.SharedViewModel
-import com.app.roomlo.screens.SignInScreen
 
 
 @Composable
@@ -91,7 +72,7 @@ fun SignInScreen(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Authenticated -> {
-                navController.navigate(Screen.HomeView.route)
+                navController.navigate(Screen.MainScaffoldView.route)
             }
 
             is AuthState.Error -> Toast.makeText(
@@ -214,7 +195,7 @@ fun SignInScreen(
                 style= TextStyle(textDecoration = TextDecoration.Underline),
                 color = Color(0XFF0066FF),
                 modifier = Modifier.clickable {
-                    navController.navigate(Screen.SignUpScreen.route)
+                    navController.navigate(Screen.AskUserTypeScreen.route)
                 })
         }
 
@@ -232,7 +213,6 @@ fun SignInScreen(
         Box(
             modifier = Modifier
                 .height(22.dp)
-                .width(65.dp)
                 .clip(RoundedCornerShape(7.dp))
                 .background(
                     brush = Brush.verticalGradient(
@@ -240,10 +220,10 @@ fun SignInScreen(
 
                         )
                 )
-                .clickable { authViewModel.login(email = email,password=password) }
+                .clickable { authViewModel.login(email = email, password = password) }
             , contentAlignment = Alignment.Center
         ) {
-            Text("Continue", color = Color.White)
+            Text("Continue", color = Color.White, modifier = Modifier.padding(horizontal = 6.dp))
         }
 
 

@@ -37,7 +37,7 @@ fun AppBottomBar(onItemSelected: (Screen) -> Unit) {
             title = "Home",
             selectedIcon = Icons.Filled.Home,
             unselectedIcon = Icons.Outlined.Home,
-            route = Screen.HomeView
+            route = Screen.MainScaffoldView
         ),
         BottomNavigationItem(
             title = "Map",

@@ -24,7 +24,6 @@ class UserRepository @Inject constructor (private val preferenceHelper: Preferen
             userId?.let {
                 val document = db.collection("Users").document(it).get().await()
                 document.toObject<User>()
-
             }
 
         } catch (e: FirebaseFirestoreException) {
@@ -68,7 +67,8 @@ class UserRepository @Inject constructor (private val preferenceHelper: Preferen
             "mobilenumber" to mobilenumber,
             "wpnumber" to wpnumber,
             "password" to password,
-            "uid" to uid
+            "uid" to uid,
+            "userType" to userType
         )
     }
 }

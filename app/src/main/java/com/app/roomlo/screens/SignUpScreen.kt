@@ -48,7 +48,8 @@ import com.app.roomlo.viewmodels.AuthViewModel
 
 @Composable
 fun SignUpScreen(
-    navController: NavHostController) {
+    navController: NavHostController,
+    userType:String) {
     val authViewModel: AuthViewModel = hiltViewModel<AuthViewModel>()
     var email by remember {
         mutableStateOf("")
@@ -71,7 +72,7 @@ fun SignUpScreen(
 
     LaunchedEffect(authState) {
         when (authState) {
-            is AuthState.Authenticated -> navController.navigate(Screen.HomeView.route)
+            is AuthState.Authenticated -> navController.navigate(Screen.MainScaffoldView.route)
             is AuthState.Error -> Toast.makeText(
                 context,
                 (authState as AuthState.Error).message, Toast.LENGTH_SHORT
@@ -179,7 +180,9 @@ fun SignUpScreen(
                     User(
                         email = email,
                         password = password,
-                        mobilenumber = mobilenumber),context
+                        mobilenumber = mobilenumber,
+                        userType = userType),context
+
                 )
 
 

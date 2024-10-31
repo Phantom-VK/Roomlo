@@ -1,6 +1,8 @@
 package com.app.roomlo.viewmodels
 
 import android.content.Context
+import android.util.Log
+import androidx.compose.runtime.currentCompositionErrors
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.app.roomlo.repository.AuthRepository
@@ -10,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +27,6 @@ class AuthViewModel @Inject constructor(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
     val authState: StateFlow<AuthState> = _authState
     private val userId = preferenceHelper.userId
-
     private val _eventChannel = Channel<AuthEvent>()
 
     init {
@@ -113,12 +115,8 @@ class AuthViewModel @Inject constructor(
     }
 
 
-    fun onEvent(authEvent: AuthEvent){
-        when (authEvent){
-            is AuthEvent.Login -> login(email=authEvent.email,password=authEvent.password)
-            is AuthEvent.ShowError -> TODO()
-        }
-    }
+
+
 }
 
 sealed class AuthState {
@@ -132,3 +130,4 @@ sealed class AuthEvent {
     data class ShowError(val message: String) : AuthEvent()
     data class Login(val email: String, val password: String):AuthEvent()
 }
+

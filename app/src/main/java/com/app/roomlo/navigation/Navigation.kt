@@ -4,19 +4,20 @@ import com.app.roomlo.screens.ListPropertyScaffoldScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.app.roomlo.repository.PreferenceHelper
+import com.app.roomlo.screens.AskUserType
 import com.app.roomlo.screens.HomeScreen
 import com.app.roomlo.screens.MapScreen
 import com.app.roomlo.screens.ProfileScreen
 import com.app.roomlo.screens.SignInScreen
 import com.app.roomlo.screens.SignUpScreen
 import com.app.roomlo.screens.SplashScreen
-import com.app.roomlo.viewmodels.AuthEvent
 import com.app.roomlo.viewmodels.AuthViewModel
 
 @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
@@ -34,7 +35,7 @@ fun Navigation(
             )
         }
 
-        composable(Screen.HomeView.route) {
+        composable(Screen.MainScaffoldView.route) {
             HomeScreen(
                 navController = navController,
                 preferenceHelper = preferenceHelper
@@ -59,18 +60,25 @@ fun Navigation(
             )
         }
 
-        composable(Screen.SignUpScreen.route) {
-            SignUpScreen(
-                navController = navController
-            )
+        composable(route="${Screen.SignUpScreen.route}/{userType}", arguments = listOf(navArgument(name="userType"){
+            type=NavType.StringType
+        })) { navBackStackEntry ->
+            val userType = navBackStackEntry.arguments?.getString("userType")
+            userType?.let {
+                SignUpScreen(
+                    navController = navController,
+                    userType =it
+                )
+            }
         }
 
         composable(Screen.ListPropertyScreen.route){
             ListPropertyScaffoldScreen(navController = navController, preferenceHelper)
-
         }
 
-
+        composable (route=Screen.AskUserTypeScreen.route){
+            AskUserType(navController=navController)
+        }
 
 
     }
