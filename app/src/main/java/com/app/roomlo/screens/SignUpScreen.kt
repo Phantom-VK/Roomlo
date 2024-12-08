@@ -42,6 +42,7 @@ import com.app.roomlo.R
 import com.app.roomlo.dataclasses.User
 import com.app.roomlo.navigation.Screen
 import com.app.roomlo.ui.theme.dimens
+import com.app.roomlo.ui.theme.getTextFieldColors
 import com.app.roomlo.viewmodels.AuthState
 import com.app.roomlo.viewmodels.AuthViewModel
 
@@ -102,15 +103,7 @@ fun SignUpScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = MaterialTheme.dimens.medium2),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-                focusedTextColor = MaterialTheme.colorScheme.secondary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                errorLabelColor = MaterialTheme.colorScheme.error,
-
-                )
+            colors = getTextFieldColors()
         )
 
         OutlinedTextField(
@@ -124,15 +117,7 @@ fun SignUpScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = MaterialTheme.dimens.medium2),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-                focusedTextColor = MaterialTheme.colorScheme.secondary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                errorLabelColor = MaterialTheme.colorScheme.error,
-
-                )
+            colors = getTextFieldColors()
         )
 
 
@@ -160,15 +145,7 @@ fun SignUpScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = MaterialTheme.dimens.medium2),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-                focusedTextColor = MaterialTheme.colorScheme.secondary,
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                errorLabelColor = MaterialTheme.colorScheme.error,
-
-                )
+            colors = getTextFieldColors()
         )
 
         // Sign Up Button

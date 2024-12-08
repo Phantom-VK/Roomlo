@@ -71,6 +71,7 @@ import com.app.roomlo.navigation.Screen
 import com.app.roomlo.repository.LocationUtils
 import com.app.roomlo.repository.PreferenceHelper
 import com.app.roomlo.ui.theme.dimens
+import com.app.roomlo.ui.theme.getTextFieldColors
 import com.app.roomlo.viewmodels.LocationViewModel
 import com.app.roomlo.viewmodels.PropertyViewModel
 import com.google.android.gms.maps.model.CameraPosition
@@ -188,7 +189,7 @@ fun ListPropertyScaffoldScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TopBar(navController)
+            ListPropertyScreenTopBar(navController)
             Divider()
             ScreenTitle(currentScreen)
             ScreenTabs(currentScreen) { newScreen ->
@@ -262,7 +263,7 @@ private fun PropertyListingContent(
     }
 }
 @Composable
-fun TopBar(navController: NavController) {
+fun ListPropertyScreenTopBar(navController: NavController) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -328,6 +329,8 @@ fun ScreenTab(label: String, isSelected: Boolean, onClick: () -> Unit) {
         )
     }
 }
+
+
 
 @Composable
 fun AddressScreen(property: Property, currentLocation: LocationData? = null, onNext: () -> Unit) {
@@ -437,18 +440,7 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Property Name") },
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.primary,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-                    focusedTextColor = MaterialTheme.colorScheme.secondary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.background,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-                    focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                    focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-                    focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                    cursorColor = MaterialTheme.colorScheme.secondary
-                ),
+                colors = getTextFieldColors(),
                 value = propertyName.value,
                 onValueChange = { propertyName.value = it
                     property.propertyName = propertyName.value}
@@ -463,18 +455,7 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                     modifier = Modifier
                         .weight(1f)
                         .padding(end = 8.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.primary,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-                        focusedTextColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.background,
-                        focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                        cursorColor = MaterialTheme.colorScheme.secondary
-                    ),
+                    colors = getTextFieldColors(),
                     value = propertyRent.value,
                     onValueChange = { propertyRent.value = it
                                     property.rent = propertyRent.value},
@@ -485,18 +466,7 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 8.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.primary,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-                        focusedTextColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedTextColor = MaterialTheme.colorScheme.background,
-                        focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-                        unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-                        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-                        focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.secondary,
-                        cursorColor = MaterialTheme.colorScheme.secondary
-                    ),
+                    colors = getTextFieldColors(),
                     onValueChange = { propertySize.value = it
                                     property.size = propertySize.value},
                     label = { Text("Property Size") },
@@ -647,7 +617,7 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
             }
         }
         item {
-            MultiSelectionSection(
+            AmenitiesSelection(
                 label = "Amenities:",
                 options = listOf(
                     "AC",
@@ -655,8 +625,7 @@ fun PropertyDetailsFormScreen(property: Property, onNext: () -> Unit) {
                     "Fridge",
                     "Washing Machine",
                     "Microwave",
-                    "Gas Stove",
-                    "Custom"
+                    "Gas Stove"
                 ),
                 selectedOptions = selectedAmenities.value
             ) { amenity ->
@@ -717,7 +686,7 @@ fun SectionWithOptions(
 
             OptionButton(
                 text = displayText,
-                isSelected = selectedOption == option || (option == "Custom" && selectedOption !in options.filter { it != "Custom" }),
+                isSelected = selectedOption == option ,
                 onClick = {
                     if (option == "Custom") {
                         showCustomDialog = true
@@ -745,7 +714,7 @@ fun SectionWithOptions(
 
 // Enhanced MultiSelectionSection with dialog-based custom input
 @Composable
-fun MultiSelectionSection(
+fun AmenitiesSelection(
     label: String,
     options: List<String>,
     selectedOptions: List<String>,
@@ -767,34 +736,35 @@ fun MultiSelectionSection(
         items(selectedOptions.filter { it !in options }) { customOption ->
             OptionButton(
                 text = customOption,
-                isSelected = true,
+                isSelected = false,
                 onClick = { onOptionSelected(customOption) }
             )
         }
 
         // Display predefined options
         items(options) { option ->
-            if (option == "Custom") {
-                // Custom option button that triggers dialog
-                OutlinedButton(
-                    onClick = { showCustomDialog = true },
-                    modifier = Modifier.wrapContentSize(),
-                    shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.secondary,
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Text("+ Add Custom", fontSize = 14.sp)
-                }
-            } else {
+//            if (option == "Custom") {
+//                // Custom option button that triggers dialog
+//                OutlinedButton(
+//                    onClick = { showCustomDialog = true },
+//                    modifier = Modifier.wrapContentSize(),
+//                    shape = RoundedCornerShape(8.dp),
+//                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+//                    colors = ButtonDefaults.outlinedButtonColors(
+//                        contentColor = MaterialTheme.colorScheme.secondary,
+//                        containerColor = MaterialTheme.colorScheme.primary
+//                    )
+//                ) {
+//                    Text("+ Add Custom", fontSize = 14.sp)
+//                }
+//
+//            } else {
                 OptionButton(
                     text = option,
                     isSelected = selectedOptions.contains(option),
                     onClick = { onOptionSelected(option) }
                 )
-            }
+//            }
         }
     }
 
@@ -990,18 +960,7 @@ fun AddressTextField(value: String, placeholder: String, onValueChange: (String)
 
         label = { Text(placeholder) },
 
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.primary,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-            focusedTextColor = MaterialTheme.colorScheme.secondary,
-            unfocusedTextColor = MaterialTheme.colorScheme.background,
-            focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
-            unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
-            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
-            focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
-            focusedLabelColor = MaterialTheme.colorScheme.secondary,
-            cursorColor = MaterialTheme.colorScheme.secondary
-        )
+        colors = getTextFieldColors()
     )
 }
 

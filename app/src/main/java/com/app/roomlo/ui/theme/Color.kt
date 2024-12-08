@@ -1,5 +1,9 @@
 package com.app.roomlo.ui.theme
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 
@@ -25,3 +29,21 @@ val SecondaryButtonTextDark = Color(0xFF000000)  // Black
 val DarkThemeDarkGrey = Color(0xFF292929)  // Dark Gray
 val DarkThemeMedGrey = Color(0xFF616161)  // Medium Gray
 val DarkThemeLightGrey = Color(0xFF616161)  // Light Gray
+
+@Composable
+fun getTextFieldColors(): TextFieldColors {
+    val colors = TextFieldDefaults.colors(
+        focusedContainerColor = MaterialTheme.colorScheme.primary,
+        unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+        focusedTextColor = MaterialTheme.colorScheme.secondary,
+        unfocusedTextColor = MaterialTheme.colorScheme.background,
+        focusedIndicatorColor = MaterialTheme.colorScheme.secondary,
+        unfocusedIndicatorColor = MaterialTheme.colorScheme.background,
+        focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+        focusedTrailingIconColor = MaterialTheme.colorScheme.primary,
+        focusedLabelColor = MaterialTheme.colorScheme.secondary,
+        cursorColor = MaterialTheme.colorScheme.secondary
+    )
+
+    return colors
+}
