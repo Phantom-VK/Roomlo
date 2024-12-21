@@ -36,10 +36,7 @@ class SharedViewModel @Inject constructor(
         viewModelScope.launch {
             val userDetails = userRepository.fetchUserDetails()
             _userDetails.value = userDetails
-            _userDetails.value?.let {
-                Log.d("SharedViewModel",it.name)
-             Log.d("SharedViewModel",it.userType)
-            }?:{Log.d("SharedViewModel","No value")}
+
         }
 
     }

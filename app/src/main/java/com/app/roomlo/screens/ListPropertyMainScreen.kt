@@ -153,8 +153,17 @@ val PropertySaver = mapSaver(
             bathroom = map["bathroom"] as? Int ?: 0,
             toilet = map["toilet"] as? Int ?: 0,
             wifi = map["wifi"] as? String ?: "",
-            amenities = (map["amenities"] as? List<String>)?.toList() ?: listOf(),
-            propertyImages = (map["propertyImages"] as? List<String>)?.toList() ?: listOf()
+            amenities = if (map["amenities"] is List<*>) {
+                (map["amenities"] as List<*>).filterIsInstance<String>()
+            } else {
+                listOf()
+            },
+
+                    propertyImages = if (map["propertyImages"] is List<*>) {
+                (map["propertyImages"] as List<*>).filterIsInstance<String>()
+            } else {
+                listOf()
+            }
         )
     }
 )
@@ -662,8 +671,11 @@ fun SectionWithOptions(
     selectedOption: String,
     onOptionSelected: (String) -> Unit
 ) {
-    // State for controlling custom input dialog visibility
     var showCustomDialog by remember { mutableStateOf(false) }
+
+    // Check if the selected option is custom (not in predefined options)
+    val isCustomValue = selectedOption.isNotEmpty() &&
+            selectedOption !in options.filter { it != "Custom" }
 
     Text(
         text = label,
@@ -671,37 +683,44 @@ fun SectionWithOptions(
         modifier = Modifier.padding(vertical = 8.dp)
     )
 
-    // Horizontal scrollable row of options
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(options) { option ->
-            // Show either the predefined option or custom value
-            val displayText = if (option == "Custom" && selectedOption !in options.filter { it != "Custom" }) {
-                selectedOption
-            } else {
-                option
-            }
-
+        // First display standard options
+        items(options.filter { it != "Custom" }) { option ->
             OptionButton(
-                text = displayText,
-                isSelected = selectedOption == option ,
-                onClick = {
-                    if (option == "Custom") {
-                        showCustomDialog = true
-                    } else {
-                        onOptionSelected(option)
-                    }
-                }
+                text = option,
+                isSelected = selectedOption == option,
+                onClick = { onOptionSelected(option) }
+            )
+        }
+
+        // Then display custom value if it exists
+        if (isCustomValue) {
+            item {
+                OptionButton(
+                    text = selectedOption,
+                    isSelected = true,
+                    onClick = { showCustomDialog = true }
+                )
+            }
+        }
+
+        // Finally display the "Custom" button
+        item {
+            OptionButton(
+                text = "Custom",
+                isSelected = false,
+                onClick = { showCustomDialog = true }
             )
         }
     }
 
-    // Custom input dialog
     if (showCustomDialog) {
         CustomInputDialog(
             title = "Enter Custom $label",
+            initialValue = if (isCustomValue) selectedOption else "",
             onDismiss = { showCustomDialog = false },
             onConfirm = { customValue ->
                 onOptionSelected(customValue)
@@ -781,21 +800,33 @@ fun AmenitiesSelection(
 }
 
 @Composable
-fun OptionButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
+fun OptionButton(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
     OutlinedButton(
         modifier = Modifier.wrapContentSize(),
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(
             1.dp,
-            if (isSelected) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.secondary
+            if (isSelected) MaterialTheme.colorScheme.onSurface
+            else MaterialTheme.colorScheme.secondary
         ),
         colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = if (isSelected) Color.White else MaterialTheme.colorScheme.secondary,
-            containerColor = if (isSelected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.primary
+            contentColor = if (isSelected) MaterialTheme.colorScheme.onSurface
+            else MaterialTheme.colorScheme.secondary,
+            containerColor = if (isSelected) MaterialTheme.colorScheme.secondary
+            else MaterialTheme.colorScheme.surface
         )
     ) {
-        Text(text, fontSize = 14.sp)
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            color = if (isSelected) MaterialTheme.colorScheme.surface
+            else MaterialTheme.colorScheme.secondary
+        )
     }
 }
 
@@ -803,10 +834,11 @@ fun OptionButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
 @Composable
 fun CustomInputDialog(
     title: String,
+    initialValue: String = "",
     onDismiss: () -> Unit,
     onConfirm: (String) -> Unit
 ) {
-    var inputValue by remember { mutableStateOf("") }
+    var inputValue by remember { mutableStateOf(initialValue) }
     var hasError by remember { mutableStateOf(false) }
 
     AlertDialog(
