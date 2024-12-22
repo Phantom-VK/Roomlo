@@ -1,6 +1,5 @@
 package com.app.roomlo.screens
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +25,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,14 +32,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.app.roomlo.screens.components.AppSearchBar
 import com.app.roomlo.screens.components.PropertyItemView
 import com.app.roomlo.ui.theme.dimens
 import com.app.roomlo.ui.theme.interFont
-import com.app.roomlo.viewmodels.PropertyViewModel
 import com.app.roomlo.viewmodels.SharedViewModel
 
 

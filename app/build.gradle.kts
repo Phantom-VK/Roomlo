@@ -87,8 +87,10 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
 
     //Google maps
-    implementation("com.google.maps.android:maps-compose:6.4.0")
+    implementation("com.google.maps.android:maps-compose:6.2.1")
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.maps.android:android-maps-utils:3.8.2")
+    implementation("com.google.maps.android:maps-utils-ktx:5.1.1")
 
     // coil-compose
     implementation("io.coil-kt:coil-compose:2.7.0")
@@ -98,9 +100,8 @@ dependencies {
 
     // Dagger-Hilt
     implementation("com.google.dagger:hilt-android:2.54")
-
-    kapt("com.google.dagger:hilt-compiler:2.54")
-
+    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
+    implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
     // Hilt navigation-compose
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
